@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-     await queryInterface.createTable("usuario", {
+     await queryInterface.createTable("users", {
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -16,6 +16,7 @@ module.exports = {
         },
         email: {
           type: Sequelize.DataTypes.STRING,
+          unique: true,
         },
         senha: {
           type: Sequelize.DataTypes.STRING,
@@ -40,6 +41,7 @@ module.exports = {
         },
         realizar_pagamentos: {
           type: Sequelize.DataTypes.BOOLEAN,
+<<<<<<< HEAD:src/database/migrations/20250122125605-usuario.js
         }
      });
   },
@@ -47,4 +49,31 @@ module.exports = {
   // async down (queryInterface, Sequelize) {
   //   await queryInterface.dropTable("clientes");
   // },
+=======
+        },
+        recover_code: {
+          type: Sequelize.DataTypes.STRING,
+        },
+        recover_expires: {
+          type: Sequelize.DataTypes.DATE,
+        },
+        role: {
+          allowNull: false,
+          type: Sequelize.DataTypes.STRING,
+        },
+        created_at: {
+          allowNull: false,
+          type: Sequelize.DataTypes.DATE,
+        },
+        updated_at: {
+          allowNull: false,
+          type: Sequelize.DataTypes.DATE,
+        },
+     });
+  },
+
+  async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable("users");
+  },
+>>>>>>> origin/lucas:src/database/migrations/20250122125605-user.js
 };

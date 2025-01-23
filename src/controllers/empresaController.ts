@@ -1,0 +1,65 @@
+import { Request, Response } from "express";
+import { userService } from "../service/userService";
+import { empresaService } from "../service/empresaService";
+import { Role } from "../models/enums/role.enum";
+
+export const empresaController = {
+
+
+    //POST /create/empresa/noAuthh
+    createNoAuth: async (req: Request, res: Response) : Promise<void> => {
+        const{
+            cnpj,
+            nome,
+            senha,
+            cidade,
+            estado,
+            email,
+            emailFinanceiro,
+            endereco,
+            telefone,
+        } = req.body;
+
+        try {
+            const alreadyExists = await userService.findByEmail(email);
+
+            if(alreadyExists) {
+                throw new Error("Este e-mail já está cadastrado.");
+            }
+
+            const empresa = await empresaService.create({
+                cnpj,
+                nome,
+                cidade,
+                estado,
+                email,
+                emailFinanceiro,
+                nmrCrea: null,
+                endereco,
+                telefone,
+                logoUrl: null,
+            });
+
+            const user = await userService.create({
+                nome: nome,
+                email,
+                senha,
+                empresaId: empresa.id,
+                visualizarLaudos: true,
+                editarLaudos: true,
+                visualizarConfigClientes: true,
+                editarConfigClientes: true,
+                realizarPagamentos: true,
+                recoverCode: null,
+                recoverExpires: null,
+                role: Role.USER,
+            })
+
+             res.status(201).json({ empresa, user });
+        } catch (err) {
+            if (err instanceof Error) {
+                 res.status(400).json({ message: err.message });
+            }
+        }
+    }
+}

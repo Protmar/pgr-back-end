@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable("cliente", {
+    await queryInterface.createTable("clientes", {
       id: {
         allowNull: false,
         autoIncrementIdentity: true,
@@ -63,11 +63,11 @@ module.exports = {
   add_documento_base_url: {
     type: Sequelize.DataTypes.STRING,
   },
-  createdAt: {
+  created_at: {
     allowNull: false,
     type: Sequelize.DataTypes.DATE,
   },
-  updatedAt: {
+  updated_at: {
     allowNull: false,
     type: Sequelize.DataTypes.DATE,
   },

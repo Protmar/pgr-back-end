@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-     await queryInterface.createTable("usuario", {
+     await queryInterface.createTable("users", {
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -16,6 +16,7 @@ module.exports = {
         },
         email: {
           type: Sequelize.DataTypes.STRING,
+          unique: true,
         },
         senha: {
           type: Sequelize.DataTypes.STRING,
@@ -41,11 +42,21 @@ module.exports = {
         realizar_pagamentos: {
           type: Sequelize.DataTypes.BOOLEAN,
         },
-        createdAt: {
+        recover_code: {
+          type: Sequelize.DataTypes.STRING,
+        },
+        recover_expires: {
+          type: Sequelize.DataTypes.DATE,
+        },
+        role: {
+          allowNull: false,
+          type: Sequelize.DataTypes.STRING,
+        },
+        created_at: {
           allowNull: false,
           type: Sequelize.DataTypes.DATE,
         },
-        updatedAt: {
+        updated_at: {
           allowNull: false,
           type: Sequelize.DataTypes.DATE,
         },
@@ -53,6 +64,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("clientes");
+    await queryInterface.dropTable("users");
   },
 };

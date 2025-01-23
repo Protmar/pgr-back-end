@@ -12,12 +12,22 @@ module.exports = {
       },
       cnpj: {
         type: Sequelize.DataTypes.STRING,
+        unique: true,
       },
       nome: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
+      cidade: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      estado: {
+        type: Sequelize.DataTypes.STRING,
+      },
       email: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      email_financeiro: {
         type: Sequelize.DataTypes.STRING,
       },
       nmr_crea: {
@@ -33,11 +43,11 @@ module.exports = {
       logo_url: {
         type: Sequelize.DataTypes.STRING,
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
       },

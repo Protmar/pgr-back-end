@@ -1,6 +1,7 @@
 import express from "express";
-import { empresaTeste } from "../controllers/empresaTeste";
+import { empresaController } from "../controllers/empresaController";
+
 
 export const router = express.Router();
 
-router.get("/:client/getdata", empresaTeste.get);
+router.post("/postcadastroempresa", empresaController.createNoAuth);

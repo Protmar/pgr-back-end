@@ -6,7 +6,7 @@ import { Role } from "../models/enums/role.enum";
 export const empresaController = {
 
 
-    //POST /create/empresa/noAuth
+    //POST /create/empresa/noAuthh
     createNoAuth: async (req: Request, res: Response) : Promise<void> => {
         const{
             cnpj,

@@ -40,19 +40,11 @@ module.exports = {
         },
         realizar_pagamentos: {
           type: Sequelize.DataTypes.BOOLEAN,
-        },
-        createdAt: {
-          allowNull: false,
-          type: Sequelize.DataTypes.DATE,
-        },
-        updatedAt: {
-          allowNull: false,
-          type: Sequelize.DataTypes.DATE,
-        },
+        }
      });
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("clientes");
-  },
+  // async down (queryInterface, Sequelize) {
+  //   await queryInterface.dropTable("clientes");
+  // },
 };

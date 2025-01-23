@@ -33,11 +33,11 @@ module.exports = {
       logo_url: {
         type: Sequelize.DataTypes.STRING,
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
       },

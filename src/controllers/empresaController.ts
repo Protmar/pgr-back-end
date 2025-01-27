@@ -6,11 +6,12 @@ import { Role } from "../models/enums/role.enum";
 export const empresaController = {
 
 
-    //POST /create/empresa/noAuthh
+    //POST /create/empresa/noAuth
     createNoAuth: async (req: Request, res: Response) : Promise<void> => {
         const{
             cnpj,
             nome,
+            nomeUsuario,
             senha,
             cidade,
             estado,
@@ -41,7 +42,7 @@ export const empresaController = {
             });
 
             const user = await userService.create({
-                nome: nome,
+                nome: nomeUsuario,
                 email,
                 senha,
                 empresaId: empresa.id,

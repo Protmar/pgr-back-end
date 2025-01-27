@@ -41,18 +41,17 @@ export const Cliente = sequelize.define<Model<ClienteAttributes, ClienteCreation
             references: { model: "empresas", key: "id" },
             onUpdate: "CASCADE",
             onDelete: "RESTRICT",
-            allowNull: true, // Definido como obrigatório
+            allowNull: false, // Definido como obrigatório
         },
         cnpj: {
             type: DataTypes.STRING,
+            allowNull: false,
         },
         nome_fantasia: {
             type: DataTypes.STRING,
-            allowNull: false, // Definido como obrigatório
         },
         razao_social: {
             type: DataTypes.STRING,
-            allowNull: false, // Definido como obrigatório
         },
         cnae: {
             type: DataTypes.STRING,

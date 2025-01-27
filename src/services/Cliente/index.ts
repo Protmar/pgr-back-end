@@ -2,15 +2,16 @@ import { Cliente } from "../../models/Cliente";
 import { ClienteAttributes } from "../../models/Cliente"; // Certifique-se de importar a interface correta
 
 // Serviço para obter os dados de um cliente pelo ID
-export const getDadosClienteService = async (id: any): Promise<any> => {
+export const getDadosClienteService = async (id: any, empresa_id: any): Promise<any> => {
     try {
         const data = await Cliente.findOne({
             where: {
-                id
+                id,
+                empresa_id
             }
         });
 
-         data; // Retorna o cliente ou null se não encontrado
+        return data;
     } catch (error) {
         console.error("Erro ao buscar dados do cliente:", error);
         throw new Error("Erro ao buscar dados do cliente");
@@ -34,7 +35,7 @@ export const postDadosClienteService = async (
     contato_financeiro: string,
     observacoes: string,
     logo_url: string,
-    add_documento_base_url: string
+    add_documento_base_url: string,
 ): Promise<any> => {
     try {
         // Validação dos campos obrigatórios
@@ -67,3 +68,18 @@ export const postDadosClienteService = async (
         throw new Error("Erro ao criar o cliente"); // Lança o erro para ser tratado em um nível superior
     }
 };
+
+export const getDadosAllClientesService = async (id: string): Promise<any> => {
+    try {
+        const data = await Cliente.findAll({
+            where: {
+                empresa_id: id
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar todos os clientes:", error);
+        throw new Error("Erro ao buscar todos os clientes");
+    }
+}

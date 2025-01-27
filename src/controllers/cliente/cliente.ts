@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { getDadosClienteService, postDadosClienteService } from "../../services/Cliente";
+import { getDadosAllClientesService, getDadosClienteService, postDadosClienteService } from "../../services/Cliente";
 
 export const dadosCliente = {
     // Método GET para buscar dados de um cliente
     get: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { idcliente } = req.params;
+            const { idcliente, idempresa } = req.params;
 
-            const data = await getDadosClienteService(idcliente);
+            const data = await getDadosClienteService(idcliente, idempresa);
 
             if (!data) {
                 res.status(404).json({
@@ -46,6 +46,8 @@ export const dadosCliente = {
             add_documento_base_url,
         } = req.body;
 
+        const { idempresa } = req.params;
+
         try {
             // Validação dos campos obrigatórios
             if (!empresa_id || !nome_fantasia || !razao_social) {
@@ -72,7 +74,8 @@ export const dadosCliente = {
                 contato_financeiro,
                 observacoes,
                 logo_url,
-                add_documento_base_url
+                add_documento_base_url,
+                
             );
 
             // Resposta de sucesso
@@ -88,4 +91,27 @@ export const dadosCliente = {
             });
         }
     },
+
+    getAll: async (req: Request, res: Response) => {
+        try {
+            const { idempresa } = req.params;
+
+            const data = await getDadosAllClientesService(idempresa);
+
+            if(!data) {
+                res.status(404).json({
+                    message: "Nenhum cliente encontrado",
+                });
+                return;
+            }
+
+            res.status(200).json(data);
+        } catch (error) {
+            console.error("Erro ao buscar todos os clientes:", error);
+            res.status(500).json({
+                message: "Erro ao buscar todos os clientes",
+                error: error
+            });
+        }
+    }
 };

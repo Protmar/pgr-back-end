@@ -7,7 +7,7 @@ export const empresaController = {
 
 
     //POST /create/empresa/noAuth
-    createNoAuth: async (req: Request, res: Response) : Promise<void> => {
+    createNoAuth: async (req: Request, res: Response) => {
         const{
             cnpj,
             nome,
@@ -56,10 +56,10 @@ export const empresaController = {
                 role: Role.USER,
             })
 
-             res.status(201).json({ empresa, user });
+            return res.status(201).json({ empresa, user });
         } catch (err) {
             if (err instanceof Error) {
-                 res.status(400).json({ message: err.message });
+            return res.status(400).json({ message: err.message });
             }
         }
     }

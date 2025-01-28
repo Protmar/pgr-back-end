@@ -4,8 +4,10 @@ import { jwtService } from "../service/jwtService";
 
 export const authController = {
   //POST /auth/login
+
+  
   login: async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, senha } = req.body;
 
     try {
       const user = await userService.findByEmail(email);
@@ -13,7 +15,7 @@ export const authController = {
       if (!user)
         return res.status(404).json({ message: "E-mail não registrado" });
 
-      user.checkPassword(password, (err, isSame) => {
+      user.checkPassword(senha, (err, isSame) => {
         if (err) return res.status(400).json({ message: err.message });
         if (!isSame)
           return res.status(401).json({ message: "Senha incorreta" });
@@ -25,13 +27,14 @@ export const authController = {
           email: user.email,
         };
 
-        const token = jwtService.signToken(payload, "7d");
+        const token = jwtService.signToken(payload, "10s");
 
         return res.json({ authenticated: true, ...payload, token });
       });
     } catch (err) {
       if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
+         res.status(400).json({ message: err.message });
       }
     }
-  }}
+  }
+}

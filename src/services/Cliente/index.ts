@@ -83,3 +83,28 @@ export const getDadosAllClientesService = async (id: string): Promise<any> => {
         throw new Error("Erro ao buscar todos os clientes");
     }
 }
+
+export const deleteDadosClienteService = async (empresa_id: string, cliente_id: string): Promise<void> => {
+    try {
+        const cliente = await Cliente.findOne({
+            where: {
+                id: cliente_id,
+                empresa_id
+            }
+        });
+
+        if (!cliente) {
+            throw new Error("Cliente não encontrado");
+        }
+
+        await Cliente.destroy({
+            where: {
+                id: cliente_id,
+                empresa_id
+            }
+        });
+    } catch (error) {
+        console.error("Erro ao deletar cliente:", error);
+        throw new Error("Erro ao deletar o cliente");
+    }
+};

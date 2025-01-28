@@ -10,6 +10,7 @@ export const router = express.Router();
 router.get("/:idempresa/getclientes", dadosCliente.getAll );
 router.get("/:idempresa/:idcliente/getcliente", dadosCliente.get );
 router.post("/:idempresa/postcliente", dadosCliente.post );
+router.delete("/:idempresa/:idcliente/deletecliente", dadosCliente.delete);
 
 //empresa
 router.post("/postcadastroempresa", empresaController.createNoAuth);

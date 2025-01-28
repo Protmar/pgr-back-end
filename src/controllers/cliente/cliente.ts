@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getDadosAllClientesService, getDadosClienteService, postDadosClienteService } from "../../services/Cliente";
+import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, postDadosClienteService } from "../../services/Cliente";
 
 export const dadosCliente = {
     // Método GET para buscar dados de um cliente
@@ -113,5 +113,13 @@ export const dadosCliente = {
                 error: error
             });
         }
+    },
+
+    delete: async (req: Request, res: Response) => {
+        const { idempresa, idcliente } = req.params;
+
+        await deleteDadosClienteService(idempresa, idcliente);
+
+        res.status(200).json({ message: "Cliente Deletado" });
     }
 };

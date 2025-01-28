@@ -41,15 +41,6 @@ module.exports = {
         },
         realizar_pagamentos: {
           type: Sequelize.DataTypes.BOOLEAN,
-<<<<<<< HEAD:src/database/migrations/20250122125605-usuario.js
-        }
-     });
-  },
-
-  // async down (queryInterface, Sequelize) {
-  //   await queryInterface.dropTable("clientes");
-  // },
-=======
         },
         recover_code: {
           type: Sequelize.DataTypes.STRING,
@@ -75,5 +66,4 @@ module.exports = {
   async down (queryInterface, Sequelize) {
     await queryInterface.dropTable("users");
   },
->>>>>>> origin/lucas:src/database/migrations/20250122125605-user.js
 };

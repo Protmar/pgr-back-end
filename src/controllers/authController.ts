@@ -27,7 +27,7 @@ export const authController = {
           email: user.email,
         };
 
-        const token = jwtService.signToken(payload, "10s");
+        const token = jwtService.signToken(payload, "12h");
 
         return res.json({ authenticated: true, ...payload, token });
       });

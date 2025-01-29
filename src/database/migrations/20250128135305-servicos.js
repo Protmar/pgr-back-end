@@ -2,8 +2,8 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("clientes", {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.createTable("servicos", {
       id: {
         allowNull: false,
         autoIncrement: true, // Corrigido
@@ -16,51 +16,28 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       },
-      cnpj: {
+      cliente_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "clientes", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
+      descricao: {
         type: Sequelize.DataTypes.STRING,
       },
-      nome_fantasia: {
-        allowNull: false,
+      responsavel_aprovacao: {
         type: Sequelize.DataTypes.STRING,
       },
-      razao_social: {
-        allowNull: false,
+      cargo_responsavel_aprovacao: {
         type: Sequelize.DataTypes.STRING,
       },
-      cnae: {
+      data_inicio: {
         type: Sequelize.DataTypes.STRING,
       },
-      atividade_principal: {
+      data_fim: {
         type: Sequelize.DataTypes.STRING,
       },
-      grau_de_risco: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      cep: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      estado: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      cidade: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      localizacao_completa: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      email_financeiro: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      contato_financeiro: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      observacoes: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      logo_url: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      add_documento_base_url: {
+      art_url: {
         type: Sequelize.DataTypes.STRING,
       },
       created_at: {
@@ -76,7 +53,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("clientes");
-  },
+  async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable("servicos");
+  }
 };

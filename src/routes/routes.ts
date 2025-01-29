@@ -3,19 +3,32 @@ import { authController } from "../controllers/authController";
 import { dadosCliente } from "../controllers/cliente/cliente";
 import { empresaController } from "../controllers/empresaController";
 import { pesquisaController } from "../controllers/pesquisas";
+import { dadosServicos } from "../controllers/servicos/index";
+import { ensureUserAuth } from "../middleware";
+
+
 
 export const router = express.Router();
 //Auth
-router.post("/auth/login", authController.login)
+router.post("/auth/login", authController.login);
 
 //cliente
-router.get("/:idempresa/getclientes", dadosCliente.getAll );
-router.get("/:idempresa/:idcliente/getcliente", dadosCliente.get );
-router.post("/:idempresa/postcliente", dadosCliente.post );
-router.delete("/:idempresa/:idcliente/deletecliente", dadosCliente.delete);
+router.get("/getclientes", ensureUserAuth ,dadosCliente.getAll );
+router.get("/:idcliente/getcliente", ensureUserAuth, dadosCliente.get );
+router.post("/postcliente", ensureUserAuth, dadosCliente.post );
+router.delete("/:idcliente/deletecliente", ensureUserAuth, dadosCliente.delete);
+router.put("/:idcliente/editcliente", ensureUserAuth, dadosCliente.put);
+
+//Servicos
+router.post("/postservico", ensureUserAuth, dadosServicos.post);
+router.get("/:idcliente/getservicosbycliente", ensureUserAuth, dadosServicos.getServicosByCliente);
+router.get("/:idservico/getservico", ensureUserAuth, dadosServicos.get);
+router.put("/:idservico/editservico", ensureUserAuth, dadosServicos.put);
+router.delete("/:idservico/deleteservico", ensureUserAuth, dadosServicos.delete);
 
 //empresa
-router.post("/postcadastroempresa", empresaController.createNoAuth);
+router.post("/postcadastroempresa", ensureUserAuth, empresaController.createNoAuth);
 
 //Rotas de pesquisa filtradas
-router.get("/:idempresa/pesquisa/:pesquisa", pesquisaController.getCnpjNome)
+router.get("/pesquisa/:pesquisa", ensureUserAuth, pesquisaController.getCnpjNome)
+router.get("/pesquisaservicos/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescDtIniDtFim)

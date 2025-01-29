@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, postDadosClienteService } from "../../services/Cliente";
+import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, postDadosClienteService, putDadosClienteService } from "../../services/Cliente";
+import { AuthenticatedUserRequest } from "../../middleware";
 
 export const dadosCliente = {
     // Método GET para buscar dados de um cliente
-    get: async (req: Request, res: Response): Promise<void> => {
+    get: async (req: AuthenticatedUserRequest, res: Response): Promise<void> => {
         try {
-            const { idcliente, idempresa } = req.params;
+            const { idcliente } = req.params;
+            const { empresaId } = req.user!;
 
-            const data = await getDadosClienteService(idcliente, idempresa);
+            const data = await getDadosClienteService(idcliente, empresaId);
 
             if (!data) {
                 res.status(404).json({
@@ -26,7 +28,7 @@ export const dadosCliente = {
     },
 
     // Método POST para criar um novo cliente
-    post: async (req: any, res: any): Promise<void> => {
+    post: async (req: AuthenticatedUserRequest, res: any): Promise<void> => {
         const {
             empresa_id,
             cnpj,
@@ -46,7 +48,6 @@ export const dadosCliente = {
             add_documento_base_url,
         } = req.body;
 
-        const { idempresa } = req.params;
 
         try {
             // Validação dos campos obrigatórios
@@ -92,11 +93,11 @@ export const dadosCliente = {
         }
     },
 
-    getAll: async (req: Request, res: Response) => {
+    getAll: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            const { idempresa } = req.params;
+            const { empresaId } = req.user!;
 
-            const data = await getDadosAllClientesService(idempresa);
+            const data = await getDadosAllClientesService(empresaId.toString());
 
             if(!data) {
                 res.status(404).json({
@@ -115,11 +116,63 @@ export const dadosCliente = {
         }
     },
 
-    delete: async (req: Request, res: Response) => {
-        const { idempresa, idcliente } = req.params;
+    delete: async (req: AuthenticatedUserRequest, res: Response) => {
+        const { idcliente } = req.params;
+        const { empresaId } = req.user!;
 
-        await deleteDadosClienteService(idempresa, idcliente);
+        await deleteDadosClienteService(empresaId.toString(), idcliente);
 
         res.status(200).json({ message: "Cliente Deletado" });
-    }
+    },
+
+    put: async (req: AuthenticatedUserRequest, res: any): Promise<void> => {
+        try {
+            const { idcliente } = req.params;
+            const { empresaId } = req.user!;
+            const {
+                cnpj,
+                nome_fantasia,
+                razao_social,
+                cnae,
+                atividade_principal,
+                grau_de_risco,
+                cep,
+                estado,
+                cidade,
+                localizacao_completa,
+                email_financeiro,
+                contato_financeiro,
+                observacoes
+            } = req.body;
+
+            const updatedData = await putDadosClienteService(
+                idcliente,
+                empresaId.toString(),
+                cnpj,
+                nome_fantasia,
+                razao_social,
+                cnae,
+                atividade_principal,
+                grau_de_risco,
+                cep,
+                estado,
+                cidade,
+                localizacao_completa,
+                email_financeiro,
+                contato_financeiro,
+                observacoes
+            );
+
+            res.status(200).json({
+                message: "Cliente atualizado com sucesso",
+                cliente: updatedData,
+            });
+        } catch (error) {
+            console.error("Erro ao atualizar o cliente:", error);
+            res.status(500).json({
+                message: "Erro ao atualizar o cliente",
+                error: error
+            });
+        }
+    },
 };

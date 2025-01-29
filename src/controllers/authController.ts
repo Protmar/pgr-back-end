@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { userService } from "../service/userService";
 import { jwtService } from "../service/jwtService";
+import { randomBytes } from "crypto";
+
+const webUrl = process.env.WEB_URL;
 
 export const authController = {
   //POST /auth/login
@@ -27,7 +30,7 @@ export const authController = {
           email: user.email,
         };
 
-        const token = jwtService.signToken(payload, "12h");
+        const token = jwtService.signToken(payload, "12hr");
 
         return res.json({ authenticated: true, ...payload, token });
       });
@@ -37,4 +40,43 @@ export const authController = {
       }
     }
   }
+
+   //POST /auth/forgotPassword
+  //  forgotPassword: async(req: Request, res: Response) => {
+  //   const { email } = req.body;
+
+  //   try {
+  //     const user = await userService.findByEmail(email);
+
+  //     if (!user)
+  //       return res.status(404).json({ message: "E-mail não registrado" });
+  //     const token = randomBytes(5).toString("hex");
+
+  //     const now = new Date();
+  //     now.setHours(now.getHours() + 1);
+
+  //     await userService.updateRecoverCode(user.id, {
+  //       recoverCode: token,
+  //       recoverExpires: now,
+  //     });
+
+  //     const emailContent = `
+  //     <p>Para recuperar a sua senha <a href="${webUrl}/redefinir-senha/${token}">clique aqui</a> ou utilize o seguinte código: </p>
+  //     <h3>${token}</h3>
+  //     `;
+
+  //     await mailerService.sendEmail(
+  //       email,
+  //       "Recuperação de senha",
+  //       emailContent
+  //     );
+
+  //     return res.send();
+  //   } catch (err) {
+  //     if (err instanceof Error) {
+  //       res.status(400).json({ message: err.message });
+  //     }
+  //     )
+  //   }
+  //  }
 }

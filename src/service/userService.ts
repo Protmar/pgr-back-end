@@ -8,5 +8,20 @@ export const userService = {
     create: async (attributes: UserCreationAttributes) => {
         const user = await User.create(attributes);
         return user
-    }
+    },
+
+    updateRecoverCode: async (
+        id: number,
+        attributes: {
+            recoverCode: string | null;
+            recoverExpires: Date | null
+        }
+    ) => {
+        const [aaffectedRows,updatedUser] = await User.update(attributes, {
+            where: { id },
+            returning: true,
+        });
+
+        return updatedUser[0];
+    },
 }

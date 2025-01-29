@@ -7,6 +7,8 @@ import { pesquisaController } from "../controllers/pesquisas";
 export const router = express.Router();
 //Auth
 router.post("/auth/login", authController.login)
+router.post("/auth/forgotPassword", authController.forgotPassword)
+router.post("/auth/resetPassword:token", authController.resetPassword)
 
 //cliente
 router.get("/:idempresa/getclientes", dadosCliente.getAll );

@@ -14,7 +14,7 @@ export interface CadastroCargoAttributes {
 export interface CadastroCargoCreationAttributes extends Optional<CadastroCargoAttributes, 'id'> {}
 
 export const CadastroCargo = sequelize.define<Model<CadastroCargoAttributes, CadastroCargoCreationAttributes>>(
-    "CadastroCargo",
+    "cadastro_cargos",
     {
         id: {
             type: DataTypes.INTEGER,

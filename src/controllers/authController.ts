@@ -63,7 +63,7 @@ export const authController = {
       });
 
       const emailContent = `
-      <p>Para recuperar a sua senha <a href="${webUrl}/redefinir-senha/${token}">clique aqui</a> ou utilize o seguinte código: </p>
+      <p>Para recuperar a sua senha <a href="${webUrl}/login/redefinirsenha/${token}">clique aqui</a> ou utilize o seguinte código: </p>
       <h3>${token}</h3>
       `;
 

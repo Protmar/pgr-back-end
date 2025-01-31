@@ -1,0 +1,37 @@
+import { Model, DataTypes, Optional } from "sequelize";
+import { sequelize } from "../database";
+
+// Atualize a interface para tornar o id opcional na criação
+export interface CadastroVentilacaoAttributes {
+    id: number;
+    empresa_id: number;
+    descricao: string;
+    created_at?: Date;
+    updated_at?: Date;
+}
+
+// Use a versão `Optional` para tornar id opcional durante a criação
+export interface CadastroVentilacaoCreationAttributes extends Optional<CadastroVentilacaoAttributes, 'id'> {}
+
+export const CadastroVentilacao = sequelize.define<Model<CadastroVentilacaoAttributes, CadastroVentilacaoCreationAttributes>>(
+    "cadastro_ventilacao",
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+            allowNull: false, 
+        },
+        empresa_id: {
+            type: DataTypes.INTEGER,
+            references: { model: "empresas", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "RESTRICT",
+            allowNull: false, 
+        },
+        descricao: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        }
+    }
+);

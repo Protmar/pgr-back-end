@@ -8,6 +8,8 @@ import { ensureUserAuth } from "../middleware";
 import { dadosCadastroGerencia } from "../controllers/cadastros/gerencia";
 import { dadosCadastroCargo } from "../controllers/cadastros/cargo";
 import { dadosCadastrosetor } from "../controllers/cadastros/setor";
+import { dadosCadastroFuncao } from "../controllers/cadastros/funcao";
+import { dadosCadastroCursoObrigatorio } from "../controllers/cadastros/cursoobrigatorio";
 
 
 
@@ -61,3 +63,15 @@ router.get("/pesquisasetor/:pesquisa", ensureUserAuth, pesquisaController.getDad
     router.get("/:idsetor/getsetor", ensureUserAuth, dadosCadastrosetor.get);
     router.put("/:idsetor/editsetor", ensureUserAuth, dadosCadastrosetor.put);
     router.delete("/:idsetor/deletesetor", ensureUserAuth, dadosCadastrosetor.delete);
+    //Funcao
+    router.post("/cadastro/postfuncao", ensureUserAuth, dadosCadastroFuncao.post);
+    router.get("/cadastro/getallfuncao", ensureUserAuth, dadosCadastroFuncao.getAll);
+    router.get("/:idfuncao/getfuncao", ensureUserAuth, dadosCadastroFuncao.get);
+    router.put("/:idfuncao/editfuncao", ensureUserAuth, dadosCadastroFuncao.put);
+    router.delete("/:idfuncao/deletefuncao", ensureUserAuth, dadosCadastroFuncao.delete);
+    //Curso Obrigatório
+    router.post("/cadastro/postcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.post);
+    router.get("/cadastro/getallcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.getAll);
+    router.get("/:idcursoobrigatorio/getcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.get);
+    router.put("/:idcursoobrigatorio/editcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.put);
+    router.delete("/:idcursoobrigatorio/deletecursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.delete);

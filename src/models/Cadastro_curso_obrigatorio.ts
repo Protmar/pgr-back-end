@@ -1,5 +1,6 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../database";
+import { table } from "console";
 
 // Atualize a interface para tornar o id opcional na criação
 export interface CadastroCursoObrigatorioAttributes {
@@ -14,7 +15,7 @@ export interface CadastroCursoObrigatorioAttributes {
 export interface CadastroCursoObrigatorioCreationAttributes extends Optional<CadastroCursoObrigatorioAttributes, 'id'> {}
 
 export const CadastroCursoObrigatorio = sequelize.define<Model<CadastroCursoObrigatorioAttributes, CadastroCursoObrigatorioCreationAttributes>>(
-    "cadastro_curso_obrigatorio",
+    "cadastro_curso_obrigatorios",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -35,3 +36,4 @@ export const CadastroCursoObrigatorio = sequelize.define<Model<CadastroCursoObri
         }
     }
 );
+

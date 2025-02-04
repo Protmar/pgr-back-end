@@ -8,6 +8,7 @@ import { ensureUserAuth } from "../middleware";
 import { dadosCadastroGerencia } from "../controllers/cadastros/gerencia";
 import { dadosCadastroCargo } from "../controllers/cadastros/cargo";
 import { dadosCadastrosetor } from "../controllers/cadastros/setor";
+import { dadosTrabalhador } from "../controllers/trabalhador";
 
 
 
@@ -16,7 +17,6 @@ export const router = express.Router();
 router.post("/auth/login", authController.login)
 router.post("/auth/forgotPassword", authController.forgotPassword)
 router.post("/auth/resetPassword/:token", authController.resetPassword)
-
 
 //cliente
 router.get("/getclientes", ensureUserAuth, dadosCliente.getAll);
@@ -41,6 +41,7 @@ router.get("/pesquisaservicos/:pesquisa", ensureUserAuth, pesquisaController.get
 router.get("/pesquisagerencia/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaGerencia);
 router.get("/pesquisacargo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaCargo);
 router.get("/pesquisasetor/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaSetor);
+router.get("/pesquisatrabalhadores/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTrabalhador);
 
 //Cadastros
     //Gerencia
@@ -61,3 +62,10 @@ router.get("/pesquisasetor/:pesquisa", ensureUserAuth, pesquisaController.getDad
     router.get("/:idsetor/getsetor", ensureUserAuth, dadosCadastrosetor.get);
     router.put("/:idsetor/editsetor", ensureUserAuth, dadosCadastrosetor.put);
     router.delete("/:idsetor/deletesetor", ensureUserAuth, dadosCadastrosetor.delete);
+
+//Trabalhador
+router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
+router.get("/gettrabalhadores", ensureUserAuth, dadosTrabalhador.getAllTrabalhadores);
+router.get("/:idtrabalhador/gettrabalhador", ensureUserAuth, dadosTrabalhador.getTrabalhador);
+router.put("/:idtrabalhador/edittrabalhador", ensureUserAuth, dadosTrabalhador.putTrabalhador);
+router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalhador.deleteTrabalhador);

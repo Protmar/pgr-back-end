@@ -4,6 +4,7 @@ import Servicos from "../../models/Servicos";
 import { CadastroGerencia } from "../../models/Cadastro_gerencia";
 import { CadastroCargo } from "../../models/CadastroCargo";
 import { CadastroSetor } from "../../models/CadastroSetor";
+import Trabalhadores from "../../models/Trabalhadores";
 
 export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa: any) => {
     try {
@@ -129,3 +130,40 @@ export const getDadosPesquisaDescSetorService = async (empresa_id: any, pesquisa
         throw error; // Lança o erro para o controlador ou camada superior tratar
     }   
 }
+
+export const getDadosPesquisaTrabalhadoresService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await Trabalhadores.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        codigo: {
+                            [Op.like]: `%${pesquisa}%` 
+                        }
+                    },
+                    {
+                        nome: {
+                            [Op.like]: `%${pesquisa}%`
+                        } as any
+                    },
+                    {
+                        cpf: {
+                            [Op.like]: `%${pesquisa}%`
+                        } as any
+                    },
+                    {
+                        cargo: {
+                            [Op.like]: `%${pesquisa}%`
+                        } as any
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do trabalhador:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }
+};

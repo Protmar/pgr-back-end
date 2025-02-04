@@ -1,5 +1,5 @@
 import { AuthenticatedUserRequest } from "../../middleware";
-import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescSetorService } from "../../services/pesquisa";
+import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescSetorService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
 
 export const pesquisaController = {
 
@@ -66,5 +66,18 @@ export const pesquisaController = {
             console.error("Erro ao buscar dados do serviço:", error);
             res.status(500).send("Erro ao buscar dados do serviço");
         }
-    }
+    },
+
+    getDadosPesquisaTrabalhador: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaTrabalhadoresService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do baise");
+        }
+    },
 };

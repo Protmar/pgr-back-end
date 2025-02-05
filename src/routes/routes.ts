@@ -11,6 +11,10 @@ import { dadosCadastrosetor } from "../controllers/cadastros/setor";
 import { dadosTrabalhador } from "../controllers/trabalhador";
 import { dadosCadastroFuncao } from "../controllers/cadastros/funcao";
 import { dadosCadastroCursoObrigatorio } from "../controllers/cadastros/cursoobrigatorio";
+import { dadosCadastroTeto } from "../controllers/cadastros/teto";
+import { dadosCadastroRac } from "../controllers/cadastros/rac";
+import { dadosCadastroIluminacao } from "../controllers/cadastros/iluminacao";
+import { dadosCadastroEquipamento } from "../controllers/cadastros/equipamento";
 
 
 
@@ -45,6 +49,12 @@ router.get("/pesquisagerencia/:pesquisa", ensureUserAuth, pesquisaController.get
 router.get("/pesquisacargo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaCargo);
 router.get("/pesquisasetor/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaSetor);
 router.get("/pesquisatrabalhadores/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTrabalhador);
+router.get("/pesquisafuncao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaFuncao);
+router.get("/pesquisacursoobrigatorio/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaCursoObrigatorio);
+router.get("/pesquisateto/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTeto);
+router.get("/pesquisarac/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaRac);
+router.get("/pesquisailuminacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaIluminacao);
+router.get("/pesquisaequipamento/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEquipamento);
 
 //Cadastros
     //Gerencia
@@ -77,6 +87,30 @@ router.get("/pesquisatrabalhadores/:pesquisa", ensureUserAuth, pesquisaControlle
     router.get("/:idcursoobrigatorio/getcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.get);
     router.put("/:idcursoobrigatorio/editcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.put);
     router.delete("/:idcursoobrigatorio/deletecursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.delete);
+    //Teto
+    router.post("/cadastro/postteto", ensureUserAuth, dadosCadastroTeto.post);
+    router.get("/cadastro/getallteto", ensureUserAuth, dadosCadastroTeto.getAll);
+    router.get("/:idteto/getteto", ensureUserAuth, dadosCadastroTeto.get);
+    router.put("/:idteto/editteto", ensureUserAuth, dadosCadastroTeto.put);
+    router.delete("/:idteto/deleteteto", ensureUserAuth, dadosCadastroTeto.delete);
+    //Rac
+    router.post("/cadastro/postrac", ensureUserAuth, dadosCadastroRac.post);
+    router.get("/cadastro/getallrac", ensureUserAuth, dadosCadastroRac.getAll);
+    router.get("/:idrac/getrac", ensureUserAuth, dadosCadastroRac.get);
+    router.put("/:idrac/editrac", ensureUserAuth, dadosCadastroRac.put);
+    router.delete("/:idrac/deleterac", ensureUserAuth, dadosCadastroRac.delete);
+    //Iluminação
+    router.post("/cadastro/postiluminacao", ensureUserAuth, dadosCadastroIluminacao.post);
+    router.get("/cadastro/getalliluminacao", ensureUserAuth, dadosCadastroIluminacao.getAll);
+    router.get("/:idiluminacao/getiluminacao", ensureUserAuth, dadosCadastroIluminacao.get);
+    router.put("/:idiluminacao/editiluminacao", ensureUserAuth, dadosCadastroIluminacao.put);
+    router.delete("/:idiluminacao/deleteiluminacao", ensureUserAuth, dadosCadastroIluminacao.delete);
+    //Iluminação
+    router.post("/cadastro/postequipamento", ensureUserAuth, dadosCadastroEquipamento.post);
+    router.get("/cadastro/getallequipamento", ensureUserAuth, dadosCadastroEquipamento.getAll);
+    router.get("/:idequipamento/getequipamento", ensureUserAuth, dadosCadastroEquipamento.get);
+    router.put("/:idequipamento/editequipamento", ensureUserAuth, dadosCadastroEquipamento.put);
+    router.delete("/:idequipamento/deleteequipamento", ensureUserAuth, dadosCadastroEquipamento.delete);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);

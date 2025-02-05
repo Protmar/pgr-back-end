@@ -5,6 +5,12 @@ import { CadastroGerencia } from "../../models/Cadastro_gerencia";
 import { CadastroCargo } from "../../models/CadastroCargo";
 import { CadastroSetor } from "../../models/CadastroSetor";
 import Trabalhadores from "../../models/Trabalhadores";
+import { CadastroFuncao } from "../../models/Cadastro_funcao";
+import { CadastroCursoObrigatorio } from "../../models/Cadastro_curso_obrigatorio";
+import { CadastroTeto } from "../../models/Cadastro_teto";
+import { CadastroRac } from "../../models/Cadastro_rac";
+import { CadastroIluminacao } from "../../models/Cadastro_iluminacao";
+import { CadastroEquipamento } from "../../models/Cadastro_equipamento";
 
 export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa: any) => {
     try {
@@ -14,12 +20,12 @@ export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa:
                 [Op.or]: [
                     {
                         cnpj: {
-                            [Op.like]: `%${pesquisa}%` // Pesquisa parcial no CNPJ
+                            [Op.iLike]: `%${pesquisa}%` // Pesquisa parcial no CNPJ
                         }
                     },
                     {
                         nome_fantasia: {
-                            [Op.like]: `%${pesquisa}%` // Pesquisa parcial no Nome Fantasia
+                            [Op.iLike]: `%${pesquisa}%` // Pesquisa parcial no Nome Fantasia
                         }
                     }
                 ]
@@ -41,17 +47,17 @@ export const getDadosPesquisaDescDtIniDtFimService = async (empresa_id: any, pes
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     },
                     {
                         data_inicio: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     },
                     {
                         data_fim: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     }
                 ]
@@ -73,7 +79,7 @@ export const getDadosPesquisaDescGerenciaService = async (empresa_id: any, pesqu
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     }
                 ]
@@ -95,7 +101,7 @@ export const getDadosPesquisaDescCargoService = async (empresa_id: any, pesquisa
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     }
                 ]
@@ -117,7 +123,133 @@ export const getDadosPesquisaDescSetorService = async (empresa_id: any, pesquisa
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescFuncaoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroFuncao.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescTetoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroTeto.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescRacService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroRac.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescIluminacaoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroIluminacao.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescEquipamentoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroEquipamento.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescCursoObrigatorioService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroCursoObrigatorio.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     }
                 ]
@@ -139,22 +271,22 @@ export const getDadosPesquisaTrabalhadoresService = async (empresa_id: any, pesq
                 [Op.or]: [
                     {
                         codigo: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     },
                     {
                         nome: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     },
                     {
                         cpf: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     },
                     {
                         cargo: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     }
                 ]

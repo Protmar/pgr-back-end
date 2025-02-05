@@ -1,5 +1,5 @@
 import { AuthenticatedUserRequest } from "../../middleware";
-import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescSetorService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
+import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTetoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
 
 export const pesquisaController = {
 
@@ -61,6 +61,78 @@ export const pesquisaController = {
             const { empresaId } = req.user!;
 
             const data = await getDadosPesquisaDescSetorService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaFuncao: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescFuncaoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaTeto: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescTetoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaRac: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescRacService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaIluminacao: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescIluminacaoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaEquipamento: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescEquipamentoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaCursoObrigatorio: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescCursoObrigatorioService(empresaId, pesquisa);
             res.json(data);
         } catch (error) {
             console.error("Erro ao buscar dados do serviço:", error);

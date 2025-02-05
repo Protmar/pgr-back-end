@@ -14,7 +14,7 @@ export interface CadastroEquipamentoAttributes {
 export interface CadastroEquipamentoCreationAttributes extends Optional<CadastroEquipamentoAttributes, 'id'> {}
 
 export const CadastroEquipamento = sequelize.define<Model<CadastroEquipamentoAttributes, CadastroEquipamentoCreationAttributes>>(
-    "cadastro_equipamento",
+    "cadastro_equipamentos",
     {
         id: {
             type: DataTypes.INTEGER,

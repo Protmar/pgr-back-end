@@ -14,7 +14,7 @@ export interface CadastroParedeAttributes {
 export interface CadastroParedeCreationAttributes extends Optional<CadastroParedeAttributes, 'id'> {}
 
 export const CadastroParede = sequelize.define<Model<CadastroParedeAttributes, CadastroParedeCreationAttributes>>(
-    "cadastro_parede",
+    "cadastro_paredes",
     {
         id: {
             type: DataTypes.INTEGER,

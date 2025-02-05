@@ -5,6 +5,9 @@ import { CadastroGerencia } from "../../models/Cadastro_gerencia";
 import { CadastroCargo } from "../../models/CadastroCargo";
 import { CadastroSetor } from "../../models/CadastroSetor";
 import Trabalhadores from "../../models/Trabalhadores";
+import { CadastroMobiliario } from "../../models/Cadastro_mobiliario";
+import { CadastroParede } from "../../models/Cadastro_parede";
+import { CadastroPiso } from "../../models/Cadastro_piso";
 
 export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa: any) => {
     try {
@@ -14,12 +17,12 @@ export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa:
                 [Op.or]: [
                     {
                         cnpj: {
-                            [Op.like]: `%${pesquisa}%` // Pesquisa parcial no CNPJ
+                            [Op.iLike]: `%${pesquisa}%` // Pesquisa parcial no CNPJ
                         }
                     },
                     {
                         nome_fantasia: {
-                            [Op.like]: `%${pesquisa}%` // Pesquisa parcial no Nome Fantasia
+                            [Op.iLike]: `%${pesquisa}%` // Pesquisa parcial no Nome Fantasia
                         }
                     }
                 ]
@@ -41,17 +44,17 @@ export const getDadosPesquisaDescDtIniDtFimService = async (empresa_id: any, pes
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     },
                     {
                         data_inicio: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     },
                     {
                         data_fim: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     }
                 ]
@@ -73,7 +76,7 @@ export const getDadosPesquisaDescGerenciaService = async (empresa_id: any, pesqu
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     }
                 ]
@@ -95,7 +98,7 @@ export const getDadosPesquisaDescCargoService = async (empresa_id: any, pesquisa
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     }
                 ]
@@ -117,7 +120,7 @@ export const getDadosPesquisaDescSetorService = async (empresa_id: any, pesquisa
                 [Op.or]: [
                     {
                         descricao: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     }
                 ]
@@ -139,22 +142,22 @@ export const getDadosPesquisaTrabalhadoresService = async (empresa_id: any, pesq
                 [Op.or]: [
                     {
                         codigo: {
-                            [Op.like]: `%${pesquisa}%` 
+                            [Op.iLike]: `%${pesquisa}%` 
                         }
                     },
                     {
                         nome: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     },
                     {
                         cpf: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     },
                     {
                         cargo: {
-                            [Op.like]: `%${pesquisa}%`
+                            [Op.iLike]: `%${pesquisa}%`
                         } as any
                     }
                 ]
@@ -167,3 +170,69 @@ export const getDadosPesquisaTrabalhadoresService = async (empresa_id: any, pesq
         throw error; // Lança o erro para o controlador ou camada superior tratar
     }
 };
+
+export const getDadosPesquisaMobiliariosService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroMobiliario.findAll({
+            where: {
+                empresa_id: empresa_id,
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    },
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; 
+    }
+}
+
+export const getDadosPesquisaParedeService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroParede.findAll({
+            where: {
+                empresa_id: empresa_id,
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    },
+                ]
+            }
+        }); 
+
+        return data;    
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; 
+    }
+}
+
+export const getDadosPesquisaPisoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroPiso.findAll({
+            where: {
+                empresa_id: empresa_id,
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    },
+                ]
+            }
+        }); 
+
+        return data;    
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; 
+    }
+}

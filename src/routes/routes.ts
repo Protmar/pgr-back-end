@@ -11,6 +11,9 @@ import { dadosCadastrosetor } from "../controllers/cadastros/setor";
 import { dadosTrabalhador } from "../controllers/trabalhador";
 import { dadosCadastroFuncao } from "../controllers/cadastros/funcao";
 import { dadosCadastroCursoObrigatorio } from "../controllers/cadastros/cursoobrigatorio";
+import { dadosCadastroMobiliarios } from "../controllers/cadastros/mobiliario";
+import { dadosCadastroParede } from "../controllers/cadastros/parede";
+import { dadosCadastroPiso } from "../controllers/cadastros/piso";
 
 
 
@@ -45,6 +48,16 @@ router.get("/pesquisagerencia/:pesquisa", ensureUserAuth, pesquisaController.get
 router.get("/pesquisacargo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaCargo);
 router.get("/pesquisasetor/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaSetor);
 router.get("/pesquisatrabalhadores/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTrabalhador);
+router.get("/pesquisamobiliarios/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMobiliarios);
+router.get("/pesquisaparede/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaParede);
+router.get("/pesquisapiso/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaPiso);
+
+//Trabalhador
+router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
+router.get("/gettrabalhadores", ensureUserAuth, dadosTrabalhador.getAllTrabalhadores);
+router.get("/:idtrabalhador/gettrabalhador", ensureUserAuth, dadosTrabalhador.getTrabalhador);
+router.put("/:idtrabalhador/edittrabalhador", ensureUserAuth, dadosTrabalhador.putTrabalhador);
+router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalhador.deleteTrabalhador);
 
 //Cadastros
     //Gerencia
@@ -77,10 +90,22 @@ router.get("/pesquisatrabalhadores/:pesquisa", ensureUserAuth, pesquisaControlle
     router.get("/:idcursoobrigatorio/getcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.get);
     router.put("/:idcursoobrigatorio/editcursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.put);
     router.delete("/:idcursoobrigatorio/deletecursoobrigatorio", ensureUserAuth, dadosCadastroCursoObrigatorio.delete);
+    //mobiliarios
+    router.post("/cadastro/postmobiliariosbrigatorio", ensureUserAuth, dadosCadastroMobiliarios.post);
+    router.get("/cadastro/getallmobiliariosbrigatorio", ensureUserAuth, dadosCadastroMobiliarios.getAll);
+    router.get("/:idmobiliariosbrigatorio/getmobiliariosbrigatorio", ensureUserAuth, dadosCadastroMobiliarios.get);
+    router.put("/:idmobiliariosbrigatorio/editmobiliariosbrigatorio", ensureUserAuth, dadosCadastroMobiliarios.put);
+    router.delete("/:idmobiliariosbrigatorio/deletemobiliariosbrigatorio", ensureUserAuth, dadosCadastroMobiliarios.delete);
+     //parede
+    router.post("/cadastro/postparede", ensureUserAuth, dadosCadastroParede.post);
+    router.get("/cadastro/getallparede", ensureUserAuth, dadosCadastroParede.getAll);
+    router.get("/:idparede/getparede", ensureUserAuth, dadosCadastroParede.get);
+    router.put("/:idparede/editparede", ensureUserAuth, dadosCadastroParede.put);
+    router.delete("/:idparede/deleteparede", ensureUserAuth, dadosCadastroParede.delete);
+    //piso
+    router.post("/cadastro/postpiso", ensureUserAuth, dadosCadastroPiso.post);
+    router.get("/cadastro/getallpiso", ensureUserAuth, dadosCadastroPiso.getAll);
+    router.get("/:idpiso/getpiso", ensureUserAuth, dadosCadastroPiso.get);
+    router.put("/:idpiso/editpiso", ensureUserAuth, dadosCadastroPiso.put);
+    router.delete("/:idpiso/deletepiso", ensureUserAuth, dadosCadastroPiso.delete);
 
-//Trabalhador
-router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
-router.get("/gettrabalhadores", ensureUserAuth, dadosTrabalhador.getAllTrabalhadores);
-router.get("/:idtrabalhador/gettrabalhador", ensureUserAuth, dadosTrabalhador.getTrabalhador);
-router.put("/:idtrabalhador/edittrabalhador", ensureUserAuth, dadosTrabalhador.putTrabalhador);
-router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalhador.deleteTrabalhador);

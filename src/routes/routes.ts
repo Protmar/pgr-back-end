@@ -74,14 +74,11 @@ router.get("/pesquisateto/:pesquisa", ensureUserAuth, pesquisaController.getDado
 router.get("/pesquisarac/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaRac);
 router.get("/pesquisailuminacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaIluminacao);
 router.get("/pesquisaequipamento/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEquipamento);
-<<<<<<< HEAD
-=======
+
 router.get("/pesquisaedificacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEdificacao);
 router.get("/pesquisatipopgr/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTipoPgr);
 router.get("/pesquisaventilacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVentilacao);
 router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVeiculo);
-
->>>>>>> origin/Lucas
 //Cadastros
     //Gerencia
     router.post("/cadastro/postgerencia", ensureUserAuth, dadosCadastroGerencia.post);

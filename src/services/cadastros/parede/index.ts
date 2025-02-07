@@ -1,4 +1,4 @@
-import { CadastroParede } from "../../../models/Cadastro_parede";
+import { CadastroParede } from "../../../models/Paredes";
 
 export const paredePostService = async (empresaId:string, descricao:string) => {
     try {

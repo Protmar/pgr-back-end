@@ -14,11 +14,7 @@ export interface CadastroPisoAttributes {
 export interface CadastroPisoCreationAttributes extends Optional<CadastroPisoAttributes, 'id'> {}
 
 export const CadastroPiso = sequelize.define<Model<CadastroPisoAttributes, CadastroPisoCreationAttributes>>(
-<<<<<<< HEAD:src/models/Cadastro_piso.ts
-    "cadastro_pisos",
-=======
     "pisos",
->>>>>>> origin/Lucas:src/models/Pisos.ts
     {
         id: {
             type: DataTypes.INTEGER,

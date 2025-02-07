@@ -14,7 +14,7 @@ export interface CadastroTetoAttributes {
 export interface CadastroTetoCreationAttributes extends Optional<CadastroTetoAttributes, 'id'> {}
 
 export const CadastroTeto = sequelize.define<Model<CadastroTetoAttributes, CadastroTetoCreationAttributes>>(
-    "cadastro_teto",
+    "cadastro_tetos",
     {
         id: {
             type: DataTypes.INTEGER,

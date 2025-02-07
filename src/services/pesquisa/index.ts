@@ -8,6 +8,12 @@ import Trabalhadores from "../../models/Trabalhadores";
 import { CadastroMobiliario } from "../../models/Cadastro_mobiliario";
 import { CadastroParede } from "../../models/Cadastro_parede";
 import { CadastroPiso } from "../../models/Cadastro_piso";
+import { CadastroFuncao } from "../../models/Cadastro_funcao";
+import { CadastroCursoObrigatorio } from "../../models/Cadastro_curso_obrigatorio";
+import { CadastroTeto } from "../../models/Cadastro_teto";
+import { CadastroRac } from "../../models/Cadastro_rac";
+import { CadastroIluminacao } from "../../models/Cadastro_iluminacao";
+import { CadastroEquipamento } from "../../models/Cadastro_equipamento";
 
 export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa: any) => {
     try {
@@ -121,6 +127,135 @@ export const getDadosPesquisaDescSetorService = async (empresa_id: any, pesquisa
                     {
                         descricao: {
                             [Op.iLike]: `%${pesquisa}%` 
+
+
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescFuncaoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroFuncao.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescTetoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroTeto.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescRacService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroRac.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescIluminacaoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroIluminacao.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescEquipamentoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroEquipamento.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescCursoObrigatorioService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroCursoObrigatorio.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+
                         }
                     }
                 ]

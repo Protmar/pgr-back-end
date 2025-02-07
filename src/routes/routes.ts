@@ -15,6 +15,10 @@ import { dadosCadastroTeto } from "../controllers/cadastros/teto";
 import { dadosCadastroRac } from "../controllers/cadastros/rac";
 import { dadosCadastroIluminacao } from "../controllers/cadastros/iluminacao";
 import { dadosCadastroEquipamento } from "../controllers/cadastros/equipamento";
+import { dadosCadastroEdificacao } from "../controllers/cadastros/edificacao";
+import { dadosCadastroTipoPgr } from "../controllers/cadastros/tipoPgr";
+import { dadosCadastroVentilacao } from "../controllers/cadastros/ventilacao";
+import { dadosCadastroVeiculo } from "../controllers/cadastros/veiculo";
 
 
 
@@ -55,6 +59,10 @@ router.get("/pesquisateto/:pesquisa", ensureUserAuth, pesquisaController.getDado
 router.get("/pesquisarac/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaRac);
 router.get("/pesquisailuminacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaIluminacao);
 router.get("/pesquisaequipamento/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEquipamento);
+router.get("/pesquisaedificacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEdificacao);
+router.get("/pesquisatipopgr/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTipoPgr);
+router.get("/pesquisaventilacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVentilacao);
+router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVeiculo);
 
 //Cadastros
     //Gerencia
@@ -105,12 +113,36 @@ router.get("/pesquisaequipamento/:pesquisa", ensureUserAuth, pesquisaController.
     router.get("/:idiluminacao/getiluminacao", ensureUserAuth, dadosCadastroIluminacao.get);
     router.put("/:idiluminacao/editiluminacao", ensureUserAuth, dadosCadastroIluminacao.put);
     router.delete("/:idiluminacao/deleteiluminacao", ensureUserAuth, dadosCadastroIluminacao.delete);
-    //Iluminação
+    //Equipamento
     router.post("/cadastro/postequipamento", ensureUserAuth, dadosCadastroEquipamento.post);
     router.get("/cadastro/getallequipamento", ensureUserAuth, dadosCadastroEquipamento.getAll);
     router.get("/:idequipamento/getequipamento", ensureUserAuth, dadosCadastroEquipamento.get);
     router.put("/:idequipamento/editequipamento", ensureUserAuth, dadosCadastroEquipamento.put);
     router.delete("/:idequipamento/deleteequipamento", ensureUserAuth, dadosCadastroEquipamento.delete);
+    //Edificação
+    router.post("/cadastro/postedificacao", ensureUserAuth, dadosCadastroEdificacao.post);
+    router.get("/cadastro/getalledificacao", ensureUserAuth, dadosCadastroEdificacao.getAll);
+    router.get("/:idedificacao/getedificacao", ensureUserAuth, dadosCadastroEdificacao.get);
+    router.put("/:idedificacao/editedificacao", ensureUserAuth, dadosCadastroEdificacao.put);
+    router.delete("/:idedificacao/deleteedificacao", ensureUserAuth, dadosCadastroEdificacao.delete);
+    //Tipo de Pgr
+    router.post("/cadastro/posttipopgr", ensureUserAuth, dadosCadastroTipoPgr.post);
+    router.get("/cadastro/getalltipopgr", ensureUserAuth, dadosCadastroTipoPgr.getAll);
+    router.get("/:idtipopgr/gettipopgr", ensureUserAuth, dadosCadastroTipoPgr.get);
+    router.put("/:idtipopgr/edittipopgr", ensureUserAuth, dadosCadastroTipoPgr.put);
+    router.delete("/:idtipopgr/deletetipopgr", ensureUserAuth, dadosCadastroTipoPgr.delete);
+    //Ventilação
+    router.post("/cadastro/postventilacao", ensureUserAuth, dadosCadastroVentilacao.post);
+    router.get("/cadastro/getallventilacao", ensureUserAuth, dadosCadastroVentilacao.getAll);
+    router.get("/:idventilacao/getventilacao", ensureUserAuth, dadosCadastroVentilacao.get);
+    router.put("/:idventilacao/editventilacao", ensureUserAuth, dadosCadastroVentilacao.put);
+    router.delete("/:idventilacao/deleteventilacao", ensureUserAuth, dadosCadastroVentilacao.delete);
+    //Veículo
+    router.post("/cadastro/postveiculo", ensureUserAuth, dadosCadastroVeiculo.post);
+    router.get("/cadastro/getallveiculo", ensureUserAuth, dadosCadastroVeiculo.getAll);
+    router.get("/:idveiculo/getveiculo", ensureUserAuth, dadosCadastroVeiculo.get);
+    router.put("/:idveiculo/editveiculo", ensureUserAuth, dadosCadastroVeiculo.put);
+    router.delete("/:idveiculo/deleteveiculo", ensureUserAuth, dadosCadastroVeiculo.delete);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);

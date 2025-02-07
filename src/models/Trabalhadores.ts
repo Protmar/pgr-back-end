@@ -48,19 +48,19 @@ export const Trabalhadores = sequelize.define<TrabalhadorInstance>("trabalhadore
   },
   gerencia_id: {
     type: DataTypes.INTEGER,
-    references: { model: "cadastro_gerencia", key: "id" },
+    references: { model: "gerencias", key: "id" },
     onUpdate: "CASCADE",
     onDelete: "RESTRICT",
   },
   cargo_id: {
     type: DataTypes.INTEGER,
-    references: { model: "cadastro_cargos", key: "id" },
+    references: { model: "cargos", key: "id" },
     onUpdate: "CASCADE",
     onDelete: "RESTRICT",
   },
   setor_id: {
     type: DataTypes.INTEGER,
-    references: { model: "cadastro_setores", key: "id" },
+    references: { model: "setores", key: "id" },
     onUpdate: "CASCADE",
     onDelete: "RESTRICT",
   },

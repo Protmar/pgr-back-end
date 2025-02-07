@@ -1,19 +1,23 @@
 import { Op } from "sequelize";
 import { Cliente } from "../../models/Cliente";
 import Servicos from "../../models/Servicos";
-import { CadastroGerencia } from "../../models/Cadastro_gerencia";
-import { CadastroCargo } from "../../models/CadastroCargo";
-import { CadastroSetor } from "../../models/CadastroSetor";
+import { CadastroGerencia } from "../../models/Gerencias";
+import { CadastroCargo } from "../../models/Cargos";
+import { CadastroSetor } from "../../models/Setores";
 import Trabalhadores from "../../models/Trabalhadores";
-import { CadastroMobiliario } from "../../models/Cadastro_mobiliario";
-import { CadastroParede } from "../../models/Cadastro_parede";
-import { CadastroPiso } from "../../models/Cadastro_piso";
-import { CadastroFuncao } from "../../models/Cadastro_funcao";
-import { CadastroCursoObrigatorio } from "../../models/Cadastro_curso_obrigatorio";
-import { CadastroTeto } from "../../models/Cadastro_teto";
-import { CadastroRac } from "../../models/Cadastro_rac";
-import { CadastroIluminacao } from "../../models/Cadastro_iluminacao";
-import { CadastroEquipamento } from "../../models/Cadastro_equipamento";
+import { CadastroFuncao } from "../../models/Funcoes";
+import { CadastroCursoObrigatorio } from "../../models/Cursosobrigatorios";
+import { CadastroTeto } from "../../models/Tetos";
+import { CadastroRac } from "../../models/Racs";
+import { CadastroIluminacao } from "../../models/Iluminacoes";
+import { CadastroEquipamento } from "../../models/Equipamentos";
+import { CadastroEdificacao } from "../../models/Edificacoes";
+import { CadastroTipoPgr } from "../../models/TipoPgrs";
+import { CadastroVentilacao } from "../../models/Ventilacoes";
+import { CadastroVeiculo } from "../../models/Veiculos";
+import { CadastroMobiliario } from "../../models/Mobiliarios";
+import { CadastroParede } from "../../models/Paredes";
+import { CadastroPiso } from "../../models/Pisos";
 
 export const getDadosPesquisaCnpjNomeService = async (empresa_id: any, pesquisa: any) => {
     try {
@@ -228,6 +232,90 @@ export const getDadosPesquisaDescIluminacaoService = async (empresa_id: any, pes
 export const getDadosPesquisaDescEquipamentoService = async (empresa_id: any, pesquisa: any) => {
     try {
         const data = await CadastroEquipamento.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescEdificacaoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroEdificacao.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescVentilacaoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroVentilacao.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescVeiculoService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroVeiculo.findAll({
+            where: {
+                empresa_id: empresa_id, // Busca exata pelo ID da empresa
+                [Op.or]: [
+                    {
+                        descricao: {
+                            [Op.iLike]: `%${pesquisa}%` 
+                        }
+                    }
+                ]
+            }
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar dados do cliente:", error);
+        throw error; // Lança o erro para o controlador ou camada superior tratar
+    }   
+}
+export const getDadosPesquisaDescTipoPgrService = async (empresa_id: any, pesquisa: any) => {
+    try {
+        const data = await CadastroTipoPgr.findAll({
             where: {
                 empresa_id: empresa_id, // Busca exata pelo ID da empresa
                 [Op.or]: [

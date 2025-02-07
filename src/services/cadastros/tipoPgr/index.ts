@@ -1,4 +1,4 @@
-import { CadastroIluminacao } from "../../../models/Iluminacoes";
+import { CadastroTipoPgr } from "../../../models/TipoPgrs";
 
 const formatarNome = (nome: string) => {
     if (!nome) return "";
@@ -7,11 +7,10 @@ const formatarNome = (nome: string) => {
     return palavras.join(" ");
 };
 
-
-export const iluminacaoPostService = async (empresaId:string, descricao:string) => {
+export const tipoPgrPostService = async (empresaId:string, descricao:string) => {
     const descricaoFormatada = formatarNome(descricao);
     try {
-         const data = await CadastroIluminacao.create({
+         const data = await CadastroTipoPgr.create({
             empresa_id: Number(empresaId),
             descricao: descricaoFormatada
          })
@@ -22,9 +21,9 @@ export const iluminacaoPostService = async (empresaId:string, descricao:string) 
     }
 }
 
-export const iluminacaoGetAllService = async (empresaId:string) => {
+export const tipoPgrGetAllService = async (empresaId:string) => {
     try {
-         const data = await CadastroIluminacao.findAll({
+         const data = await CadastroTipoPgr.findAll({
             where: {
                 empresa_id: Number(empresaId)
             }
@@ -36,12 +35,12 @@ export const iluminacaoGetAllService = async (empresaId:string) => {
     }
 }
 
-export const iluminacaoGetService = async (empresaId:string, iluminacaoId:string) => {
+export const tipoPgrGetService = async (empresaId:string, tipoPgrId:string) => {
     try {
-         const data = await CadastroIluminacao.findOne({
+         const data = await CadastroTipoPgr.findOne({
             where: {
                 empresa_id: Number(empresaId),
-                id: iluminacaoId
+                id: tipoPgrId
             }
          })
 
@@ -51,12 +50,12 @@ export const iluminacaoGetService = async (empresaId:string, iluminacaoId:string
     }
 }
 
-export const iluminacaoDeleteService = (empresaId:string, iluminacaoId:string) => {
+export const tipoPgrDeleteService = (empresaId:string, tipoPgrId:string) => {
     try {
-         const data = CadastroIluminacao.destroy({
+         const data = CadastroTipoPgr.destroy({
             where: {
                 empresa_id: Number(empresaId),
-                id: iluminacaoId
+                id: tipoPgrId
             }   
          })
 
@@ -66,15 +65,15 @@ export const iluminacaoDeleteService = (empresaId:string, iluminacaoId:string) =
     }
 }
 
-export const iluminacaoPutService = (empresaId:string, descricao:string, iluminacaoId:string) => {
+export const tipoPgrPutService = (empresaId:string, descricao:string, tipoPgrId:string) => {
     const descricaoFormatada = formatarNome(descricao);
     try {
-         const data = CadastroIluminacao.update({
+         const data = CadastroTipoPgr.update({
             descricao: descricaoFormatada
          }, {
             where: {
                 empresa_id: Number(empresaId),
-                id: iluminacaoId
+                id: tipoPgrId
             }
          })
 

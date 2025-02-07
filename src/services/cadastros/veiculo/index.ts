@@ -1,4 +1,4 @@
-import { CadastroIluminacao } from "../../../models/Iluminacoes";
+import { CadastroVeiculo } from "../../../models/Veiculos";
 
 const formatarNome = (nome: string) => {
     if (!nome) return "";
@@ -7,11 +7,10 @@ const formatarNome = (nome: string) => {
     return palavras.join(" ");
 };
 
-
-export const iluminacaoPostService = async (empresaId:string, descricao:string) => {
+export const veiculoPostService = async (empresaId:string, descricao:string) => {
     const descricaoFormatada = formatarNome(descricao);
     try {
-         const data = await CadastroIluminacao.create({
+         const data = await CadastroVeiculo.create({
             empresa_id: Number(empresaId),
             descricao: descricaoFormatada
          })
@@ -22,9 +21,9 @@ export const iluminacaoPostService = async (empresaId:string, descricao:string) 
     }
 }
 
-export const iluminacaoGetAllService = async (empresaId:string) => {
+export const veiculoGetAllService = async (empresaId:string) => {
     try {
-         const data = await CadastroIluminacao.findAll({
+         const data = await CadastroVeiculo.findAll({
             where: {
                 empresa_id: Number(empresaId)
             }
@@ -36,12 +35,12 @@ export const iluminacaoGetAllService = async (empresaId:string) => {
     }
 }
 
-export const iluminacaoGetService = async (empresaId:string, iluminacaoId:string) => {
+export const veiculoGetService = async (empresaId:string, veiculoId:string) => {
     try {
-         const data = await CadastroIluminacao.findOne({
+         const data = await CadastroVeiculo.findOne({
             where: {
                 empresa_id: Number(empresaId),
-                id: iluminacaoId
+                id: veiculoId
             }
          })
 
@@ -51,12 +50,12 @@ export const iluminacaoGetService = async (empresaId:string, iluminacaoId:string
     }
 }
 
-export const iluminacaoDeleteService = (empresaId:string, iluminacaoId:string) => {
+export const veiculoDeleteService = (empresaId:string, veiculoId:string) => {
     try {
-         const data = CadastroIluminacao.destroy({
+         const data = CadastroVeiculo.destroy({
             where: {
                 empresa_id: Number(empresaId),
-                id: iluminacaoId
+                id: veiculoId
             }   
          })
 
@@ -66,15 +65,15 @@ export const iluminacaoDeleteService = (empresaId:string, iluminacaoId:string) =
     }
 }
 
-export const iluminacaoPutService = (empresaId:string, descricao:string, iluminacaoId:string) => {
+export const veiculoPutService = (empresaId:string, descricao:string, veiculoId:string) => {
     const descricaoFormatada = formatarNome(descricao);
     try {
-         const data = CadastroIluminacao.update({
+         const data = CadastroVeiculo.update({
             descricao: descricaoFormatada
          }, {
             where: {
                 empresa_id: Number(empresaId),
-                id: iluminacaoId
+                id: veiculoId
             }
          })
 

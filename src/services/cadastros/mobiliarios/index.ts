@@ -1,5 +1,5 @@
-import { CadastroGerencia } from "../../../models/Cadastro_gerencia";
-import { CadastroMobiliario } from "../../../models/Cadastro_mobiliario";
+import { CadastroMobiliario } from "../../../models/Mobiliarios";
+
 
 export const mobiliariosPostService = async (empresaId:string, descricao:string) => {
     try {

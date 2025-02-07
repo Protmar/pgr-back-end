@@ -1,5 +1,7 @@
 import { AuthenticatedUserRequest } from "../../middleware";
-import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTetoService, getDadosPesquisaMobiliariosService, getDadosPesquisaParedeService, getDadosPesquisaPisoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
+
+import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEdificacaoService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTetoService, getDadosPesquisaDescTipoPgrService, getDadosPesquisaDescVeiculoService, getDadosPesquisaDescVentilacaoService, getDadosPesquisaMobiliariosService, getDadosPesquisaParedeService, getDadosPesquisaPisoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
+
 
 export const pesquisaController = {
 
@@ -121,6 +123,54 @@ export const pesquisaController = {
             const { empresaId } = req.user!;
 
             const data = await getDadosPesquisaDescEquipamentoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaEdificacao: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescEdificacaoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaTipoPgr: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescTipoPgrService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaVentilacao: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescVentilacaoService(empresaId, pesquisa);
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do serviço");
+        }
+    },
+    getDadosPesquisaVeiculo: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaDescVeiculoService(empresaId, pesquisa);
             res.json(data);
         } catch (error) {
             console.error("Erro ao buscar dados do serviço:", error);

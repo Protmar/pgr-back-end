@@ -1,4 +1,4 @@
-import { CadastroPiso } from "../../../models/Cadastro_piso";
+import { CadastroPiso } from "../../../models/Pisos";
 
 export const pisoPostService = async (empresaId:string, descricao:string) => {
     try {

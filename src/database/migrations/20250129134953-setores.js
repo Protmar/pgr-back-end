@@ -3,11 +3,8 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-<<<<<<< HEAD:src/database/migrations/20250131124230-cadastroVeiculo.js
-    await queryInterface.createTable("cadastro_veiculos", {
-=======
+
     await queryInterface.createTable("setores", {
->>>>>>> origin/Lucas:src/database/migrations/20250129134953-setores.js
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -36,10 +33,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-<<<<<<< HEAD:src/database/migrations/20250131124230-cadastroVeiculo.js
-    await queryInterface.dropTable("cadastro_veiculos");
-=======
+
     await queryInterface.dropTable("setores");
->>>>>>> origin/Lucas:src/database/migrations/20250129134953-setores.js
   }
 };

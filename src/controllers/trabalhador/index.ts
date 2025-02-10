@@ -2,6 +2,15 @@ import { AuthenticatedUserRequest } from "../../middleware";
 import { deleteDadosTrabalhadorService, getDadosAllTrabalhadoresService, getDadosTrabalhadorService, postDadosTrabalhadorService, putDadosTrabalhadorService } from "../../services/cadastros/trabalhadores";
 
 export const dadosTrabalhador = {
+    // Função para capitalizar a primeira letra de cada palavra
+    capitalizeName: (name: string) => {
+        return name
+            .toLowerCase()
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    },
+
     postTrabalhador: async (req: AuthenticatedUserRequest, res: any) => {
         try {
             const { empresaId } = req.user!;
@@ -14,7 +23,8 @@ export const dadosTrabalhador = {
                 genero, 
                 data_nascimento, 
                 cpf, 
-                rg, 
+                rg,
+                orgao_expeditor,
                 nis_pis, 
                 ctps, 
                 serie, 
@@ -23,7 +33,9 @@ export const dadosTrabalhador = {
                 dataCargo
             } = req.body;
             
-            const data = await postDadosTrabalhadorService(empresaId.toString(), gerencia_id, cargo_id, setor_id, codigo, nome, genero, data_nascimento, cpf, rg, nis_pis, ctps, serie, uf, jornada_trabalho, dataCargo);
+            const formattedNome = dadosTrabalhador.capitalizeName(nome);
+            
+            const data = await postDadosTrabalhadorService(empresaId.toString(), gerencia_id, cargo_id, setor_id, codigo, formattedNome, genero, data_nascimento, cpf, rg, orgao_expeditor, nis_pis, ctps, serie, uf, jornada_trabalho, dataCargo);
             
             res.send(data);
         } catch (error) {
@@ -66,6 +78,7 @@ export const dadosTrabalhador = {
                 data_nascimento, 
                 cpf, 
                 rg, 
+                orgao_expeditor,
                 nis_pis, 
                 ctps, 
                 serie, 
@@ -73,8 +86,10 @@ export const dadosTrabalhador = {
                 jornada_trabalho,
                 cargoString
             } = req.body;   
-
-            const data = await putDadosTrabalhadorService(empresaId.toString(), idtrabalhador, gerencia_id, cargo_id, setor_id, codigo, nome, genero, data_nascimento, cpf, rg, nis_pis, ctps, serie, uf, jornada_trabalho, cargoString);
+            
+            const formattedNome = dadosTrabalhador.capitalizeName(nome);
+            
+            const data = await putDadosTrabalhadorService(empresaId.toString(), idtrabalhador, gerencia_id, cargo_id, setor_id, codigo, formattedNome, genero, data_nascimento, cpf, rg,orgao_expeditor, nis_pis, ctps, serie, uf, jornada_trabalho, cargoString);
             
             res.send(data);
         } catch (error) {

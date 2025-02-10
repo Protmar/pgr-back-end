@@ -5,10 +5,18 @@ import { Role } from "../models/enums/role.enum";
 
 export const empresaController = {
 
+    // Função para capitalizar a primeira letra de cada palavra
+    capitalizeName: (name: string) => {
+        return name
+            .toLowerCase()
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    },
 
     //POST /create/empresa/noAuth
     createNoAuth: async (req: Request, res: Response) => {
-        const{
+        const {
             cnpj,
             nome,
             nomeUsuario,
@@ -24,13 +32,17 @@ export const empresaController = {
         try {
             const alreadyExists = await userService.findByEmail(email);
 
-            if(alreadyExists) {
+            if (alreadyExists) {
                 throw new Error("Este e-mail já está cadastrado.");
             }
 
+            // Formata os nomes antes de salvar
+            const formattedNome = empresaController.capitalizeName(nome);
+            const formattedNomeUsuario = empresaController.capitalizeName(nomeUsuario);
+
             const empresa = await empresaService.create({
                 cnpj,
-                nome,
+                nome: formattedNome,
                 cidade,
                 estado,
                 email,
@@ -42,7 +54,7 @@ export const empresaController = {
             });
 
             const user = await userService.create({
-                nome: nomeUsuario,
+                nome: formattedNomeUsuario,
                 email,
                 senha,
                 empresaId: empresa.id,
@@ -54,13 +66,13 @@ export const empresaController = {
                 recoverCode: null,
                 recoverExpires: null,
                 role: Role.USER,
-            })
+            });
 
             return res.status(201).json({ empresa, user });
         } catch (err) {
             if (err instanceof Error) {
-            return res.status(400).json({ message: err.message });
+                return res.status(400).json({ message: err.message });
             }
         }
     }
-}
+};

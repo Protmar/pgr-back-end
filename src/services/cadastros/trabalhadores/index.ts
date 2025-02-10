@@ -1,8 +1,8 @@
 import Trabalhadores from "../../../models/Trabalhadores";
 
-export const postDadosTrabalhadorService = (empresaId:string, gerencia_id:string, cargo_id:string, setor_id:string, codigo:string, nome:string, genero:string, data_nascimento:string, cpf:string, rg:string, nis_pis:string, ctps:string, serie:string, uf:string, jornada_trabalho:string, cargo:string) => {
+export const postDadosTrabalhadorService = (empresaId:string, gerencia_id:string, cargo_id:string, setor_id:string, codigo:string, nome:string, genero:string, data_nascimento:string, cpf:string, rg:string, orgao_expeditor:string, nis_pis:string, ctps:string, serie:string, uf:string, jornada_trabalho:string, cargo:string) => {
     try {
-        const data = Trabalhadores.create({ empresa_id: Number(empresaId), gerencia_id: Number(gerencia_id), cargo_id: Number(cargo_id), setor_id: Number(setor_id), codigo, nome, genero, data_nascimento, cpf, rg, nis_pis, ctps, serie, uf, jornada_trabalho, cargo });
+        const data = Trabalhadores.create({ empresa_id: Number(empresaId), gerencia_id: Number(gerencia_id), cargo_id: Number(cargo_id), setor_id: Number(setor_id), codigo, nome, genero, data_nascimento, cpf, rg, orgao_expeditor, nis_pis, ctps, serie, uf, jornada_trabalho, cargo });
         return data;
     
     } catch (error) {
@@ -29,9 +29,9 @@ export const getDadosTrabalhadorService = (empresaId:string, trabalhadorId:strin
     }
 }
 
-export const putDadosTrabalhadorService = (empresaId:string, trabaladorId:string, gerencia_id:string, cargo_id:string, setor_id:string, codigo:string, nome:string, genero:string, data_nascimento:string, cpf:string, rg:string, nis_pis:string, ctps:string, serie:string, uf:string, jornada_trabalho:string, cargo:string) => {
+export const putDadosTrabalhadorService = (empresaId:string, trabaladorId:string, gerencia_id:string, cargo_id:string, setor_id:string, codigo:string, nome:string, genero:string, data_nascimento:string, cpf:string, rg:string, orgao_expeditor:string ,nis_pis:string, ctps:string, serie:string, uf:string, jornada_trabalho:string, cargo:string) => {
     try {
-        const data = Trabalhadores.update({gerencia_id: Number(gerencia_id), cargo_id: Number(cargo_id), setor_id: Number(setor_id), codigo, nome, genero, data_nascimento, cpf, rg, nis_pis, ctps, serie, uf, jornada_trabalho, cargo}, { where: { empresa_id: Number(empresaId), id: trabaladorId } });
+        const data = Trabalhadores.update({gerencia_id: Number(gerencia_id), cargo_id: Number(cargo_id), setor_id: Number(setor_id), codigo, nome, genero, data_nascimento, cpf, rg, orgao_expeditor, nis_pis, ctps, serie, uf, jornada_trabalho, cargo}, { where: { empresa_id: Number(empresaId), id: trabaladorId } });
         return data;
     } catch (error) {
         console.error(error)

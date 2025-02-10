@@ -79,6 +79,7 @@ router.get("/pesquisaedificacao/:pesquisa", ensureUserAuth, pesquisaController.g
 router.get("/pesquisatipopgr/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTipoPgr);
 router.get("/pesquisaventilacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVentilacao);
 router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVeiculo);
+
 //Cadastros
     //Gerencia
     router.post("/cadastro/postgerencia", ensureUserAuth, dadosCadastroGerencia.post);

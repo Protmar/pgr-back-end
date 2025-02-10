@@ -58,6 +58,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
+      orgao_expeditor: {
+        allowNull: false,
+        type: Sequelize.DataTypes.STRING,
+      },
       nis_pis: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,

@@ -14,6 +14,7 @@ export interface TrabalhadorAttributes {
   data_nascimento: string;
   cpf: string;
   rg: string;
+  orgao_expeditor: string;
   nis_pis: string;
   ctps: string;
   serie: string;
@@ -80,6 +81,9 @@ export const Trabalhadores = sequelize.define<TrabalhadorInstance>("trabalhadore
     type: DataTypes.STRING,
   },
   rg: {
+    type: DataTypes.STRING,
+  },
+  orgao_expeditor: {
     type: DataTypes.STRING,
   },
   nis_pis: {

@@ -23,6 +23,7 @@ import { dadosCadastroEdificacao } from "../controllers/cadastros/edificacao";
 import { dadosCadastroTipoPgr } from "../controllers/cadastros/tipoPgr";
 import { dadosCadastroVentilacao } from "../controllers/cadastros/ventilacao";
 import { dadosCadastroVeiculo } from "../controllers/cadastros/veiculo";
+import { gesController } from "../controllers/ges";
 
 
 
@@ -179,3 +180,5 @@ router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getD
     router.put("/:idveiculo/editveiculo", ensureUserAuth, dadosCadastroVeiculo.put);
     router.delete("/:idveiculo/deleteveiculo", ensureUserAuth, dadosCadastroVeiculo.delete);
 
+//GES
+router.post("/postges", ensureUserAuth, gesController.postges);

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { userService } from "../service/userService";
-import { empresaService } from "../service/empresaService";
+import { userService } from "../services/userService";
+import { empresaService } from "../services/empresaService";
 import { Role } from "../models/enums/role.enum";
 
 export const empresaController = {

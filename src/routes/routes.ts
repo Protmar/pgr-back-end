@@ -23,6 +23,13 @@ import { dadosCadastroEdificacao } from "../controllers/cadastros/edificacao";
 import { dadosCadastroTipoPgr } from "../controllers/cadastros/tipoPgr";
 import { dadosCadastroVentilacao } from "../controllers/cadastros/ventilacao";
 import { dadosCadastroVeiculo } from "../controllers/cadastros/veiculo";
+import { dadosCadastroTecnicaUtilizada } from "../controllers/cadastros/tecnicautilizada";
+import { dadosCadastroFonteGeradora } from "../controllers/cadastros/fontegeradora";
+import { dadosCadastroExposicao } from "../controllers/cadastros/exposicao";
+import { dadosCadastroEpi } from "../controllers/cadastros/epi";
+import { dadosCadastroMeioDePropagacao } from "../controllers/cadastros/meiodepropagacao";
+import { dadosCadastroTrajetoria } from "../controllers/cadastros/trajetoria";
+import { dadosCadastroMedidaDeControle } from "../controllers/cadastros/medidadecontrole";
 
 
 
@@ -60,6 +67,23 @@ router.get("/pesquisatrabalhadores/:pesquisa", ensureUserAuth, pesquisaControlle
 router.get("/pesquisamobiliarios/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMobiliarios);
 router.get("/pesquisaparede/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaParede);
 router.get("/pesquisapiso/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaPiso);
+router.get("/pesquisafuncao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaFuncao);
+router.get("/pesquisacursoobrigatorio/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaCursoObrigatorio);
+router.get("/pesquisateto/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTeto);
+router.get("/pesquisarac/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaRac);
+router.get("/pesquisailuminacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaIluminacao);
+router.get("/pesquisaequipamento/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEquipamento);
+router.get("/pesquisaedificacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEdificacao);
+router.get("/pesquisatipopgr/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTipoPgr);
+router.get("/pesquisaventilacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVentilacao);
+router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVeiculo);
+router.get("/pesquisatecnicautilizada/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTecnicaUtilizada);
+router.get("/pesquisafontegeradora/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaFonteGeradora);
+router.get("/pesquisaexposicao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaExposicao);
+router.get("/pesquisaepi/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEpi);
+router.get("/pesquisameiodepropagacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMeioDePropagacao);
+router.get("/pesquisatrajetoria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTrajetoria);
+router.get("/pesquisamedidadecontrole/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMedidaDeControle);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
@@ -68,17 +92,7 @@ router.get("/:idtrabalhador/gettrabalhador", ensureUserAuth, dadosTrabalhador.ge
 router.put("/:idtrabalhador/edittrabalhador", ensureUserAuth, dadosTrabalhador.putTrabalhador);
 router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalhador.deleteTrabalhador);
 
-router.get("/pesquisafuncao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaFuncao);
-router.get("/pesquisacursoobrigatorio/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaCursoObrigatorio);
-router.get("/pesquisateto/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTeto);
-router.get("/pesquisarac/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaRac);
-router.get("/pesquisailuminacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaIluminacao);
-router.get("/pesquisaequipamento/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEquipamento);
 
-router.get("/pesquisaedificacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaEdificacao);
-router.get("/pesquisatipopgr/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTipoPgr);
-router.get("/pesquisaventilacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVentilacao);
-router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaVeiculo);
 
 //Cadastros
     //Gerencia
@@ -178,4 +192,48 @@ router.get("/pesquisaveiculo/:pesquisa", ensureUserAuth, pesquisaController.getD
     router.get("/:idveiculo/getveiculo", ensureUserAuth, dadosCadastroVeiculo.get);
     router.put("/:idveiculo/editveiculo", ensureUserAuth, dadosCadastroVeiculo.put);
     router.delete("/:idveiculo/deleteveiculo", ensureUserAuth, dadosCadastroVeiculo.delete);
+
+
+    //Técnica Utilizada
+    router.post("/cadastro/posttecnicautilizada", ensureUserAuth, dadosCadastroTecnicaUtilizada.post);
+    router.get("/cadastro/getalltecnicautilizada", ensureUserAuth, dadosCadastroTecnicaUtilizada.getAll);
+    router.get("/:idtecnicautilizada/gettecnicautilizada", ensureUserAuth, dadosCadastroTecnicaUtilizada.get);
+    router.put("/:idtecnicautilizada/edittecnicautilizada", ensureUserAuth, dadosCadastroTecnicaUtilizada.put);
+    router.delete("/:idtecnicautilizada/deletetecnicautilizada", ensureUserAuth, dadosCadastroTecnicaUtilizada.delete);
+    //Fonte Geradora
+    router.post("/cadastro/postfontegeradora", ensureUserAuth, dadosCadastroFonteGeradora.post);
+    router.get("/cadastro/getallfontegeradora", ensureUserAuth, dadosCadastroFonteGeradora.getAll);
+    router.get("/:idfontegeradora/getfontegeradora", ensureUserAuth, dadosCadastroFonteGeradora.get);
+    router.put("/:idfontegeradora/editfontegeradora", ensureUserAuth, dadosCadastroFonteGeradora.put);
+    router.delete("/:idfontegeradora/deletefontegeradora", ensureUserAuth, dadosCadastroFonteGeradora.delete);
+    //Exposição
+    router.post("/cadastro/postexposicao", ensureUserAuth, dadosCadastroExposicao.post);
+    router.get("/cadastro/getallexposicao", ensureUserAuth, dadosCadastroExposicao.getAll);
+    router.get("/:idexposicao/getexposicao", ensureUserAuth, dadosCadastroExposicao.get);
+    router.put("/:idexposicao/editexposicao", ensureUserAuth, dadosCadastroExposicao.put);
+    router.delete("/:idexposicao/deleteexposicao", ensureUserAuth, dadosCadastroExposicao.delete);
+    //EPI
+    router.post("/cadastro/postepi", ensureUserAuth, dadosCadastroEpi.post);
+    router.get("/cadastro/getallepi", ensureUserAuth, dadosCadastroEpi.getAll);
+    router.get("/:idepi/getepi", ensureUserAuth, dadosCadastroEpi.get);
+    router.put("/:idepi/editepi", ensureUserAuth, dadosCadastroEpi.put);
+    router.delete("/:idepi/deleteepi", ensureUserAuth, dadosCadastroEpi.delete);
+    //Meio de Propagação
+    router.post("/cadastro/postmeiodepropagacao", ensureUserAuth, dadosCadastroMeioDePropagacao.post);
+    router.get("/cadastro/getallmeiodepropagacao", ensureUserAuth, dadosCadastroMeioDePropagacao.getAll);
+    router.get("/:idmeiodepropagacao/getmeiodepropagacao", ensureUserAuth, dadosCadastroMeioDePropagacao.get);
+    router.put("/:idmeiodepropagacao/editmeiodepropagacao", ensureUserAuth, dadosCadastroMeioDePropagacao.put);
+    router.delete("/:idmeiodepropagacao/deletemeiodepropagacao", ensureUserAuth, dadosCadastroMeioDePropagacao.delete);
+    //Trajetória
+    router.post("/cadastro/posttrajetoria", ensureUserAuth, dadosCadastroTrajetoria.post);
+    router.get("/cadastro/getalltrajetoria", ensureUserAuth, dadosCadastroTrajetoria.getAll);
+    router.get("/:idtrajetoria/gettrajetoria", ensureUserAuth, dadosCadastroTrajetoria.get);
+    router.put("/:idtrajetoria/edittrajetoria", ensureUserAuth, dadosCadastroTrajetoria.put);
+    router.delete("/:idtrajetoria/deletetrajetoria", ensureUserAuth, dadosCadastroTrajetoria.delete);
+    //Veículo
+    router.post("/cadastro/postmedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.post);
+    router.get("/cadastro/getallmedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.getAll);
+    router.get("/:idmedidadecontrole/getmedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.get);
+    router.put("/:idmedidadecontrole/editmedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.put);
+    router.delete("/:idmedidadecontrole/deletemedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.delete);
 

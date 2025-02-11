@@ -1,7 +1,7 @@
 import { NextFunction } from "express";
 import { UserInstance } from "../models/User";
-import { jwtService } from "../service/jwtService";
-import { userService } from "../service/userService";
+import { jwtService } from "../services/jwtService";
+import { userService } from "../services/userService";
 import { Express, Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 

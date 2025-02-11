@@ -1,5 +1,5 @@
 import { AuthenticatedUserRequest } from "../../middleware";
-import { deleteDadosTrabalhadorService, getDadosAllTrabalhadoresService, getDadosTrabalhadorService, postDadosTrabalhadorService, putDadosTrabalhadorService } from "../../services/cadastros/trabalhadores";
+import { deleteDadosTrabalhadorService, getDadosAllTrabalhadoresService, getDadosTrabalhadorService, postDadosTrabalhadorService, putDadosTrabalhadorService } from "../../services/trabalhadores";
 
 export const dadosTrabalhador = {
     // Função para capitalizar a primeira letra de cada palavra
@@ -35,12 +35,14 @@ export const dadosTrabalhador = {
             
             const formattedNome = dadosTrabalhador.capitalizeName(nome);
             
-            const data = await postDadosTrabalhadorService(empresaId.toString(), gerencia_id, cargo_id, setor_id, codigo, formattedNome, genero, data_nascimento, cpf, rg, orgao_expeditor, nis_pis, ctps, serie, uf, jornada_trabalho, dataCargo);
+            const data = await postDadosTrabalhadorService({empresa_id: empresaId, gerencia_id, cargo_id, setor_id, codigo, nome: formattedNome, genero, data_nascimento, cpf, rg, orgao_expeditor, nis_pis, ctps, serie, uf, jornada_trabalho, cargo: dataCargo});
             
             res.send(data);
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
 
     getAllTrabalhadores: async (req: AuthenticatedUserRequest, res: any) => {

@@ -1,9 +1,9 @@
 require("dotenv").config();
 import { Request, Response } from "express";
-import { userService } from "../service/userService";
-import { jwtService } from "../service/jwtService";
+import { userService } from "../services/userService";
+import { jwtService } from "../services/jwtService";
 import { randomBytes } from "crypto";
-import { mailerService } from "../service/mailerService";
+import { mailerService } from "../services/mailerService";
 import { Role } from "../models/enums/role.enum";
 
 const roles = Object.keys(Role);

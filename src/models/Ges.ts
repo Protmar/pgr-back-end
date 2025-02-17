@@ -1,5 +1,14 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../database";
+import { GesCurso } from "./subdivisoesGes/GesCursos";
+import { GesRac } from "./subdivisoesGes/GesRacs";
+import { GesTipoPgr } from "./subdivisoesGes/GesTiposPgrs";
+import { GesTrabalhador } from "./subdivisoesGes/GesTrabalhadores";
+import { AmbienteTrabalho } from "./AmbienteTrabalho";
+import { CadastroEdificacao } from "./Edificacoes";
+import { CadastroTeto } from "./Tetos";
+import { CadastroParede } from "./Paredes";
+import { CadastroVentilacao } from "./Ventilacoes";
 
 export interface GesAttributes {
     id: number;
@@ -7,8 +16,6 @@ export interface GesAttributes {
     codigo: string;
     descricao_ges: string;
     observacao: string;
-    caracterizacao_processos_id: number;
-    caracterizacao_ambientes_trabalho_id: number;
     responsavel: string;
     cargo: string;
     created_at?: Date;
@@ -46,14 +53,6 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
             type: DataTypes.STRING,
             allowNull: false,
         },
-        caracterizacao_processos_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        caracterizacao_ambientes_trabalho_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
         responsavel: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -72,5 +71,34 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
             allowNull: false,
             defaultValue: DataTypes.NOW,
         },
+    },
+    {
+        timestamps: true,
+        underscored: true, 
     }
 );
+
+Ges.hasMany(GesCurso, {
+    foreignKey: "id_ges", 
+    as: "cursos",         
+});
+
+Ges.hasMany(GesRac, {
+    foreignKey: "id_ges", 
+    as: "racs",         
+});
+
+Ges.hasMany(GesTipoPgr, {
+    foreignKey: "id_ges", 
+    as: "tiposPgr",         
+});
+
+Ges.hasMany(GesTrabalhador, {
+    foreignKey: "id_ges", 
+    as: "trabalhadores",         
+});
+
+Ges.hasMany(AmbienteTrabalho, {
+    foreignKey: "ges_id", 
+    as: "ambientesTrabalhos",         
+});

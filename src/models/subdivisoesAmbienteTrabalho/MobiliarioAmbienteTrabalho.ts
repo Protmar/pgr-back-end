@@ -1,19 +1,23 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
 
-export interface GesRacAttributes {
+export interface MobiliarioAmbienteTrabalhoAttributes {
     id: number;
-    id_ges: number;
-    id_rac: number;
+    empresa_id?: number;
+    id_ambiente_trabalho: number;
+    id_mobiliario: number;
     created_at?: Date;
     updated_at?: Date;
 }
 
 // Torna o ID opcional durante a criação
-export interface GesRacCreationAttributes extends Optional<GesRacAttributes, 'id'> {}
+export interface MobiliarioAmbienteTrabalhoCreationAttributes
+    extends Optional<MobiliarioAmbienteTrabalhoAttributes, "id"> {}
 
-export const GesRac = sequelize.define<Model<any>>(
-    "ges_racs",
+export const MobiliarioAmbienteTrabalho = sequelize.define<
+    Model<MobiliarioAmbienteTrabalhoAttributes, MobiliarioAmbienteTrabalhoCreationAttributes>
+>(
+    "mobiliario_ambiente_trabalhos",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -21,15 +25,15 @@ export const GesRac = sequelize.define<Model<any>>(
             autoIncrement: true,
             allowNull: false,
         },
-        id_ges: {
+        id_ambiente_trabalho: {
             type: DataTypes.INTEGER,
-            references: { model: "ges", key: "id" },
+            references: { model: "ambientes_trabalhos", key: "id" },
             onUpdate: "CASCADE",
-            onDelete: "CASCADE",
+            onDelete: "RESTRICT"
         },
-        id_rac: {
+        id_mobiliario: {
             type: DataTypes.INTEGER,
-            references: { model: "racs", key: "id" },
+            references: { model: "mobiliarios", key: "id" },
             onUpdate: "CASCADE",
             onDelete: "RESTRICT"
         },
@@ -43,8 +47,7 @@ export const GesRac = sequelize.define<Model<any>>(
         },
     },
     {
-        timestamps: true, 
+        timestamps: true,
         underscored: true,
     }
 );
-

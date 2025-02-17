@@ -22,27 +22,30 @@ export const GesTrabalhador = sequelize.define<Model<GesTrabalhadorAttributes, G
             autoIncrement: true,
             allowNull: false,
         },
-        empresa_id: {
-            type: DataTypes.INTEGER,
-            references: { model: "empresas", key: "id" },
-            onUpdate: "CASCADE",
-            onDelete: "RESTRICT",
-        },
         id_ges: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            references: { model: "ges", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
         },
         id_trabalhador: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            references: { model: "trabalhadores", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "RESTRICT"
         },
         created_at: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: DataTypes.NOW, 
         },
         updated_at: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: DataTypes.NOW, 
         },
+    },
+    {
+        timestamps: true, // 🔹 Habilitar timestamps automáticos
+        underscored: true, // 🔹 Usar snake_case para os nomes das colunas
     }
 );
+

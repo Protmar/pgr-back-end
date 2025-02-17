@@ -27,7 +27,7 @@ export const CadastroCursoObrigatorio = sequelize.define<Model<CadastroCursoObri
             type: DataTypes.INTEGER,
             references: { model: "empresas", key: "id" },
             onUpdate: "CASCADE",
-            onDelete: "RESTRICT",
+            onDelete: "CASCADE",
             allowNull: false, 
         },
         descricao: {

@@ -28,14 +28,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
-      caracterizacao_processos_id: {
-        allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
-      },
-      caracterizacao_ambientes_trabalho_id: {
-        allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
-      },
       responsavel: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,

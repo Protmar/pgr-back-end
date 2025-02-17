@@ -239,3 +239,9 @@ router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalha
     
 //GES
 router.post("/postges", ensureUserAuth, gesController.postges);
+router.get("/gesgetall", ensureUserAuth, gesController.getAll);
+router.get("/gesgetone/:idges", ensureUserAuth, gesController.getOne);
+
+
+//Ambiente Trabalho
+// router.post("/postambientetrabalho", ensureUserAuth, ATController.postAT);

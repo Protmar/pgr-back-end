@@ -1,19 +1,23 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
 
-export interface GesRacAttributes {
+export interface EquipamentosAmbienteTrabalhoAttributes {
     id: number;
-    id_ges: number;
-    id_rac: number;
+    empresa_id?: number;
+    id_ambiente_trabalho: number;
+    id_equipamentos: number;
     created_at?: Date;
     updated_at?: Date;
 }
 
 // Torna o ID opcional durante a criação
-export interface GesRacCreationAttributes extends Optional<GesRacAttributes, 'id'> {}
+export interface EquipamentosAmbienteTrabalhoCreationAttributes
+    extends Optional<EquipamentosAmbienteTrabalhoAttributes, "id"> { }
 
-export const GesRac = sequelize.define<Model<any>>(
-    "ges_racs",
+export const EquipamentosAmbienteTrabalho = sequelize.define<
+    Model<EquipamentosAmbienteTrabalhoAttributes, EquipamentosAmbienteTrabalhoCreationAttributes>
+>(
+    "equipamentos_ambiente_trabalhos",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -21,30 +25,31 @@ export const GesRac = sequelize.define<Model<any>>(
             autoIncrement: true,
             allowNull: false,
         },
-        id_ges: {
+        id_ambiente_trabalho: {
             type: DataTypes.INTEGER,
-            references: { model: "ges", key: "id" },
+            references: { model: "ambientes_trabalhos", key: "id" },
             onUpdate: "CASCADE",
-            onDelete: "CASCADE",
+            onDelete: "RESTRICT"
         },
-        id_rac: {
+        id_equipamentos: {
             type: DataTypes.INTEGER,
-            references: { model: "racs", key: "id" },
+            references: { model: "equipamentos", key: "id" },
             onUpdate: "CASCADE",
             onDelete: "RESTRICT"
         },
         created_at: {
             type: DataTypes.DATE,
+
             defaultValue: DataTypes.NOW,
         },
         updated_at: {
             type: DataTypes.DATE,
+
             defaultValue: DataTypes.NOW,
         },
     },
     {
-        timestamps: true, 
+        timestamps: true,
         underscored: true,
     }
 );
-

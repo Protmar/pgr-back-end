@@ -6,7 +6,7 @@ export const sequelize = new Sequelize({
     port: 5432,
     database: "PGR-DEV",
     username: "postgres",
-    password: "postgres",
+    password: "123456",
     define: {
         underscored: true // snake_case
     }

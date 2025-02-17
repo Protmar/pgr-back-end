@@ -3,7 +3,6 @@ import { sequelize } from "../../database";
 
 export interface GesTipoPgrAttributes {
     id: number;
-    empresa_id?: number;
     id_ges: number;
     id_tipo_pgr: number;
     created_at?: Date;
@@ -22,27 +21,30 @@ export const GesTipoPgr = sequelize.define<Model<GesTipoPgrAttributes, GesTipoPg
             autoIncrement: true,
             allowNull: false,
         },
-        empresa_id: {
-            type: DataTypes.INTEGER,
-            references: { model: "empresas", key: "id" },
-            onUpdate: "CASCADE",
-            onDelete: "RESTRICT",
-        },
         id_ges: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            references: { model: "ges", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
         },
         id_tipo_pgr: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            references: { model: "tipo_pgrs", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "RESTRICT"
         },
         created_at: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: DataTypes.NOW, // 🔹 Definindo um valor padrão para evitar erro
         },
         updated_at: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: DataTypes.NOW, // 🔹 Garantindo que não seja nulo
         },
+    },
+    {
+        timestamps: true, // 🔹 Habilita gerenciamento automático de timestamps
+        underscored: true, // 🔹 Mantém o padrão snake_case no banco de dados
     }
 );
+

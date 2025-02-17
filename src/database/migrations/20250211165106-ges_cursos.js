@@ -10,26 +10,22 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
-      empresa_id: {
+      id_ges: {
         type: Sequelize.DataTypes.INTEGER,
-        references: { model: "empresas", key: "id" },
+        references: { model: "ges", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      id_curso: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "cursosobrigatorios", key: "id" },
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
-      id_ges: {
-        allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
-      },
-      id_curso: {
-        allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
-      },
       created_at: {
-        allowNull: false,
         type: Sequelize.DataTypes.DATE,
       },
       updated_at: {
-        allowNull: false,
         type: Sequelize.DataTypes.DATE,
       },
     });

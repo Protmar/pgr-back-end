@@ -1,5 +1,7 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../database";
+import { VeiculosAmbienteTrabalho } from "./subdivisoesAmbienteTrabalho/VeiculosAmbientesTrabalho";
+import { AmbienteTrabalho } from "./AmbienteTrabalho";
 
 // Atualize a interface para tornar o id opcional na criação
 export interface CadastroVeiculoAttributes {

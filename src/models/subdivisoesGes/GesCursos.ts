@@ -3,17 +3,14 @@ import { sequelize } from "../../database";
 
 export interface GesCursoAttributes {
     id: number;
-    empresa_id?: number;
     id_ges: number;
     id_curso: number;
     created_at?: Date;
     updated_at?: Date;
 }
+export interface GesCreationAttributes extends Optional<GesCursoAttributes, 'id'> {}
 
-// Torna o ID opcional durante a criação
-export interface GesCursoCreationAttributes extends Optional<GesCursoAttributes, 'id'> {}
-
-export const GesCurso = sequelize.define<Model<GesCursoAttributes, GesCursoCreationAttributes>>(
+export const GesCurso = sequelize.define<Model<GesCursoAttributes, GesCreationAttributes>>(
     "ges_cursos",
     {
         id: {
@@ -22,27 +19,30 @@ export const GesCurso = sequelize.define<Model<GesCursoAttributes, GesCursoCreat
             autoIncrement: true,
             allowNull: false,
         },
-        empresa_id: {
-            type: DataTypes.INTEGER,
-            references: { model: "empresas", key: "id" },
-            onUpdate: "CASCADE",
-            onDelete: "RESTRICT",
-        },
         id_ges: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            references: { model: "ges", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
         },
         id_curso: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            references: { model: "cursosobrigatorios", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "RESTRICT"
         },
         created_at: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
         updated_at: {
             type: DataTypes.DATE,
-            allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
+    },
+    {
+        timestamps: true, 
+        underscored: true, 
     }
 );
+

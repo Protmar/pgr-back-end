@@ -54,7 +54,7 @@ export const User = sequelize.define<UserInstance>("User", {
         type: DataTypes.INTEGER,
         references: { model: "empresas", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+        onDelete: "CASCADE"
       },
       visualizarLaudos: {
         type: DataTypes.BOOLEAN,

@@ -1,6 +1,6 @@
 import { AuthenticatedUserRequest } from "../../middleware";
 
-import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEdificacaoService, getDadosPesquisaDescEpiService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescExposicaoService, getDadosPesquisaDescFonteGeradoraService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescMedidaDeControleService, getDadosPesquisaDescMeioDePropagacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTecnicaUtilizadaService, getDadosPesquisaDescTetoService, getDadosPesquisaDescTipoPgrService, getDadosPesquisaDescTrajetoriaService, getDadosPesquisaDescVeiculoService, getDadosPesquisaDescVentilacaoService, getDadosPesquisaMobiliariosService, getDadosPesquisaParedeService, getDadosPesquisaPisoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
+import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEdificacaoService, getDadosPesquisaDescEpiService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescExposicaoService, getDadosPesquisaDescFonteGeradoraService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescMedidaDeControleService, getDadosPesquisaDescMeioDePropagacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTecnicaUtilizadaService, getDadosPesquisaDescTetoService, getDadosPesquisaDescTipoPgrService, getDadosPesquisaDescTrajetoriaService, getDadosPesquisaDescVeiculoService, getDadosPesquisaDescVentilacaoService, getDadosPesquisaFatoresRiscoService, getDadosPesquisaMobiliariosService, getDadosPesquisaParedeService, getDadosPesquisaPisoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
 
 
 export const pesquisaController = {
@@ -326,6 +326,18 @@ export const pesquisaController = {
             const { empresaId } = req.user!;
 
             const data = await getDadosPesquisaDescMedidaDeControleService(empresaId, pesquisa);            
+            res.json(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do serviço:", error);
+            res.status(500).send("Erro ao buscar dados do baise");
+        }
+    },
+    getDadosPesquisaFatoresRisco: async (req: AuthenticatedUserRequest, res: any) => {
+        try {
+            const { pesquisa } = req.params;
+            const { empresaId } = req.user!;
+
+            const data = await getDadosPesquisaFatoresRiscoService(empresaId, pesquisa);            
             res.json(data);
         } catch (error) {
             console.error("Erro ao buscar dados do serviço:", error);

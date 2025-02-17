@@ -31,6 +31,7 @@ import { dadosCadastroEpi } from "../controllers/cadastros/epi";
 import { dadosCadastroMeioDePropagacao } from "../controllers/cadastros/meiodepropagacao";
 import { dadosCadastroTrajetoria } from "../controllers/cadastros/trajetoria";
 import { dadosCadastroMedidaDeControle } from "../controllers/cadastros/medidadecontrole";
+import { dadosCadastroFatoresRisco } from "../controllers/cadastros/fatoresrisco";
 
 
 
@@ -85,6 +86,7 @@ router.get("/pesquisaepi/:pesquisa", ensureUserAuth, pesquisaController.getDados
 router.get("/pesquisameiodepropagacao/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMeioDePropagacao);
 router.get("/pesquisatrajetoria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTrajetoria);
 router.get("/pesquisamedidadecontrole/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMedidaDeControle);
+router.get("/pesquisafatoresrisco/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaFatoresRisco);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
@@ -235,8 +237,12 @@ router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalha
     router.get("/:idmedidadecontrole/getmedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.get);
     router.put("/:idmedidadecontrole/editmedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.put);
     router.delete("/:idmedidadecontrole/deletemedidadecontrole", ensureUserAuth, dadosCadastroMedidaDeControle.delete);
-
-    
+    //Fatores de Risco
+    router.post("/cadastro/postfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.post);
+    router.get("/cadastro/getallfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.getAll);
+    router.get("/:idfatoresrisco/getfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.get);
+    router.put("/:idfatoresrisco/editfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.put);
+    router.delete("/:idfatoresrisco/deletefatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.delete);
 //GES
 router.post("/postges", ensureUserAuth, gesController.postges);
 router.get("/gesgetall", ensureUserAuth, gesController.getAll);

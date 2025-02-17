@@ -10,9 +10,11 @@ export const dadosCadastroTecnicaUtilizada = {
             const data = await tecnicaUtilizadaPostService(empresaId.toString(), descricao);
             
             res.send(data)
-        } catch (error) {
-            console.log(error);
-        }
+        }catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
     getAll: async (req: AuthenticatedUserRequest, res: any): Promise<void> => {
         try {

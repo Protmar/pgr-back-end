@@ -1,10 +1,18 @@
 import { CadastroTecnicaUtilizada } from "../../../models/TecnicasUtilizadas";
 
+const formatarNome = (nome: string) => {
+    if (!nome) return "";
+    const palavras = nome.toLowerCase().split(" ");
+    palavras[0] = palavras[0].charAt(0).toUpperCase() + palavras[0].slice(1);
+    return palavras.join(" ");
+};
+
 export const tecnicaUtilizadaPostService = async (empresaId:string, descricao:string) => {
+    const descricaoFormatada = formatarNome(descricao);
     try {
          const data = await CadastroTecnicaUtilizada.create({
             empresa_id: Number(empresaId),
-            descricao
+            descricao: descricaoFormatada
          })
 
          return data;
@@ -58,9 +66,10 @@ export const tecnicaUtilizadaDeleteService = (empresaId:string, tecnicautilizada
 }
 
 export const tecnicaUtilizadaPutService = (empresaId:string, descricao:string, tecnicautilizadaId:string) => {
+    const descricaoFormatada = formatarNome(descricao);
     try {
          const data = CadastroTecnicaUtilizada.update({
-            descricao
+            descricao: descricaoFormatada
          }, {
             where: {
                 empresa_id: Number(empresaId),

@@ -1,11 +1,18 @@
 import { CadastroFonteGeradora } from "../../../models/FontesGeradoras";
 
+const formatarNome = (nome: string) => {
+    if (!nome) return "";
+    const palavras = nome.toLowerCase().split(" ");
+    palavras[0] = palavras[0].charAt(0).toUpperCase() + palavras[0].slice(1);
+    return palavras.join(" ");
+};
 
 export const fonteGeradoraPostService = async (empresaId:string, descricao:string) => {
+    const descricaoFormatada = formatarNome(descricao);
     try {
          const data = await CadastroFonteGeradora.create({
             empresa_id: Number(empresaId),
-            descricao
+            descricao: descricaoFormatada
          })
 
          return data;
@@ -59,9 +66,10 @@ export const fonteGeradoraDeleteService = (empresaId:string, idfontegeradora:str
 }
 
 export const fonteGeradoraPutService = (empresaId:string, descricao:string, fontegeradoraId:string) => {
+    const descricaoFormatada = formatarNome(descricao);
     try {
          const data = CadastroFonteGeradora.update({
-            descricao
+            descricao: descricaoFormatada
          }, {
             where: {
                 empresa_id: Number(empresaId),

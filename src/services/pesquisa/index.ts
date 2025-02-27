@@ -26,6 +26,13 @@ import { CadastroMeioDePropagacao } from "../../models/MeiosDePropagacoes";
 import { CadastroTrajetoria } from "../../models/Trajetorias";
 import { CadastroMedidaDeControle } from "../../models/MedidasDeControles";
 import { CadastroFatoresRisco } from "../../models/FatoresRisco";
+import { CadastroMedidaControleColetivaExistente } from "../../models/MedidaControleColetivaExistente";
+import { CadastroMedidaControleAdministrativaExistente } from "../../models/MedidaControleAdministrativaExistente";
+import { CadastroMedidaControleIndividualExistente } from "../../models/MedidaControleIndividualExistente";
+import { Risco } from "../../models/Risco";
+import { CadastroMedidaControleIndividualNecessaria } from "../../models/MedidaControleIndividualNecessaria";
+import { CadastroMedidaControleAdministrativaNecessaria } from "../../models/MedidaControleAdministrativaNecessaria";
+import { CadastroMedidaControleColetivaNecessaria } from "../../models/MedidaControleColetivaNecessaria";
 
 export const getDadosPesquisaCnpjNomeService = async (
   empresa_id: any,
@@ -507,6 +514,35 @@ export const getDadosPesquisaFatoresRiscoService = async (
     throw error; // Lança o erro para o controlador ou camada superior tratar
   }
 };
+export const getDadosPesquisaRiscoService = async (
+    empresa_id: any,
+    pesquisa: any
+  ) => {
+    try {
+      const data = await  Risco.findAll({
+        where: {
+          empresa_id: empresa_id, // Busca exata pelo ID da empresa
+          [Op.or]: [
+            {
+              id_fator_risco: {
+                [Op.iLike]: `%${pesquisa}%`,
+              },
+            },
+            {
+              id_fonte_geradora: {
+                [Op.iLike]: `%${pesquisa}%`,
+              } as any,
+            }
+          ],
+        },
+      });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do risco:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
 export const getDadosPesquisaDescMedidaDeControleService = async (
   empresa_id: any,
   pesquisa: any
@@ -537,6 +573,150 @@ export const getDadosPesquisaDescEpiService = async (
 ) => {
   try {
     const data = await CadastroEpi.findAll({
+      where: {
+        empresa_id: empresa_id, // Busca exata pelo ID da empresa
+        [Op.or]: [
+          {
+            descricao: {
+              [Op.iLike]: `%${pesquisa}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do cliente:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
+export const getDadosPesquisaDescMedidaControleColetivaExistenteService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  try {
+    const data = await CadastroMedidaControleColetivaExistente.findAll({
+      where: {
+        empresa_id: empresa_id, // Busca exata pelo ID da empresa
+        [Op.or]: [
+          {
+            descricao: {
+              [Op.iLike]: `%${pesquisa}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do cliente:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
+export const getDadosPesquisaDescMedidaControleAdministrativaExistenteService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  try {
+    const data = await CadastroMedidaControleAdministrativaExistente.findAll({
+      where: {
+        empresa_id: empresa_id, // Busca exata pelo ID da empresa
+        [Op.or]: [
+          {
+            descricao: {
+              [Op.iLike]: `%${pesquisa}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do cliente:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
+export const getDadosPesquisaDescMedidaControleIndividualExistenteService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  try {
+    const data = await CadastroMedidaControleIndividualExistente.findAll({
+      where: {
+        empresa_id: empresa_id, // Busca exata pelo ID da empresa
+        [Op.or]: [
+          {
+            descricao: {
+              [Op.iLike]: `%${pesquisa}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do cliente:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
+export const getDadosPesquisaDescMedidaControleColetivaNecessariaService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  try {
+    const data = await CadastroMedidaControleColetivaNecessaria.findAll({
+      where: {
+        empresa_id: empresa_id, // Busca exata pelo ID da empresa
+        [Op.or]: [
+          {
+            descricao: {
+              [Op.iLike]: `%${pesquisa}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do cliente:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
+export const getDadosPesquisaDescMedidaControleAdministrativaNecessariaService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  try {
+    const data = await CadastroMedidaControleAdministrativaNecessaria.findAll({
+      where: {
+        empresa_id: empresa_id, // Busca exata pelo ID da empresa
+        [Op.or]: [
+          {
+            descricao: {
+              [Op.iLike]: `%${pesquisa}%`,
+            },
+          },
+        ],
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao buscar dados do cliente:", error);
+    throw error; // Lança o erro para o controlador ou camada superior tratar
+  }
+};
+export const getDadosPesquisaDescMedidaControleIndividualNecessariaService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  try {
+    const data = await CadastroMedidaControleIndividualNecessaria.findAll({
       where: {
         empresa_id: empresa_id, // Busca exata pelo ID da empresa
         [Op.or]: [

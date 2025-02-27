@@ -35,84 +35,87 @@ export interface TrabalhadorInstance
     TrabalhadorAttributes {}
 
 // Definindo o modelo Trabalhador
-export const Trabalhadores = sequelize.define<TrabalhadorInstance>("trabalhadores", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+export const Trabalhadores = sequelize.define<TrabalhadorInstance>(
+  "trabalhadores",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    empresa_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "empresas", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    },
+    gerencia_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "gerencias", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    },
+    cargo_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "cargos", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    },
+    setor_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "setores", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    },
+    codigo: {
+      type: DataTypes.STRING,
+    },
+    nome: {
+      type: DataTypes.STRING,
+    },
+    genero: {
+      type: DataTypes.STRING,
+    },
+    data_nascimento: {
+      type: DataTypes.STRING,
+    },
+    cpf: {
+      type: DataTypes.STRING,
+    },
+    rg: {
+      type: DataTypes.STRING,
+    },
+    orgao_expeditor: {
+      type: DataTypes.STRING,
+    },
+    nis_pis: {
+      type: DataTypes.STRING,
+    },
+    ctps: {
+      type: DataTypes.STRING,
+    },
+    serie: {
+      type: DataTypes.STRING,
+    },
+    uf: {
+      type: DataTypes.STRING,
+    },
+    jornada_trabalho: {
+      type: DataTypes.STRING,
+    },
+    cargo: {
+      type: DataTypes.STRING,
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.fn("NOW"),
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.fn("NOW"),
+    },
   },
-  empresa_id: {
-    type: DataTypes.INTEGER,
-    references: { model: "empresas", key: "id" },
-    onUpdate: "CASCADE",
-    onDelete: "RESTRICT",
-  },
-  gerencia_id: {
-    type: DataTypes.INTEGER,
-    references: { model: "gerencias", key: "id" },
-    onUpdate: "CASCADE",
-    onDelete: "RESTRICT",
-  },
-  cargo_id: {
-    type: DataTypes.INTEGER,
-    references: { model: "cargos", key: "id" },
-    onUpdate: "CASCADE",
-    onDelete: "RESTRICT",
-  },
-  setor_id: {
-    type: DataTypes.INTEGER,
-    references: { model: "setores", key: "id" },
-    onUpdate: "CASCADE",
-    onDelete: "RESTRICT",
-  },
-  codigo: {
-    type: DataTypes.STRING,
-  },
-  nome: {
-    type: DataTypes.STRING,
-  },
-  genero: {
-    type: DataTypes.STRING,
-  },
-  data_nascimento: {
-    type: DataTypes.STRING,
-  },
-  cpf: {
-    type: DataTypes.STRING,
-  },
-  rg: {
-    type: DataTypes.STRING,
-  },
-  orgao_expeditor: {
-    type: DataTypes.STRING,
-  },
-  nis_pis: {
-    type: DataTypes.STRING,
-  },
-  ctps: {
-    type: DataTypes.STRING,
-  },
-  serie: {
-    type: DataTypes.STRING,
-  },
-  uf: {
-    type: DataTypes.STRING,
-  },
-  jornada_trabalho: {
-    type: DataTypes.STRING,
-  },
-  cargo: {
-    type: DataTypes.STRING,
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: Sequelize.fn("NOW"),
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: Sequelize.fn("NOW"),
-  },
-},
-{ tableName: "trabalhadores" });
+  { tableName: "trabalhadores" }
+);
 
 export default Trabalhadores;

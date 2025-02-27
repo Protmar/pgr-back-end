@@ -40,7 +40,7 @@ export const getDadosTrabalhadorService = (
 
 export const putDadosTrabalhadorService = (
   empresaId: string,
-  trabaladorId: string,
+  trabalhadorId: string,
   gerencia_id: string,
   cargo_id: string,
   setor_id: string,
@@ -78,7 +78,7 @@ export const putDadosTrabalhadorService = (
         jornada_trabalho,
         cargo,
       },
-      { where: { empresa_id: Number(empresaId), id: trabaladorId } }
+      { where: { empresa_id: Number(empresaId), id: trabalhadorId } }
     );
     return data;
   } catch (error) {

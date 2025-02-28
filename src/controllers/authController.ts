@@ -38,7 +38,7 @@ export const authController = {
       });
     } catch (err) {
       if (err instanceof Error) {
-         res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
       }
     }
   },
@@ -74,9 +74,9 @@ export const authController = {
       );
 
       return res.send();
-      } catch (err) {
+    } catch (err) {
       if (err instanceof Error) {
-        res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
       }
     }
    },
@@ -110,7 +110,7 @@ export const authController = {
       return res.send();
     } catch (err) {
       if (err instanceof Error) {
-       return res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: err.message });
       }
     }
    },

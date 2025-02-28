@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("medida_controle_coletiva_necessaria", {
+    await queryInterface.createTable("medida_controle_coletiva_necessarias", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -32,6 +32,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("medida_controle_coletiva_necessaria");
+    await queryInterface.dropTable("medida_controle_coletiva_necessarias");
   }
 };

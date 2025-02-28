@@ -1,3 +1,4 @@
+import { Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
 import {
   deleteDadosTrabalhadorService,
@@ -17,7 +18,7 @@ export const dadosTrabalhador = {
       .join(" ");
   },
 
-  postTrabalhador: async (req: AuthenticatedUserRequest, res: any) => {
+  postTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const {
@@ -69,17 +70,19 @@ export const dadosTrabalhador = {
     }
   },
 
-  getAllTrabalhadores: async (req: AuthenticatedUserRequest, res: any) => {
+  getAllTrabalhadores: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const data = await getDadosAllTrabalhadoresService(empresaId.toString());
       res.send(data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
     }
   },
 
-  getTrabalhador: async (req: AuthenticatedUserRequest, res: any) => {
+  getTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const { idtrabalhador } = req.params;
@@ -88,12 +91,14 @@ export const dadosTrabalhador = {
         idtrabalhador
       );
       res.send(data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
     }
   },
 
-  putTrabalhador: async (req: AuthenticatedUserRequest, res: any) => {
+  putTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const { idtrabalhador } = req.params;
@@ -140,12 +145,14 @@ export const dadosTrabalhador = {
       );
 
       res.send(data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
     }
   },
 
-  deleteTrabalhador: async (req: AuthenticatedUserRequest, res: any) => {
+  deleteTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const { idtrabalhador } = req.params;
@@ -154,8 +161,10 @@ export const dadosTrabalhador = {
         idtrabalhador
       );
       res.send(data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
     }
   },
 };

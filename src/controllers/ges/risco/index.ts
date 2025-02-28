@@ -132,7 +132,7 @@ export const dadosRisco = {
   },
 
 
-  delete: async (req: AuthenticatedUserRequest, res: any) => {
+  delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const { idtrabalhador } = req.params;
@@ -141,8 +141,10 @@ export const dadosRisco = {
         idtrabalhador
       );
       res.send(data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
     }
   },
 };

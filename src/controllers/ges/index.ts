@@ -62,10 +62,11 @@ export const gesController = {
                 } as AmbienteTrabalhoAttributes);
 
             return res.status(201).json(data);
-        } catch (error) {
-            console.error("Erro no postges:", error);
-            return res.status(500).json({ error: "Erro interno do servidor" });
-        }
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
 
     getAll: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -94,8 +95,8 @@ export const gesController = {
             res.status(200).json(response);
         } catch (err) {
             if (err instanceof Error) {
-                return res.status(400).json({ message: err.message });
-              }
+              return res.status(400).json({ message: err.message });
             }
+          }
         }
 }

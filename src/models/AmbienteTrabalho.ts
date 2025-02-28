@@ -35,7 +35,7 @@ export interface AmbienteTrabalhoCreationAttributes
 export const AmbienteTrabalho = sequelize.define<
     Model<AmbienteTrabalhoAttributes, AmbienteTrabalhoCreationAttributes>
 >(
-    "ambientes_trabalhos",
+    "ambientes_trabalho",
     {
         id: {
             type: DataTypes.INTEGER,

@@ -16,7 +16,7 @@ export const dadosCadastroFatoresRisco = {
     return palavras.join(" ");
   },
 
-  post: async (req: AuthenticatedUserRequest, res: any) => {
+  post: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const {
@@ -53,7 +53,7 @@ export const dadosCadastroFatoresRisco = {
     }
   },
 
-  getAll: async (req: AuthenticatedUserRequest, res: any) => {
+  getAll: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const data = await getDadosAllFatoresRiscoService(empresaId.toString());
@@ -65,7 +65,7 @@ export const dadosCadastroFatoresRisco = {
     }
   },
 
-  get: async (req: AuthenticatedUserRequest, res: any) => {
+  get: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
         const { empresaId } = req.user!;
         const { idfatoresrisco } = req.params;

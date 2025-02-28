@@ -4,7 +4,7 @@ import { AuthenticatedUserRequest } from "../../middleware";
 
 export const dadosCliente = {
     // Método GET para buscar dados de um cliente
-    get: async (req: AuthenticatedUserRequest, res: Response): Promise<void> => {
+    get: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { idcliente } = req.params;
             const { empresaId } = req.user!;
@@ -19,16 +19,15 @@ export const dadosCliente = {
             }
 
             res.status(200).json(data); // Alterado para 200 OK
-        } catch (error) {
-            console.error("Erro ao buscar dados do cliente:", error);
-            res.status(500).json({
-                message: "Erro ao buscar dados do cliente",
-            });
-        }
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
 
     // Método POST para criar um novo cliente
-    post: async (req: AuthenticatedUserRequest, res: any): Promise<void> => {
+    post: async (req: AuthenticatedUserRequest, res: Response) => {
         const {
             empresa_id,
             cnpj,
@@ -84,13 +83,11 @@ export const dadosCliente = {
                 message: "Cliente criado com sucesso",
                 cliente: newCliente, // Retorna os dados do cliente criado
             });
-        } catch (error) {
-            console.error("Erro ao criar o cliente:", error);  // Registra o erro completo no console
-            res.status(500).json({
-                message: "Erro ao criar o cliente",
-                error: error
-            });
-        }
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
 
     getAll: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -107,13 +104,11 @@ export const dadosCliente = {
             }
 
             res.status(200).json(data);
-        } catch (error) {
-            console.error("Erro ao buscar todos os clientes:", error);
-            res.status(500).json({
-                message: "Erro ao buscar todos os clientes",
-                error: error
-            });
-        }
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
 
     delete: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -125,7 +120,7 @@ export const dadosCliente = {
         res.status(200).json({ message: "Cliente Deletado" });
     },
 
-    put: async (req: AuthenticatedUserRequest, res: any): Promise<void> => {
+    put: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { idcliente } = req.params;
             const { empresaId } = req.user!;
@@ -167,12 +162,10 @@ export const dadosCliente = {
                 message: "Cliente atualizado com sucesso",
                 cliente: updatedData,
             });
-        } catch (error) {
-            console.error("Erro ao atualizar o cliente:", error);
-            res.status(500).json({
-                message: "Erro ao atualizar o cliente",
-                error: error
-            });
-        }
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
     },
 };

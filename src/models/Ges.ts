@@ -20,11 +20,12 @@ export interface GesAttributes {
     cargo: string;
     nome_fluxograma: Text;
     created_at?: Date;
-    updated_at?: Date;
-}
+        updated_at?: Date;
+    }
+
 
 // Torna o ID opcional durante a criação
-export interface GesCreationAttributes extends Optional<GesAttributes, 'id'> {}
+export interface GesCreationAttributes extends Optional<GesAttributes, "id"> {}
 
 export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>(
     "ges",
@@ -68,34 +69,35 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
         },
+
     },
-    {
-        timestamps: true,
-        underscored: true, 
-    }
+  {
+    timestamps: true,
+    underscored: true,
+  }
 );
 
 Ges.hasMany(GesCurso, {
-    foreignKey: "id_ges", 
-    as: "cursos",         
+  foreignKey: "id_ges",
+  as: "cursos",
 });
 
 Ges.hasMany(GesRac, {
-    foreignKey: "id_ges", 
-    as: "racs",         
+  foreignKey: "id_ges",
+  as: "racs",
 });
 
 Ges.hasMany(GesTipoPgr, {
-    foreignKey: "id_ges", 
-    as: "tiposPgr",         
+  foreignKey: "id_ges",
+  as: "tiposPgr",
 });
 
 Ges.hasMany(GesTrabalhador, {
-    foreignKey: "id_ges", 
-    as: "trabalhadores",         
+  foreignKey: "id_ges",
+  as: "trabalhadores",
 });
 
 Ges.hasMany(AmbienteTrabalho, {
-    foreignKey: "ges_id", 
-    as: "ambientesTrabalhos",         
+  foreignKey: "ges_id",
+  as: "ambientesTrabalhos",
 });

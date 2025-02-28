@@ -35,6 +35,15 @@ import { dadosCadastroMedidaDeControle } from "../controllers/cadastros/medidade
 import { dadosCadastroFatoresRisco } from "../controllers/cadastros/fatoresrisco";
 import { s3Controller } from "../controllers/aws/s3";
 
+import { dadosCadastroAdministrativaExistente } from "../controllers/cadastros/medidacontroleadministrativaexistente";
+import { dadosCadastroColetivaExistente } from "../controllers/cadastros/medidacontrolecoletivaexistente";
+import { dadosCadastroIndividualExistente } from "../controllers/cadastros/medidacontroleindividualexistente";
+import { dadosRisco } from "../controllers/ges/risco";
+import { dadosCadastroColetivaNecessaria } from "../controllers/cadastros/medidacontrolecoletivanecessaria";
+import { dadosCadastroAdministrativaNecessaria } from "../controllers/cadastros/medidacontroleadministrativanecessaria";
+import { dadosCadastroIndividualNecessaria } from "../controllers/cadastros/medidacontroleindividualnecessaria";
+
+
 
 
 
@@ -89,6 +98,12 @@ router.get("/pesquisameiodepropagacao/:pesquisa", ensureUserAuth, pesquisaContro
 router.get("/pesquisatrajetoria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaTrajetoria);
 router.get("/pesquisamedidadecontrole/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaMedidaDeControle);
 router.get("/pesquisafatoresrisco/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaFatoresRisco);
+router.get("/pesquisaadministrativaexistente/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleAdministrativaExistenteService);
+router.get("/pesquisacoletivaexistente/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleColetivaExistenteService);
+router.get("/pesquisaindividualexistente/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleIndividualExistenteService);
+router.get("/pesquisaadministrativanecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleAdministrativaNecessariaService);
+router.get("/pesquisacoletivanecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleColetivaNecessariaService);
+router.get("/pesquisaindividualnecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleIndividualNecessariaService);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
@@ -245,6 +260,42 @@ router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalha
     router.get("/:idfatoresrisco/getfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.get);
     router.put("/:idfatoresrisco/editfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.put);
     router.delete("/:idfatoresrisco/deletefatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.delete);
+    //Medida de controle Coletiva existente
+    router.post("/cadastro/postcoletivaexistente", ensureUserAuth, dadosCadastroColetivaExistente.post);
+    router.get("/cadastro/getallcoletivaexistente", ensureUserAuth, dadosCadastroColetivaExistente.getAll);
+    router.get("/:idcoletivaexistente/getcoletivaexistente", ensureUserAuth, dadosCadastroColetivaExistente.get);
+    router.put("/:idcoletivaexistente/editcoletivaexistente", ensureUserAuth, dadosCadastroColetivaExistente.put);
+    router.delete("/:idcoletivaexistente/deletecoletivaexistente", ensureUserAuth, dadosCadastroColetivaExistente.delete);
+    //Medida de controle Administrativa existente
+    router.post("/cadastro/postadministrativaexistente", ensureUserAuth, dadosCadastroAdministrativaExistente.post);
+    router.get("/cadastro/getalladministrativaexistente", ensureUserAuth, dadosCadastroAdministrativaExistente.getAll);
+    router.get("/:idadministrativaexistente/getadministrativaexistente", ensureUserAuth, dadosCadastroAdministrativaExistente.get);
+    router.put("/:idadministrativaexistente/editadministrativaexistente", ensureUserAuth, dadosCadastroAdministrativaExistente.put);
+    router.delete("/:idadministrativaexistente/deleteadministrativaexistente", ensureUserAuth, dadosCadastroAdministrativaExistente.delete);
+    //Medida de controle individual existente
+    router.post("/cadastro/postindividualexistente", ensureUserAuth, dadosCadastroIndividualExistente.post);
+    router.get("/cadastro/getallindividualexistente", ensureUserAuth, dadosCadastroIndividualExistente.getAll);
+    router.get("/:idindividualexistente/getindividualexistente", ensureUserAuth, dadosCadastroIndividualExistente.get);
+    router.put("/:idindividualexistente/editindividualexistente", ensureUserAuth, dadosCadastroIndividualExistente.put);
+    router.delete("/:idindividualexistente/deleteindividualexistente", ensureUserAuth, dadosCadastroIndividualExistente.delete);
+    //Medida de controle Coletiva necessaria
+    router.post("/cadastro/postcoletivanecessaria", ensureUserAuth, dadosCadastroColetivaNecessaria.post);
+    router.get("/cadastro/getallcoletivanecessaria", ensureUserAuth, dadosCadastroColetivaNecessaria.getAll);
+    router.get("/:idcoletivanecessaria/getcoletivanecessaria", ensureUserAuth, dadosCadastroColetivaNecessaria.get);
+    router.put("/:idcoletivanecessaria/editcoletivanecessaria", ensureUserAuth, dadosCadastroColetivaNecessaria.put);
+    router.delete("/:idcoletivanecessaria/deletecoletivanecessaria", ensureUserAuth, dadosCadastroColetivaNecessaria.delete);
+    //Medida de controle Administrativa necessaria
+    router.post("/cadastro/postadministrativanecessaria", ensureUserAuth, dadosCadastroAdministrativaNecessaria.post);
+    router.get("/cadastro/getalladministrativanecessaria", ensureUserAuth, dadosCadastroAdministrativaNecessaria.getAll);
+    router.get("/:idadministrativanecessaria/getadministrativanecessaria", ensureUserAuth, dadosCadastroAdministrativaNecessaria.get);
+    router.put("/:idadministrativanecessaria/editadministrativanecessaria", ensureUserAuth, dadosCadastroAdministrativaNecessaria.put);
+    router.delete("/:idadministrativanecessaria/deleteadministrativanecessaria", ensureUserAuth, dadosCadastroAdministrativaNecessaria.delete);
+    //Medida de controle individual necessaria
+    router.post("/cadastro/postindividualnecessaria", ensureUserAuth, dadosCadastroIndividualNecessaria.post);
+    router.get("/cadastro/getallindividualnecessaria", ensureUserAuth, dadosCadastroIndividualNecessaria.getAll);
+    router.get("/:idindividualnecessaria/getindividualnecessaria", ensureUserAuth, dadosCadastroIndividualNecessaria.get);
+    router.put("/:idindividualnecessaria/editindividualnecessaria", ensureUserAuth, dadosCadastroIndividualNecessaria.put);
+    router.delete("/:idindividualnecessaria/deleteindividualnecessaria", ensureUserAuth, dadosCadastroIndividualNecessaria.delete);
 //GES
 const upload = multer({ dest: 'uploads/' });
 router.post("/postges", ensureUserAuth, upload.fields([{ name: 'file' }, { name: 'params' }]), gesController.postges);
@@ -253,6 +304,17 @@ router.get("/gesgetall", ensureUserAuth, gesController.getAll);
 router.get("/gesgetone/:idges", ensureUserAuth, gesController.getOne);
 router.delete("/:idges/deleteges", ensureUserAuth, gesController.deleteGes)
 
+
 //S3
 router.post("/postfile", ensureUserAuth, upload.single('file'), s3Controller.post);
 router.get("/getfile/:key", ensureUserAuth, s3Controller.getOne);
+
+//RISCOS
+router.post("/cadastros/riscos/novorisco/postrisco", ensureUserAuth, dadosRisco.post);
+router.get("/cadastro/getallrisco", ensureUserAuth, dadosRisco.getAll);
+router.get("/:idrisco/getrisco", ensureUserAuth, dadosRisco.get);
+router.put("/:idrisco/editrisco", ensureUserAuth, dadosRisco.put);
+router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
+
+//Ambiente Trabalho
+// router.post("/postambientetrabalho", ensureUserAuth, ATController.postAT);

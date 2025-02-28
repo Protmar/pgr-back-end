@@ -5,42 +5,30 @@ import Trabalhadores, {
 export const postDadosTrabalhadorService = (
   params: TrabalhadorCreationAttributes
 ) => {
-  try {
-    const data = Trabalhadores.create(params);
-    return data;
-  } catch (error) {
-    console.error("Erro ao salvar no banco:", error);
-  }
+  const data = Trabalhadores.create(params);
+  return data;
 };
 
 export const getDadosAllTrabalhadoresService = (empresaId: string) => {
-  try {
-    const data = Trabalhadores.findAll({
-      where: { empresa_id: Number(empresaId) },
-    });
-    return data;
-  } catch (error) {
-    console.error("Erro ao buscar todos os trabalhadores:", error);
-  }
+  const data = Trabalhadores.findAll({
+    where: { empresa_id: Number(empresaId) },
+  });
+  return data;
 };
 
 export const getDadosTrabalhadorService = (
   empresaId: string,
   trabalhadorId: string
 ) => {
-  try {
-    const data = Trabalhadores.findOne({
-      where: { empresa_id: Number(empresaId), id: Number(trabalhadorId) },
-    });
-    return data;
-  } catch (error) {
-    console.error("Erro ao buscar trabalhador:", error);
-  }
+  const data = Trabalhadores.findOne({
+    where: { empresa_id: Number(empresaId), id: Number(trabalhadorId) },
+  });
+  return data;
 };
 
 export const putDadosTrabalhadorService = (
   empresaId: string,
-  trabaladorId: string,
+  trabalhadorId: string,
   gerencia_id: string,
   cargo_id: string,
   setor_id: string,
@@ -58,44 +46,36 @@ export const putDadosTrabalhadorService = (
   jornada_trabalho: string,
   cargo: string
 ) => {
-  try {
-    const data = Trabalhadores.update(
-      {
-        gerencia_id: Number(gerencia_id),
-        cargo_id: Number(cargo_id),
-        setor_id: Number(setor_id),
-        codigo,
-        nome,
-        genero,
-        data_nascimento,
-        cpf,
-        rg,
-        orgao_expeditor,
-        nis_pis,
-        ctps,
-        serie,
-        uf,
-        jornada_trabalho,
-        cargo,
-      },
-      { where: { empresa_id: Number(empresaId), id: trabaladorId } }
-    );
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
+  const data = Trabalhadores.update(
+    {
+      gerencia_id: Number(gerencia_id),
+      cargo_id: Number(cargo_id),
+      setor_id: Number(setor_id),
+      codigo,
+      nome,
+      genero,
+      data_nascimento,
+      cpf,
+      rg,
+      orgao_expeditor,
+      nis_pis,
+      ctps,
+      serie,
+      uf,
+      jornada_trabalho,
+      cargo,
+    },
+    { where: { empresa_id: Number(empresaId), id: trabalhadorId } }
+  );
+  return data;
 };
 
 export const deleteDadosTrabalhadorService = (
   empresaId: string,
   trabaladorId: string
 ) => {
-  try {
-    const data = Trabalhadores.destroy({
-      where: { empresa_id: Number(empresaId), id: trabaladorId },
-    });
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
+  const data = Trabalhadores.destroy({
+    where: { empresa_id: Number(empresaId), id: trabaladorId },
+  });
+  return data;
 };

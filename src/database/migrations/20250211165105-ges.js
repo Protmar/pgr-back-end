@@ -36,7 +36,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
-      url: {
+      nome_fluxograma: {
         type: Sequelize.DataTypes.STRING,
       },
       created_at: {

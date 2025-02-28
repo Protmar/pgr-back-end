@@ -56,7 +56,9 @@ export const VeiculosAmbienteTrabalho = sequelize.define<
     }
 );
 
-VeiculosAmbienteTrabalho.hasMany(CadastroVeiculo, {
+
+
+VeiculosAmbienteTrabalho.belongsTo(CadastroVeiculo, {
     foreignKey: "id_veiculos",
     as: "veiculo",
 });

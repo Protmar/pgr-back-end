@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import { authController } from "../controllers/authController";
 import { dadosCliente } from "../controllers/cliente/cliente";
 import { empresaController } from "../controllers/empresaController";
@@ -32,6 +33,7 @@ import { dadosCadastroMeioDePropagacao } from "../controllers/cadastros/meiodepr
 import { dadosCadastroTrajetoria } from "../controllers/cadastros/trajetoria";
 import { dadosCadastroMedidaDeControle } from "../controllers/cadastros/medidadecontrole";
 import { dadosCadastroFatoresRisco } from "../controllers/cadastros/fatoresrisco";
+import { s3Controller } from "../controllers/aws/s3";
 
 
 
@@ -244,10 +246,13 @@ router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalha
     router.put("/:idfatoresrisco/editfatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.put);
     router.delete("/:idfatoresrisco/deletefatoresrisco", ensureUserAuth, dadosCadastroFatoresRisco.delete);
 //GES
-router.post("/postges", ensureUserAuth, gesController.postges);
+const upload = multer({ dest: 'uploads/' });
+router.post("/postges", ensureUserAuth, upload.fields([{ name: 'file' }, { name: 'params' }]), gesController.postges);
+router.put("/updateges/:id", ensureUserAuth, gesController.putges);
 router.get("/gesgetall", ensureUserAuth, gesController.getAll);
 router.get("/gesgetone/:idges", ensureUserAuth, gesController.getOne);
+router.delete("/:idges/deleteges", ensureUserAuth, gesController.deleteGes)
 
-
-//Ambiente Trabalho
-// router.post("/postambientetrabalho", ensureUserAuth, ATController.postAT);
+//S3
+router.post("/postfile", ensureUserAuth, upload.single('file'), s3Controller.post);
+router.get("/getfile/:key", ensureUserAuth, s3Controller.getOne);

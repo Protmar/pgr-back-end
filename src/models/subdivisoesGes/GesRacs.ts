@@ -1,5 +1,6 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
+import { CadastroRac } from "../Racs";
 
 export interface GesRacAttributes {
     id: number;
@@ -48,3 +49,7 @@ export const GesRac = sequelize.define<Model<any>>(
     }
 );
 
+GesRac.belongsTo(CadastroRac, {
+    foreignKey: "id_rac",
+    as: "rac",
+});

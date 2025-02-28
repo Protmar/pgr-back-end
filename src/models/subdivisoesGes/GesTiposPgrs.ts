@@ -1,5 +1,7 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
+import { Ges } from "../Ges";
+import { CadastroTipoPgr } from "../TipoPgrs";
 
 export interface GesTipoPgrAttributes {
     id: number;
@@ -48,3 +50,7 @@ export const GesTipoPgr = sequelize.define<Model<GesTipoPgrAttributes, GesTipoPg
     }
 );
 
+GesTipoPgr.belongsTo(CadastroTipoPgr, {
+    foreignKey: "id_tipo_pgr",
+    as: "tipoPgr",
+});

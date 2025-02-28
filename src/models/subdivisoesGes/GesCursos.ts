@@ -1,5 +1,7 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
+import { Ges } from "../Ges";
+import { CadastroCursoObrigatorio } from "../Cursosobrigatorios";
 
 export interface GesCursoAttributes {
     id: number;
@@ -42,7 +44,11 @@ export const GesCurso = sequelize.define<Model<GesCursoAttributes, GesCreationAt
     },
     {
         timestamps: true, 
-        underscored: true, 
+        underscored: true
     }
 );
 
+GesCurso.belongsTo(CadastroCursoObrigatorio, {
+    foreignKey: "id_curso",
+    as: "curso",
+});

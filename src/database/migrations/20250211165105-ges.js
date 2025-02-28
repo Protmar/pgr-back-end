@@ -36,6 +36,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
+      url: {
+        type: Sequelize.DataTypes.STRING,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

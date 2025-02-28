@@ -72,7 +72,6 @@ export const postDadosClienteService = async (
 
 export const getDadosAllClientesService = async (id: string): Promise<any> => {
     try {
-        console.log('ID EMPRESA', id);
         const data = await Cliente.findAll({
             where: {
                 empresa_id: id

@@ -1,5 +1,6 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
+import Trabalhadores from "../Trabalhadores";
 
 export interface GesTrabalhadorAttributes {
     id: number;
@@ -44,8 +45,12 @@ export const GesTrabalhador = sequelize.define<Model<GesTrabalhadorAttributes, G
         },
     },
     {
-        timestamps: true, // 🔹 Habilitar timestamps automáticos
-        underscored: true, // 🔹 Usar snake_case para os nomes das colunas
+        timestamps: true,
+        underscored: true,
     }
 );
 
+GesTrabalhador.belongsTo(Trabalhadores, {
+    foreignKey: "id_trabalhador",
+    as: "trabalhador",
+});

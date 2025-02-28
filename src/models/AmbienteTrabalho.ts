@@ -8,6 +8,9 @@ import { CadastroIluminacao } from "./Iluminacoes";
 import { CadastroPiso } from "./Pisos";
 import { CadastroVeiculo } from "./Veiculos";
 import { VeiculosAmbienteTrabalho } from "./subdivisoesAmbienteTrabalho/VeiculosAmbientesTrabalho";
+import { MobiliarioAmbienteTrabalho } from "./subdivisoesAmbienteTrabalho/MobiliarioAmbienteTrabalho";
+import { EquipamentosAmbienteTrabalho } from "./subdivisoesAmbienteTrabalho/EquipamentosAmbienteTrabalho";
+import { AtImagesUrls } from "./subdivisoesAmbienteTrabalho/AtImagesUrls";
 
 export interface AmbienteTrabalhoAttributes {
     id: number;
@@ -147,7 +150,22 @@ AmbienteTrabalho.belongsTo(CadastroPiso, {
     as: "piso",
 });
 
-AmbienteTrabalho.belongsTo(VeiculosAmbienteTrabalho, {
-    foreignKey: "id_veiculos",
-    as: "veiculoat",
+AmbienteTrabalho.hasMany(VeiculosAmbienteTrabalho, {
+    foreignKey: "id_ambiente_trabalho",
+    as: "veiculosAmbienteTrabalho",
 });
+
+AmbienteTrabalho.hasMany(MobiliarioAmbienteTrabalho, {
+    foreignKey: "id_ambiente_trabalho",
+    as: "MobiliarioAmbienteTrabalho",
+});
+
+AmbienteTrabalho.hasMany(EquipamentosAmbienteTrabalho, {
+    foreignKey: "id_ambiente_trabalho",
+    as: "EquipamentoAmbienteTrabalho",
+});
+
+AmbienteTrabalho.hasMany(AtImagesUrls, {
+    foreignKey: "id_at",
+    as: "fluxogramaUrl",
+})

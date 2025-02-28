@@ -3,6 +3,7 @@ import { Ges, GesCreationAttributes } from "../../models/Ges";
 import { EquipamentosAmbienteTrabalho } from "../../models/subdivisoesAmbienteTrabalho/EquipamentosAmbienteTrabalho";
 import { MobiliarioAmbienteTrabalho } from "../../models/subdivisoesAmbienteTrabalho/MobiliarioAmbienteTrabalho";
 import { VeiculosAmbienteTrabalho } from "../../models/subdivisoesAmbienteTrabalho/VeiculosAmbientesTrabalho";
+import uploadFileToS3 from "../aws/s3";
 
 export const ATPostService = async (
     empresa_id: number,
@@ -10,32 +11,36 @@ export const ATPostService = async (
     listmobiliarios: { label: string; value: number; literalValue: string }[],
     listveiculos: { label: string; value: number; literalValue: string }[],
     params:any,
-    ges_id:number
+    ges_id:number,
+    pathFluxograma: string, 
+    fileName: string, 
+    mimeType: string,
+    
 ) => {
-    try {
+
         const AT = await AmbienteTrabalho.create({ ...params, empresa_id, ges_id });
         const id_AT = AT.get("id") as number;
-      
-        
+              
         await ATEquipamentosPost(empresa_id, id_AT, listequipamentos);
         await ATMobiliariosPost(empresa_id, id_AT, listmobiliarios);
         await ATVeiculosPost(empresa_id, id_AT, listveiculos);
-        
+        await uploadFileToS3(id_AT, pathFluxograma, fileName, mimeType);
         return AT;
-    } catch (error) {
-        console.error("Erro ao criar Ambiente de Trabalho:", error);
-        throw new Error("Erro ao criar Ambiente de Trabalho");
-    }
+
 };
 
 export const ATEquipamentosPost = async (
     empresa_id: number,
     id_ambiente_trabalho: number,
-    listCurso: { label: string; value: number; literalValue: string }[]
+    listequipamentos: any[]
 ) => {
-    try {
+    
+        if (listequipamentos.length === 0) {
+            listequipamentos = [];
+        }
+
         await Promise.all(
-            listCurso.map((curso) =>
+            listequipamentos.map((curso) =>
                 EquipamentosAmbienteTrabalho.create({
                     empresa_id,
                     id_ambiente_trabalho,
@@ -43,21 +48,21 @@ export const ATEquipamentosPost = async (
                 })
             )
         );
-    } catch (error) {
-        console.error("Erro ao associar cursos ao Ges:", error);
-        throw new Error("Erro ao associar cursos ao Ges");
-    }
 };
+
 
 
 export const ATMobiliariosPost = async (
     empresa_id: number,
     id_ambiente_trabalho: number,
-    listCurso: { label: string; value: number; literalValue: string }[]
+    listmobiliarios: any[]
 ) => {
-    try {
+        if (listmobiliarios.length === 0) {
+            listmobiliarios = [];
+        }
+
         await Promise.all(
-            listCurso.map((curso) =>
+            listmobiliarios.map((curso) =>
                 MobiliarioAmbienteTrabalho.create({
                     empresa_id,
                     id_ambiente_trabalho,
@@ -65,20 +70,21 @@ export const ATMobiliariosPost = async (
                 })
             )
         );
-    } catch (error) {
-        console.error("Erro ao associar RACS ao Ges:", error);
-        throw new Error("Erro ao associar cursos ao Ges");
-    }
+    
 };
 
 export const ATVeiculosPost = async (
     empresa_id: number,
     id_ambiente_trabalho: number,
-    listCurso: { label: string; value: number; literalValue: string }[]
+    listveiculos: any[]
 ) => {
-    try {
+    
+        if (listveiculos.length === 0) {
+            listveiculos = [];
+        }
+
         await Promise.all(
-            listCurso.map((curso) =>
+            listveiculos.map((curso) =>
                 VeiculosAmbienteTrabalho.create({
                     empresa_id,
                     id_ambiente_trabalho,
@@ -86,8 +92,93 @@ export const ATVeiculosPost = async (
                 })
             )
         );
-    } catch (error) {
-        console.error("Erro ao associar Tipos de PGR ao Ges:", error);
-        throw new Error("Erro ao associar cursos ao Ges");
+};
+
+export const ATPutService = async (
+    empresa_id: number,
+    data: any,
+    params: any,
+    ges_id: number
+) => {
+    // Busca o AmbienteTrabalho pelo ges_id
+    const AT = await AmbienteTrabalho.findOne({ where: { ges_id } });
+
+    if (!AT) {
+        throw new Error("Registro de Ambiente de Trabalho não encontrado.");
     }
+
+    const id_AT = AT.get("id") as number;
+    await AT.update({ ...params, empresa_id });
+    await ATEquipamentosPut(empresa_id, id_AT, data.equipamentos);
+    await ATMobiliariosPut(empresa_id, id_AT, data.mobiliarios);
+    await ATVeiculosPut(empresa_id, id_AT, data.veiculos);
+
+
+    return AT;
+};
+
+export const ATEquipamentosPut = async (
+    empresa_id: number,
+    id_ambiente_trabalho: number,
+    listequipamentos: any
+) => {
+
+    listequipamentos.deletedEquipamentos.map(async (e: any) => {
+        await EquipamentosAmbienteTrabalho.destroy({
+            where: {
+                id: e.id
+            }
+        })
+    })
+    
+    listequipamentos.updatedEquipamentos.map(async (e: any) => {
+        await EquipamentosAmbienteTrabalho.create({
+            id_ambiente_trabalho,
+            id_equipamentos: e.value
+        })
+    })
+};
+
+export const ATMobiliariosPut = async (
+    empresa_id: number,
+    id_ambiente_trabalho: number,
+    listMobiliario: any
+) => {
+
+    listMobiliario.deletedMobiliarios.map(async (e: any) => {
+        await MobiliarioAmbienteTrabalho.destroy({
+            where: {
+                id: e.id
+            }
+        })
+    })
+    
+    listMobiliario.updatedMobiliarios.map(async (e: any) => {
+        await MobiliarioAmbienteTrabalho.create({
+            id_ambiente_trabalho,
+            id_mobiliario: e.value
+        })
+    })
+};
+
+export const ATVeiculosPut = async (
+    empresa_id: number,
+    id_ambiente_trabalho: number,
+    listVeiculos: any
+) => {
+
+    listVeiculos.deletedVeiculos.map(async (e: any) => {
+        await VeiculosAmbienteTrabalho.destroy({
+            where: {
+                id: e.id
+            }
+        })
+    })
+    
+    listVeiculos.updatedVeiculos.map(async (e: any) => {
+        await VeiculosAmbienteTrabalho.create({
+            id_ambiente_trabalho,
+            id_veiculos: e.value
+        })
+    })
 };

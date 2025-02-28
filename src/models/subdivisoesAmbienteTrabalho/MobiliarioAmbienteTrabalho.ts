@@ -1,5 +1,6 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
+import { CadastroMobiliario } from "../Mobiliarios";
 
 export interface MobiliarioAmbienteTrabalhoAttributes {
     id: number;
@@ -51,3 +52,8 @@ export const MobiliarioAmbienteTrabalho = sequelize.define<
         underscored: true,
     }
 );
+
+MobiliarioAmbienteTrabalho.belongsTo(CadastroMobiliario, {
+    foreignKey: "id_mobiliario",
+    as: "mobiliario",
+});

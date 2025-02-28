@@ -18,6 +18,7 @@ export interface GesAttributes {
     observacao: string;
     responsavel: string;
     cargo: string;
+    nome_fluxograma: Text;
     created_at?: Date;
     updated_at?: Date;
 }
@@ -43,32 +44,28 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
         },
         codigo: {
             type: DataTypes.STRING,
-            allowNull: false,
         },
         descricao_ges: {
             type: DataTypes.STRING,
-            allowNull: false,
         },
         observacao: {
             type: DataTypes.STRING,
-            allowNull: false,
         },
         responsavel: {
             type: DataTypes.STRING,
-            allowNull: false,
         },
         cargo: {
             type: DataTypes.STRING,
-            allowNull: false,
         },
+        nome_fluxograma: {
+            type: DataTypes.TEXT,
+          },
         created_at: {
             type: DataTypes.DATE,
-            allowNull: false,
             defaultValue: DataTypes.NOW,
         },
         updated_at: {
             type: DataTypes.DATE,
-            allowNull: false,
             defaultValue: DataTypes.NOW,
         },
     },

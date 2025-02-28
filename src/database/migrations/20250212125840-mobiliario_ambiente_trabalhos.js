@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "ambientes_trabalhos", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE" //CASCADE
+        onDelete: "RESTRICT" //CASCADE
       },
       id_mobiliario: {
         type: Sequelize.DataTypes.INTEGER,

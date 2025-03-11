@@ -21,31 +21,30 @@ import { CadastroRac } from "../../models/Racs";
 import { CadastroCursoObrigatorio } from "../../models/Cursosobrigatorios";
 import { CadastroTipoPgr } from "../../models/TipoPgrs";
 import Trabalhadores from "../../models/Trabalhadores";
-import uploadFileToS3 from "../aws/s3";
+import uploadFileToS3, { deleteFileToS3 } from "../aws/s3";
 import { AtImagesUrls } from "../../models/subdivisoesAmbienteTrabalho/AtImagesUrls";
 
 export const gesPostService = async (
+    cliente_id: any,
     empresa_id: number,
     listCurso: any[],
     listRac: any[],
-    listTipoPgr: { label: string; value: number; literalValue: string }[],
     listTrabalhadores: any[],
     params: any,
     listequipamentos: { label: string; value: number; literalValue: string }[],
     listmobiliarios: { label: string; value: number; literalValue: string }[],
     listveiculos: { label: string; value: number; literalValue: string }[],
     paramsAT: any,
-    pathFluxograma: string,
-    fileNameFluxograma: string,
-    mimeTypeFluxograma: string
-) => {
-
-    const ges = await Ges.create({ ...params, empresa_id, nome_fluxograma: fileNameFluxograma });
+    pathFluxograma?: string,
+    fileNameFluxograma?: any,
+    mimeTypeFluxograma?: string
+) => {  
+    console.log("Cliente ID: " + cliente_id)
+    const ges = await Ges.create({ ...params, empresa_id, nome_fluxograma: fileNameFluxograma, cliente_id });
     const id_ges = ges.get("id") as number;
 
     await ATPostService(empresa_id, listequipamentos, listmobiliarios, listveiculos, paramsAT, id_ges, pathFluxograma, fileNameFluxograma, mimeTypeFluxograma);
     await GesTrabalhadoresPost(empresa_id, id_ges, listTrabalhadores);
-    await GesTipoPgrPost(empresa_id, id_ges, listTipoPgr);
     await gesRacsPost(empresa_id, id_ges, listRac);
     await gesCursoPost(empresa_id, id_ges, listCurso);
     return ges;
@@ -124,9 +123,12 @@ export const GesTrabalhadoresPost = async (
 };
 
 export const getAllGesService = async (empresa_id: number) => {
+    const cliente_id = globalThis.cliente_id;
+
     const data = await Ges.findAll({
         where: {
-            empresa_id
+            empresa_id,
+            cliente_id
         },
         include: [
             { model: GesCurso, as: "cursos" },
@@ -219,7 +221,11 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
                             { model: CadastroEquipamento, as: "equipamento" },
                         ]
                     },
-                    { model: AtImagesUrls, as: "fluxogramaUrl" }
+                    // {
+                    //     model: AtImagesUrls,
+                    //     as: "fluxogramaUrls",
+                    //     attributes: ["id", "url"], 
+                    // }
                 ]
             }
         ]
@@ -235,9 +241,6 @@ export const gesPutService = async (
     listTrabalhadores: any[],
     params: any,
     paramsAT: any,
-    pathFluxograma: string,
-    fileName: string,
-    mimeType: string
 ) => {
 
     const ges = await Ges.findByPk(id_ges);
@@ -344,4 +347,79 @@ export const gesDeleteService = async (ges_id: number) => {
     });
 
     return data;
+}
+
+import { Sequelize } from "sequelize";
+
+export const fluxogramaDeleteService = async (ges_id: number) => {
+    try {
+        const data = await Ges.findOne({
+            where: { id: ges_id },
+            attributes: ["nome_fluxograma"],
+        });
+
+        if (!data) {
+            console.error("Registro não encontrado.");
+            return;
+        }
+
+        const nameImage = data.dataValues.nome_fluxograma;
+
+        // Atualiza nome_fluxograma para NULL corretamente
+        await Ges.update(
+            { nome_fluxograma: Sequelize.literal("NULL") }, // Corrigido aqui
+            { where: { id: ges_id } }
+        );
+
+        if (nameImage) {
+            await deleteFileToS3(nameImage.toString());
+        }
+
+        console.log("Fluxograma removido com sucesso.");
+    } catch (error) {
+        console.error("Erro ao deletar o fluxograma:", error);
+    }
+};
+
+export const fluxogramaUpdateNameService = async (ges_id: number, fluxogramaName: string) => {
+    try {
+
+        const data = await Ges.update({
+            nome_fluxograma: fluxogramaName
+        }, {
+            where: {
+                id: ges_id
+            }
+        })
+
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const postImagesAtService = async (name: string, id_ges: number, nome_fluxograma: string) => {
+    try {
+        const data = await AtImagesUrls.create({
+            name,
+            id_ges,
+            nome_fluxograma
+        })
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getImagesAtService = async (id_ges: number) => {
+    try {
+        const data = await AtImagesUrls.findAll({
+            where: {
+                id_ges
+            }
+        })
+
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
 }

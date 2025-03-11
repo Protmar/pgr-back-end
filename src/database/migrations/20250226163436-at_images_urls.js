@@ -9,11 +9,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
-      id_at: {
+      id_ges: {
         type: Sequelize.DataTypes.INTEGER,
-        references: { model: "ambientes_trabalhos", key: "id" },
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "ges", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "CASCADE",
       },
       nome_fluxograma: {
         type: Sequelize.DataTypes.TEXT,

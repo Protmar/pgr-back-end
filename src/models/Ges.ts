@@ -9,68 +9,81 @@ import { CadastroEdificacao } from "./Edificacoes";
 import { CadastroTeto } from "./Tetos";
 import { CadastroParede } from "./Paredes";
 import { CadastroVentilacao } from "./Ventilacoes";
+import { AtImagesUrls } from "./subdivisoesAmbienteTrabalho/AtImagesUrls";
 
 export interface GesAttributes {
-    id: number;
-    empresa_id?: number; // Tornado opcional
-    codigo: string;
-    descricao_ges: string;
-    observacao: string;
-    responsavel: string;
-    cargo: string;
-    nome_fluxograma: Text;
-    created_at?: Date;
-        updated_at?: Date;
-    }
+  id: number;
+  empresa_id?: number; // Tornado opcional
+  codigo: string;
+  descricao_ges: string;
+  cliente_id: number;
+  observacao: string;
+  responsavel: string;
+  cargo: string;
+  nome_fluxograma: String;
+  tipo_pgr: string;
+  created_at?: Date;
+  updated_at?: Date;
+}
 
 
 // Torna o ID opcional durante a criação
-export interface GesCreationAttributes extends Optional<GesAttributes, "id"> {}
+export interface GesCreationAttributes extends Optional<GesAttributes, "id"> { }
 
 export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>(
-    "ges",
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-            allowNull: false,
-        },
-        empresa_id: {
-            type: DataTypes.INTEGER,
-            references: { model: "empresas", key: "id" },
-            onUpdate: "CASCADE",
-            onDelete: "RESTRICT",
-            allowNull: true, // Permitido ser nulo, se necessário
-        },
-        codigo: {
-            type: DataTypes.STRING,
-        },
-        descricao_ges: {
-            type: DataTypes.STRING,
-        },
-        observacao: {
-            type: DataTypes.STRING,
-        },
-        responsavel: {
-            type: DataTypes.STRING,
-        },
-        cargo: {
-            type: DataTypes.STRING,
-        },
-        nome_fluxograma: {
-            type: DataTypes.TEXT,
-          },
-        created_at: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
-        updated_at: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-        },
-
+  "ges",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
     },
+    empresa_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "empresas", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+      allowNull: true, // Permitido ser nulo, se necessário
+    },
+    cliente_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "clientes", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+      allowNull: false,
+    },
+    codigo: {
+      type: DataTypes.STRING,
+    },
+    descricao_ges: {
+      type: DataTypes.STRING,
+    },
+    observacao: {
+      type: DataTypes.STRING,
+    },
+    responsavel: {
+      type: DataTypes.STRING,
+    },
+    cargo: {
+      type: DataTypes.STRING,
+    },
+    nome_fluxograma: {
+      type: DataTypes.STRING,
+    },
+    tipo_pgr: {
+      type: DataTypes.STRING,
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+
+  },
   {
     timestamps: true,
     underscored: true,
@@ -100,4 +113,11 @@ Ges.hasMany(GesTrabalhador, {
 Ges.hasMany(AmbienteTrabalho, {
   foreignKey: "ges_id",
   as: "ambientesTrabalhos",
+});
+
+Ges.hasMany(AtImagesUrls, {
+  foreignKey: "id_ges",
+  as: "imagens",
+  onDelete: "CASCADE",
+  hooks: true,
 });

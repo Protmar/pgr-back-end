@@ -8,6 +8,7 @@ export interface TrabalhadorAttributes {
   gerencia_id: number;
   cargo_id: number;
   setor_id: number;
+  cliente_id: number;
   codigo: string;
   nome: string;
   genero: string;
@@ -66,6 +67,13 @@ export const Trabalhadores = sequelize.define<TrabalhadorInstance>(
       references: { model: "setores", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
+    },
+    cliente_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "clientes", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+      allowNull: false,
     },
     codigo: {
       type: DataTypes.STRING,

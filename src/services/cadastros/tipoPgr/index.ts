@@ -1,3 +1,4 @@
+import { Ges } from "../../../models";
 import { CadastroTipoPgr } from "../../../models/TipoPgrs";
 
 const formatarNome = (nome: string) => {
@@ -25,6 +26,18 @@ export const tipoPgrGetAllService = async (empresaId: string) => {
   const data = await CadastroTipoPgr.findAll({
     where: {
       empresa_id: Number(empresaId),
+    },
+  });
+
+  return data;
+};
+
+export const getOneTipoPgrByGesService = async (
+  idGes: string
+) => {
+  const data = await Ges.findAll({
+    where: {
+      id: Number(idGes),
     },
   });
 

@@ -164,8 +164,3 @@ AmbienteTrabalho.hasMany(EquipamentosAmbienteTrabalho, {
     foreignKey: "id_ambiente_trabalho",
     as: "EquipamentoAmbienteTrabalho",
 });
-
-AmbienteTrabalho.hasMany(AtImagesUrls, {
-    foreignKey: "id_at",
-    as: "fluxogramaUrl",
-})

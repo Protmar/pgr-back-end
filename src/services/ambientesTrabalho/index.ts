@@ -13,9 +13,9 @@ export const ATPostService = async (
     listveiculos: { label: string; value: number; literalValue: string }[],
     params:any,
     ges_id:number,
-    pathFluxograma: string, 
-    fileName: string, 
-    mimeType: string,
+    pathFluxograma?: string, 
+    fileName?: string, 
+    mimeType?: string,
     
 ) => {
 
@@ -25,7 +25,9 @@ export const ATPostService = async (
         await ATEquipamentosPost(empresa_id, id_AT, listequipamentos);
         await ATMobiliariosPost(empresa_id, id_AT, listmobiliarios);
         await ATVeiculosPost(empresa_id, id_AT, listveiculos);
-        await uploadFileToS3(id_AT, pathFluxograma, fileName, mimeType);
+        if(pathFluxograma && fileName && mimeType){
+            await uploadFileToS3(id_AT, pathFluxograma, fileName, mimeType);
+        }
         return AT;
 
 };

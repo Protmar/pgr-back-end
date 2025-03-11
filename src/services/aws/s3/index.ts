@@ -1,8 +1,11 @@
 import dotenv from 'dotenv';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { AtImagesUrls } from '../../../models/subdivisoesAmbienteTrabalho/AtImagesUrls';
+import { Ges } from '../../../models';
+import { Sequelize } from 'sequelize';
+import { S3 } from 'aws-sdk';
 dotenv.config();
 
 const s3 = new S3Client({
@@ -13,13 +16,21 @@ const s3 = new S3Client({
     },
 });
 
+const s3GetFile = new S3({
+    region: process.env.AWS_REGION || "",
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+    },
+});
+
 // Função para fazer upload de um arquivo para o S3
 export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: string, mimeType: string) => {
     const fileStream = fs.createReadStream(filePath);
-    const key = `uploads/${fileName}`; 
+    const key = `uploads/${fileName}`;
 
     const command = new PutObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME, 
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: key,
         Body: fileStream,
         ContentType: mimeType,
@@ -33,13 +44,6 @@ export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: 
             Bucket: process.env.AWS_S3_BUCKET_NAME,
             Key: key,
         }));
-        
-        // Criação do registro no banco de dados (exemplo comentado)
-        // await AtImagesUrls.create({
-        //     id_at: id_AT,
-        //     url: url,
-        //     name: fileName,
-        // });
 
         return url;
 
@@ -51,20 +55,26 @@ export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: 
 
 // Função para obter um arquivo do S3 e retornar o URL
 export const getFileToS3 = async (fileName: string, empresaId: number) => {
+    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+    if (!bucketName) {
+        throw new Error("AWS_S3_BUCKET_NAME não está definido");
+    }
+
     const command = new GetObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: "uploads/" + fileName,
+        Bucket: bucketName,
+        Key: `uploads/${fileName}`,
     });
 
     try {
-        const url = await getSignedUrl(s3, command);
+        // Gerar URL assinada para acessar o arquivo
+        const url = await getSignedUrl(s3, command, { expiresIn: 3600 }); // URL expira em 1 hora
         return url;
-
     } catch (error) {
-        console.error("Erro ao pegar o arquivo para o S3:", error);
-        throw new Error("Erro ao pegar o arquivo para o S3");
+        console.error("Erro ao obter URL assinada do S3:", error);
+        throw new Error("Erro ao obter URL assinada do S3");
     }
 };
+
 
 // Nova função para alterar o conteúdo de um arquivo já existente no S3
 export const updateFileInS3 = async (fileName: string, newContent: string) => {
@@ -108,6 +118,34 @@ export const updateFileInS3 = async (fileName: string, newContent: string) => {
         throw new Error("Erro ao atualizar o arquivo no S3");
     }
 };
+
+export const deleteFileToS3 = async (fileName: string) => {
+    const fileKey = `uploads/${fileName}`;
+
+    try {
+        const deleteCommand = new DeleteObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET_NAME,
+            Key: fileKey,
+        });
+
+        const data = await AtImagesUrls.destroy({
+            where: {
+                name: fileName
+            }
+        })
+
+        await s3.send(deleteCommand);
+        console.log("Arquivo deletado com sucesso!");
+
+    } catch (error) {
+        console.error("Erro ao deletar o arquivo no S3:", error);
+        throw new Error("Erro ao deletar o arquivo no S3");
+    }
+};
+
+
+
+
 
 // Função auxiliar para converter stream em string
 async function streamToString(stream: any) {

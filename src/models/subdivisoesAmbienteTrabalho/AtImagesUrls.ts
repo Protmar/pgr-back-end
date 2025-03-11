@@ -1,21 +1,19 @@
-import { Model, DataTypes, Optional } from "sequelize";
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import { sequelize } from "../../database";
+import { deleteFileToS3 } from "../../services/aws/s3";
 
 export interface AtImagesUrlsAttributes {
     id: number;
-    id_at: number;
+    id_ges: number;
     url: string;
     name: string;
     created_at?: Date;
     updated_at?: Date;
 }
 
-// Torna o ID opcional durante a criação
-export interface AtImagesUrlsCreationAttributes
-    extends Optional<AtImagesUrlsAttributes, "id"> {}
-
-export const AtImagesUrls = sequelize.define<
-    Model<AtImagesUrlsAttributes, AtImagesUrlsCreationAttributes>
+// Modelo Sequelize
+export const AtImagesUrls:any = sequelize.define<
+    Model<InferAttributes<typeof AtImagesUrls>, InferCreationAttributes<typeof AtImagesUrls>>
 >(
     "at_images_urls",
     {
@@ -25,14 +23,11 @@ export const AtImagesUrls = sequelize.define<
             autoIncrement: true,
             allowNull: false,
         },
-        id_at: {
+        id_ges: {
             type: DataTypes.INTEGER,
-            references: { model: "ambientes_trabalhos", key: "id" },
+            references: { model: "ges", key: "id" },
             onUpdate: "CASCADE",
             onDelete: "CASCADE",
-        },
-        url: {
-            type: DataTypes.STRING,
         },
         name: {
             type: DataTypes.STRING,
@@ -54,3 +49,11 @@ export const AtImagesUrls = sequelize.define<
         tableName: "at_images_urls",
     }
 );
+
+AtImagesUrls.beforeDestroy(async (instance:any) => {
+    const name = instance.getDataValue("name");
+    if (name) {
+        await deleteFileToS3(name);
+    }
+});
+

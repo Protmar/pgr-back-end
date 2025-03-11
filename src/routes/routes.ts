@@ -59,6 +59,7 @@ router.get("/:idcliente/getcliente", ensureUserAuth, dadosCliente.get);
 router.post("/postcliente", ensureUserAuth, dadosCliente.post);
 router.delete("/:idcliente/deletecliente", ensureUserAuth, dadosCliente.delete);
 router.put("/:idcliente/editcliente", ensureUserAuth, dadosCliente.put);
+router.post("/selecionarcliente", ensureUserAuth, dadosCliente.selecionarCliente);
 
 //Servicos
 router.post("/postservico", ensureUserAuth, dadosServicos.post);
@@ -200,6 +201,7 @@ router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalha
     router.get("/:idtipopgr/gettipopgr", ensureUserAuth, dadosCadastroTipoPgr.get);
     router.put("/:idtipopgr/edittipopgr", ensureUserAuth, dadosCadastroTipoPgr.put);
     router.delete("/:idtipopgr/deletetipopgr", ensureUserAuth, dadosCadastroTipoPgr.delete);
+    router.get("/cadastro/getonetipopgrbyges/:idges", ensureUserAuth, dadosCadastroTipoPgr.getOneByGes);
     //Ventilação
     router.post("/cadastro/postventilacao", ensureUserAuth, dadosCadastroVentilacao.post);
     router.get("/cadastro/getallventilacao", ensureUserAuth, dadosCadastroVentilacao.getAll);
@@ -302,12 +304,16 @@ router.post("/postges", ensureUserAuth, upload.fields([{ name: 'file' }, { name:
 router.put("/updateges/:id", ensureUserAuth, gesController.putges);
 router.get("/gesgetall", ensureUserAuth, gesController.getAll);
 router.get("/gesgetone/:idges", ensureUserAuth, gesController.getOne);
-router.delete("/:idges/deleteges", ensureUserAuth, gesController.deleteGes)
-
+router.delete("/:idges/deleteges", ensureUserAuth, gesController.deleteGes);
+router.delete("/deletefluxograma/:idges", ensureUserAuth, gesController.deleteFluxograma);
+router.put("/updatenamefluxograma/:idges", ensureUserAuth, gesController.updateNameFluxograma);
+router.post("/postimagesat", ensureUserAuth, gesController.postImagesAt);
+router.get("/getimagesat/:idges", ensureUserAuth, gesController.getImagesAt);
 
 //S3
-router.post("/postfile", ensureUserAuth, upload.single('file'), s3Controller.post);
+router.post("/postfile", ensureUserAuth, upload.fields([{ name: 'file' }]), s3Controller.post);
 router.get("/getfile/:key", ensureUserAuth, s3Controller.getOne);
+router.delete("/deletefile/:key", ensureUserAuth, s3Controller.deleteOne)
 
 //RISCOS
 router.post("/cadastros/riscos/novorisco/postrisco", ensureUserAuth, dadosRisco.post);

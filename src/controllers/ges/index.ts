@@ -1,114 +1,123 @@
 import { Request, Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { gesDeleteService, gesPostService, gesPutService, getAllGesService, getOneGesService } from "../../services/ges";
+import { fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
 import { GesAttributes } from "../../models/Ges";
 import { AmbienteTrabalhoAttributes } from "../../models/AmbienteTrabalho";
+
 
 export const gesController = {
     postges: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            // Verificando o arquivo enviado
-            const file = req.files ? req.files['file'] : null;
-            const params = JSON.parse(req.body.params)
-            
-            if (!req.user) {
-                return res.status(401).json({ message: "Usuário não autenticado." });
-            }
-    
-            // Dados do usuário autenticado
-            const { empresaId } = req.user;
-            
-    
-            // Extraindo os parâmetros do corpo da requisição
-            const {
-                codigo,
-                descricaoges,
-                observacao,
-                responsavel,
-                cargo,
-                listCurso = [],
-                listRac = [],
-                listTipoPgr = [],
-                listTrabalhadores = [],
-                area,
-                pedireito,
-                qntjanelas,
-                infoadicionais,
-                listequipamentos = [],
-                listmobiliarios = [],
-                listveiculos = [],
-                tipoEdificacaoId,
-                tetoId,
-                paredeId,
-                ventilacaoId,
-                iluminacaoId,
-                pisoId
-            } = params;
-    
-            // Verificando e tratando o arquivo
-            const fileData = file ? {
-                path: file[0].path,
-                filename: file[0].filename,
-                mimetype: file[0].mimetype
-            } : null;
-    
-            // Preparando os dados para enviar ao serviço
-            const data = await gesPostService(
-                empresaId,
-                listCurso,
-                listRac,
-                listTipoPgr,
-                listTrabalhadores,
-                {
-                    codigo,
-                    descricao_ges: descricaoges,
-                    observacao,
-                    responsavel,
-                    cargo
-                } as GesAttributes,
-                listequipamentos,
-                listmobiliarios,
-                listveiculos,
-                {
-                    area,
-                    pe_direito: pedireito,
-                    qnt_janelas: qntjanelas,
-                    informacoes_adicionais: infoadicionais,
-                    tipo_edificacao_id: tipoEdificacaoId,
-                    teto_id: tetoId,
-                    parede_id: paredeId,
-                    ventilacao_id: ventilacaoId,
-                    iluminacao_id: iluminacaoId,
-                    piso_id: pisoId
-                } as AmbienteTrabalhoAttributes,
-                fileData?.path, // Caminho do arquivo
-                fileData?.filename, // Nome do arquivo
-                fileData?.mimetype // Tipo MIME do arquivo
-            );
-    
-            return res.status(201).json(data);
+          // Verificando o arquivo enviado
+          const file = req.files && req.files['file'] ? req.files['file'][0] : null;
+      
+          // Verificando se req.body.params existe
+          if (!req.body.params) {
+            return res.status(400).json({ message: "Parâmetros ausentes na requisição." });
+          }
+      
+          let params;
+          try {
+            params = JSON.parse(req.body.params);
+          } catch (error) {
+            return res.status(400).json({ message: "Erro ao processar os parâmetros. JSON inválido." });
+          }
+      
+          // Verifica autenticação do usuário
+          if (!req.user) {
+            return res.status(401).json({ message: "Usuário não autenticado." });
+          }
+      
+          const { empresaId } = req.user;
+      
+          // Extraindo os parâmetros
+          const {
+            codigo,
+            descricaoges,
+            observacao,
+            responsavel,
+            cargo,
+            listCurso = [],
+            listRac = [],
+            tipoPgr,
+            listTrabalhadores = [],
+            area,
+            pedireito,
+            qntjanelas,
+            infoadicionais,
+            listequipamentos = [],
+            listmobiliarios = [],
+            listveiculos = [],
+            tipoEdificacaoId,
+            tetoId,
+            paredeId,
+            ventilacaoId,
+            iluminacaoId,
+            pisoId,
+          } = params;
+      
+          // Dados do arquivo (se existir)
+          const fileData = file
+            ? {
+                path: file.path,
+                filename: file.filename,
+                mimetype: file.mimetype,
+              }
+            : null;
+      
+            const cliente_id = globalThis.cliente_id;
+      
+          console.log("Cliente ID recuperado da sessão:", cliente_id);
+      
+          // Chamada ao serviço (com ou sem arquivo)
+          const data = await gesPostService(
+            cliente_id,
+            empresaId,
+            listCurso,
+            listRac,
+            listTrabalhadores,
+            {
+              codigo,
+              descricao_ges: descricaoges,
+              observacao,
+              responsavel,
+              cargo,
+              tipo_pgr: tipoPgr,
+            } as GesAttributes,
+            listequipamentos,
+            listmobiliarios,
+            listveiculos,
+            {
+              area,
+              pe_direito: pedireito,
+              qnt_janelas: qntjanelas,
+              informacoes_adicionais: infoadicionais,
+              tipo_edificacao_id: tipoEdificacaoId,
+              teto_id: tetoId,
+              parede_id: paredeId,
+              ventilacao_id: ventilacaoId,
+              iluminacao_id: iluminacaoId,
+              piso_id: pisoId,
+            } as AmbienteTrabalhoAttributes,
+            fileData?.path,
+            fileData?.filename,
+            fileData?.mimetype
+          );
+      
+          return res.status(201).json(data);
         } catch (err) {
-            // Log do erro
-            console.error("Erro no postges:", err);
-    
-            // Retornando resposta de erro com mensagem detalhada
-            return res.status(400).json({ 
-                message: err instanceof Error ? err.message : "Erro desconhecido." 
-            });
+          console.error("❌ Erro no postges:", err);
+          return res.status(400).json({
+            message: err instanceof Error ? err.message : "Erro desconhecido.",
+          });
         }
-    },
+      },
     
-    
+
+
 
     putges: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            const file = req.files ? req.files['file'] : null;
-
-            const fileData = file ? {
-                path: file[0].path,
-                filename: file[0].filename,
-                mimetype: file[0].mimetype
-            } : null;
 
             const { empresaId } = req.user!;
             const { id } = req.params; // Obtém o ID do recurso a ser atualizado
@@ -119,20 +128,19 @@ export const gesController = {
                 observacao,
                 responsavel,
                 cargo,
+                tipoPgr,
                 listTrabalhadores,
                 area,
                 pedireito,
                 qntjanelas,
                 infoadicionais,
-                listequipamentos,
-                listmobiliarios,
-                listveiculos,
                 tipoEdificacaoId,
                 tetoId,
                 paredeId,
                 ventilacaoId,
                 iluminacaoId,
-                pisoId
+                pisoId,
+                fluxogramaName
             } = req.body;
 
             // Verifica se o ID foi informado
@@ -151,6 +159,8 @@ export const gesController = {
                     observacao,
                     responsavel,
                     cargo,
+                    nome_fluxograma: fluxogramaName,
+                    tipo_pgr: tipoPgr
                 } as GesAttributes,
                 {
                     area: area,
@@ -164,9 +174,7 @@ export const gesController = {
                     iluminacao_id: iluminacaoId === "N/A" ? null : iluminacaoId,
                     piso_id: pisoId === "N/A" ? null : pisoId
                 } as AmbienteTrabalhoAttributes,
-                fileData?.path, 
-                fileData?.filename, 
-                fileData?.mimetype 
+
             );
 
             return res.status(200).json(updatedData);
@@ -183,11 +191,9 @@ export const gesController = {
         try {
             const { empresaId } = req.user!;
 
-            // Correção do nome da variável "resposne" para "response"
             const response = await getAllGesService(empresaId);
 
-            // Enviando a resposta corretamente
-            res.status(200).json(response); // Usando JSON em vez de send para garantir um formato adequado
+            res.status(200).json(response);
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message });
@@ -210,8 +216,6 @@ export const gesController = {
         }
     },
 
-
-
     deleteGes: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { idges } = req.params;
@@ -223,5 +227,62 @@ export const gesController = {
                 return res.status(400).json({ message: err.message });
             }
         }
-    }
+    },
+
+    deleteFluxograma: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idges } = req.params;
+            const data = await fluxogramaDeleteService(Number(idges))
+
+            return res.status(201).json(data);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
+    updateNameFluxograma: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idges } = req.params;
+            const { fluxogramaName } = req.body;
+            const data = await fluxogramaUpdateNameService(Number(idges), fluxogramaName)
+
+            return res.status(201).json(data);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
+    postImagesAt: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const {
+                name,
+                id_ges,
+                nome_fluxograma
+            } = req.body;
+
+            const response = await postImagesAtService(name, id_ges, nome_fluxograma);
+            return res.status(200).json(response);
+
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
+    getImagesAt: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idges } = req.params;
+            const response = await getImagesAtService(Number(idges));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
 }

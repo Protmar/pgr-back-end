@@ -16,6 +16,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      cliente_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "clientes", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
       codigo: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
@@ -37,6 +43,9 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
       },
       nome_fluxograma: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      tipo_pgr: {
         type: Sequelize.DataTypes.STRING,
       },
       created_at: {

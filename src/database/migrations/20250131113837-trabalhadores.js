@@ -16,6 +16,13 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      cliente_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "clientes", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+        allowNull: false,
+      },
       gerencia_id: {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "gerencias", key: "id" },

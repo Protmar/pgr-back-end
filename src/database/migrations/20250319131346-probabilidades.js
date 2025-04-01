@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable("severidade_consequencias", {
+    await queryInterface.createTable("probabilidades", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,20 +12,32 @@ module.exports = {
       },
       matriz_id: {
         type: Sequelize.DataTypes.INTEGER,
-        references: { model: "matrizes", key: "id" },
+        references: { model: "matriz_padroes", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "RESTRICT"
       },
       position:{
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
       description:{
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
         allowNull: true,
       },
       criterio:{
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: true,
+      },
+      sinal:{
         type: Sequelize.DataTypes.STRING,
+        allowNull: true,
+      },
+      valor:{
+        type: Sequelize.DataTypes.STRING,
+        allowNull: true,
+      },
+      sem_protecao:{
+        type: Sequelize.DataTypes.BOOLEAN,
         allowNull: true,
       },
       created_at: {
@@ -40,6 +52,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("severidade_consequencias");
+    await queryInterface.dropTable("probabilidades");
   }
 };

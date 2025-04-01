@@ -1,4 +1,5 @@
 import { Matriz, MatrizCreationAttributes } from "../../../../models/Matriz";
+import { parametroPostService } from "../../matrizpadrao/probabilidades";
 
 export const matrizPostService = async (params: MatrizCreationAttributes) => {
   const data = await Matriz.create(params);

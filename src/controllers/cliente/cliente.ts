@@ -1,6 +1,20 @@
 import { Request, Response } from "express";
-import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, postDadosClienteService, putDadosClienteService } from "../../services/Cliente";
+import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, postDadosClienteService, postLogoClienteService, putDadosClienteService } from "../../services/Cliente";
 import { AuthenticatedUserRequest } from "../../middleware";
+import NodeCache from "node-cache";
+
+
+const cache = new NodeCache({ stdTTL: 0 });
+
+function setCache(key: string, value: number) {
+    cache.set(key, value);
+}
+
+// Função para recuperar do cache
+function getCache(key: string) {
+    return cache.get(key);
+}
+
 
 export const dadosCliente = {
     // Método GET para buscar dados de um cliente
@@ -112,12 +126,17 @@ export const dadosCliente = {
     },
 
     delete: async (req: AuthenticatedUserRequest, res: Response) => {
-        const { idcliente } = req.params;
-        const { empresaId } = req.user!;
+        try {
+            const { idcliente } = req.params;
+            const { empresaId } = req.user!;
 
-        await deleteDadosClienteService(empresaId.toString(), idcliente);
+            await deleteDadosClienteService(empresaId.toString(), idcliente);
 
-        res.status(200).json({ message: "Cliente Deletado" });
+            res.status(200).json({ message: "Cliente Deletado" });
+        } catch (err) {
+            return res.status(400).json({ message: err });
+
+        }
     },
 
     put: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -137,7 +156,9 @@ export const dadosCliente = {
                 localizacao_completa,
                 email_financeiro,
                 contato_financeiro,
-                observacoes
+                observacoes,
+                logo_url,
+                add_documento_base_url
             } = req.body;
 
             const updatedData = await putDadosClienteService(
@@ -155,7 +176,9 @@ export const dadosCliente = {
                 localizacao_completa,
                 email_financeiro,
                 contato_financeiro,
-                observacoes
+                observacoes,
+                logo_url,
+                add_documento_base_url
             );
 
             res.status(200).json({
@@ -171,29 +194,39 @@ export const dadosCliente = {
 
     selecionarCliente: async (req: Request, res: Response) => {
         try {
-          const { cliente_id } = req.body;
-    
-          if (!cliente_id) {
-            return res.status(400).json({
-              message: "O cliente_id é obrigatório",
+            const { cliente_id } = req.body;
+
+            if (!cliente_id) {
+                return res.status(400).json({
+                    message: "O cliente_id é obrigatório",
+                });
+            }
+
+            globalThis.cliente_id = cliente_id;
+
+            return res.status(200).json({
+                message: "Cliente selecionado com sucesso!",
+                cliente_id,
             });
-          }
-    
-          // Atribuindo o valor à variável global
-          globalThis.cliente_id = cliente_id; // Agora a variável está acessível globalmente
-    
-          return res.status(200).json({
-            message: "Cliente selecionado com sucesso!",
-            cliente_id,
-          });
         } catch (err) {
-          console.error("Erro ao selecionar cliente:", err);
-          return res.status(500).json({
-            message: err instanceof Error ? err.message : "Erro desconhecido ao selecionar cliente.",
-          });
+            console.error("Erro ao selecionar cliente:", err);
+            return res.status(500).json({
+                message: err instanceof Error ? err.message : "Erro desconhecido ao selecionar cliente.",
+            });
         }
-      },
-    
-    
-    
+    },
+
+    uploadLogo: async (req: AuthenticatedUserRequest, res: Response) => {
+        const { cliente_id, name } = req.body;
+
+        const response = await postLogoClienteService(cliente_id, name);
+
+        return res.status(200).json({
+            message: "Logo do cliente atualizado com sucesso",
+            response,
+        });
+    }
+
 };
+
+export { getCache }

@@ -23,9 +23,10 @@ import { CadastroTipoPgr } from "../../models/TipoPgrs";
 import Trabalhadores from "../../models/Trabalhadores";
 import uploadFileToS3, { deleteFileToS3 } from "../aws/s3";
 import { AtImagesUrls } from "../../models/subdivisoesAmbienteTrabalho/AtImagesUrls";
+import { Sequelize } from "sequelize";
+import { getCache } from "../../controllers/cliente/cliente";
 
 export const gesPostService = async (
-    cliente_id: any,
     empresa_id: number,
     listCurso: any[],
     listRac: any[],
@@ -39,8 +40,9 @@ export const gesPostService = async (
     fileNameFluxograma?: any,
     mimeTypeFluxograma?: string
 ) => {  
-    console.log("Cliente ID: " + cliente_id)
-    const ges = await Ges.create({ ...params, empresa_id, nome_fluxograma: fileNameFluxograma, cliente_id });
+    const cliente_id = globalThis.cliente_id;
+    const servico_id = globalThis.servico_id;
+    const ges = await Ges.create({ ...params, servico_id, empresa_id, nome_fluxograma: fileNameFluxograma, cliente_id });
     const id_ges = ges.get("id") as number;
 
     await ATPostService(empresa_id, listequipamentos, listmobiliarios, listveiculos, paramsAT, id_ges, pathFluxograma, fileNameFluxograma, mimeTypeFluxograma);
@@ -123,12 +125,12 @@ export const GesTrabalhadoresPost = async (
 };
 
 export const getAllGesService = async (empresa_id: number) => {
-    const cliente_id = globalThis.cliente_id;
+    const servico_id = globalThis.servico_id;;
 
     const data = await Ges.findAll({
         where: {
             empresa_id,
-            cliente_id
+            servico_id: Number(servico_id)
         },
         include: [
             { model: GesCurso, as: "cursos" },
@@ -221,11 +223,6 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
                             { model: CadastroEquipamento, as: "equipamento" },
                         ]
                     },
-                    // {
-                    //     model: AtImagesUrls,
-                    //     as: "fluxogramaUrls",
-                    //     attributes: ["id", "url"], 
-                    // }
                 ]
             }
         ]
@@ -255,7 +252,6 @@ export const gesPutService = async (
     await GesTipoPgrPut(newValuesMultiInput.tipoPgr, id_ges);
     await gesRacsPut(newValuesMultiInput.rac, id_ges);
 
-    console.log(at)
     return ges;
 };
 
@@ -349,7 +345,7 @@ export const gesDeleteService = async (ges_id: number) => {
     return data;
 }
 
-import { Sequelize } from "sequelize";
+
 
 export const fluxogramaDeleteService = async (ges_id: number) => {
     try {
@@ -375,7 +371,6 @@ export const fluxogramaDeleteService = async (ges_id: number) => {
             await deleteFileToS3(nameImage.toString());
         }
 
-        console.log("Fluxograma removido com sucesso.");
     } catch (error) {
         console.error("Erro ao deletar o fluxograma:", error);
     }
@@ -416,6 +411,93 @@ export const getImagesAtService = async (id_ges: number) => {
             where: {
                 id_ges
             }
+        })
+
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getAllGesByServico = async (idServico: number) => {
+    try {
+        const data = await Ges.findAll({
+            where: {
+                servico_id: idServico
+            },
+            include: [
+                {
+                    model: GesCurso, as: "cursos"
+                    , include: [
+                        {
+                            model: CadastroCursoObrigatorio,
+                            as: "curso",
+                        }
+                    ]
+                },
+                {
+                    model: GesRac,
+                    as: "racs",
+                    include: [
+                        {
+                            model: CadastroRac,
+                            as: "rac",
+                        }
+                    ]
+                },
+                {
+                    model: GesTipoPgr, as: "tiposPgr",
+                    include: [
+                        { model: CadastroTipoPgr, as: "tipoPgr" }
+                    ]
+                },
+                {
+                    model: GesTrabalhador,
+                    as: "trabalhadores",
+                    include: [
+                        {
+                            model: Trabalhadores,
+                            as: "trabalhador", // A associação correta aqui é "trabalhador"
+                        },
+                    ],
+                },
+                {
+                    model: AmbienteTrabalho,
+                    as: "ambientesTrabalhos",
+                    include: [
+                        { model: CadastroTeto, as: "teto", attributes: ["descricao"] },
+                        { model: CadastroEdificacao, as: "edificacao", attributes: ["descricao"] },
+                        { model: CadastroParede, as: "parede", attributes: ["descricao"] },
+                        { model: CadastroVentilacao, as: "ventilacao", attributes: ["descricao"] },
+                        { model: CadastroIluminacao, as: "iluminacao", attributes: ["descricao"] },
+                        { model: CadastroPiso, as: "piso", attributes: ["descricao"] },
+                        {
+                            model: VeiculosAmbienteTrabalho,
+                            as: "veiculosAmbienteTrabalho",
+                            attributes: ["id"],
+                            include: [
+                                { model: CadastroVeiculo, as: "veiculo" },
+                            ]
+                        },
+                        {
+                            model: MobiliarioAmbienteTrabalho,
+                            as: "MobiliarioAmbienteTrabalho",
+                            attributes: ["id"],
+                            include: [
+                                { model: CadastroMobiliario, as: "mobiliario" },
+                            ]
+                        },
+                        {
+                            model: EquipamentosAmbienteTrabalho,
+                            as: "EquipamentoAmbienteTrabalho",
+                            attributes: ["id"],
+                            include: [
+                                { model: CadastroEquipamento, as: "equipamento" },
+                            ]
+                        },
+                    ]
+                }
+            ]
         })
 
         return data;

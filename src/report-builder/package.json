@@ -1,0 +1,22 @@
+{
+  "name": "book-safety",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Victor",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1062.0",
+    "axios": "^0.25.0",
+    "image-size": "^1.0.0",
+    "moment": "^2.29.1",
+    "pdf-lib": "1.16.0",
+    "pdfmake": "0.2.2",
+    "pg": "^8.7.1",
+    "sharp": "^0.29.3",
+    "uuidv4": "^6.2.12"
+  }
+}

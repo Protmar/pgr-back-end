@@ -22,6 +22,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       },
+      servico_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "servicos", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
       codigo: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
@@ -43,6 +49,9 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
       },
       nome_fluxograma: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      texto_caracterizacao_processos: {
         type: Sequelize.DataTypes.STRING,
       },
       tipo_pgr: {

@@ -1,3 +1,4 @@
+import { getCache } from "../../controllers/cliente/cliente";
 import Trabalhadores, {
   TrabalhadorCreationAttributes,
 } from "../../models/Trabalhadores";
@@ -10,10 +11,15 @@ export const postDadosTrabalhadorService = (
 };
 
 export const getDadosAllTrabalhadoresService = (empresaId: string) => {
-  const data = Trabalhadores.findAll({
-    where: { empresa_id: Number(empresaId) },
-  });
-  return data;
+  const cliente_id = globalThis.cliente_id;
+  const servico_id = globalThis.servico_id;
+
+  if(cliente_id) {
+    const data = Trabalhadores.findAll({
+      where: { empresa_id: Number(empresaId), cliente_id: Number(cliente_id), servico_id },
+    });
+    return data;
+  }
 };
 
 export const getDadosTrabalhadorService = (

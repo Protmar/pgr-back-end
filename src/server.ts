@@ -27,12 +27,6 @@ app.use(
   })
 );
 
-// 🔥 Middleware de depuração (TESTE SE A SESSÃO ESTÁ FUNCIONANDO)
-app.use((req, res, next) => {
-  console.log("Sessão atual:", req.session);
-  next();
-});
-
 app.use(router);
 
 const PORT = process.env.PORT || 3001;

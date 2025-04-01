@@ -7,6 +7,7 @@ import {
   postDadosTrabalhadorService,
   putDadosTrabalhadorService,
 } from "../../services/trabalhadores";
+import { getCache } from "../cliente/cliente";
 
 export const dadosTrabalhador = {
   // Função para capitalizar a primeira letra de cada palavra
@@ -42,11 +43,16 @@ export const dadosTrabalhador = {
 
       const formattedNome = dadosTrabalhador.capitalizeName(nome);
 
+      const cliente_id = globalThis.cliente_id;
+      const servico_id = globalThis.servico_id;
+
       const data = await postDadosTrabalhadorService({
+        cliente_id: Number(cliente_id),
         empresa_id: empresaId,
         gerencia_id,
         cargo_id,
         setor_id,
+        servico_id,
         codigo,
         nome: formattedNome,
         genero,

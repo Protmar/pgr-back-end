@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
+import { fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesByServico, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
 import { GesAttributes } from "../../models/Ges";
 import { AmbienteTrabalhoAttributes } from "../../models/AmbienteTrabalho";
+import { getCache } from "../cliente/cliente";
 
 
 export const gesController = {
@@ -54,6 +55,7 @@ export const gesController = {
             ventilacaoId,
             iluminacaoId,
             pisoId,
+            texto_caracterizacao_processos
           } = params;
       
           // Dados do arquivo (se existir)
@@ -64,14 +66,9 @@ export const gesController = {
                 mimetype: file.mimetype,
               }
             : null;
-      
-            const cliente_id = globalThis.cliente_id;
-      
-          console.log("Cliente ID recuperado da sessão:", cliente_id);
-      
-          // Chamada ao serviço (com ou sem arquivo)
-          const data = await gesPostService(
-            cliente_id,
+              
+
+            const data = await gesPostService(
             empresaId,
             listCurso,
             listRac,
@@ -83,6 +80,7 @@ export const gesController = {
               responsavel,
               cargo,
               tipo_pgr: tipoPgr,
+              texto_caracterizacao_processos
             } as GesAttributes,
             listequipamentos,
             listmobiliarios,
@@ -103,6 +101,7 @@ export const gesController = {
             fileData?.filename,
             fileData?.mimetype
           );
+
       
           return res.status(201).json(data);
         } catch (err) {
@@ -140,7 +139,9 @@ export const gesController = {
                 ventilacaoId,
                 iluminacaoId,
                 pisoId,
-                fluxogramaName
+                fluxogramaName,
+                servico_id,
+                texto_caracterizacao_processos
             } = req.body;
 
             // Verifica se o ID foi informado
@@ -160,7 +161,9 @@ export const gesController = {
                     responsavel,
                     cargo,
                     nome_fluxograma: fluxogramaName,
-                    tipo_pgr: tipoPgr
+                    tipo_pgr: tipoPgr,
+                    servico_id,
+                    texto_caracterizacao_processos
                 } as GesAttributes,
                 {
                     area: area,
@@ -285,4 +288,16 @@ export const gesController = {
             }
         }
     },
+
+    getAllByServico: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idservico } = req.params;
+            const response = await getAllGesByServico(Number(idservico));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    }   
 }

@@ -17,10 +17,12 @@ export interface GesAttributes {
   codigo: string;
   descricao_ges: string;
   cliente_id: number;
+  servico_id: number;
   observacao: string;
   responsavel: string;
   cargo: string;
-  nome_fluxograma: String;
+  nome_fluxograma: string;
+  texto_caracterizacao_processos: string;
   tipo_pgr: string;
   created_at?: Date;
   updated_at?: Date;
@@ -53,6 +55,12 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
       onDelete: "RESTRICT",
       allowNull: false,
     },
+    servico_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "servicos", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    },
     codigo: {
       type: DataTypes.STRING,
     },
@@ -69,6 +77,9 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
       type: DataTypes.STRING,
     },
     nome_fluxograma: {
+      type: DataTypes.STRING,
+    },
+    texto_caracterizacao_processos: {
       type: DataTypes.STRING,
     },
     tipo_pgr: {

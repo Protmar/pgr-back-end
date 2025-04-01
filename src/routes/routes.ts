@@ -42,9 +42,9 @@ import { dadosRisco } from "../controllers/ges/risco";
 import { dadosCadastroColetivaNecessaria } from "../controllers/cadastros/medidacontrolecoletivanecessaria";
 import { dadosCadastroAdministrativaNecessaria } from "../controllers/cadastros/medidacontroleadministrativanecessaria";
 import { dadosCadastroIndividualNecessaria } from "../controllers/cadastros/medidacontroleindividualnecessaria";
-
-
-
+import { dadosCopias } from "../controllers/copias";
+import { generatePdfHandler } from "../pdfs/introducaoPdf";
+import { pgrtrReportController } from "../controllers/pdfs/pgrtrController";
 
 
 export const router = express.Router();
@@ -61,12 +61,17 @@ router.delete("/:idcliente/deletecliente", ensureUserAuth, dadosCliente.delete);
 router.put("/:idcliente/editcliente", ensureUserAuth, dadosCliente.put);
 router.post("/selecionarcliente", ensureUserAuth, dadosCliente.selecionarCliente);
 
+router.post("/postclientelogo", ensureUserAuth, dadosCliente.uploadLogo);
+
 //Servicos
 router.post("/postservico", ensureUserAuth, dadosServicos.post);
-router.get("/:idcliente/getservicosbycliente", ensureUserAuth, dadosServicos.getServicosByCliente);
+router.get("/getservicosbycliente", ensureUserAuth, dadosServicos.getServicosByCliente);
 router.get("/:idservico/getservico", ensureUserAuth, dadosServicos.get);
 router.put("/:idservico/editservico", ensureUserAuth, dadosServicos.put);
 router.delete("/:idservico/deleteservico", ensureUserAuth, dadosServicos.delete);
+router.post("/selecionarservico", ensureUserAuth, dadosServicos.selecionarServico);
+router.get("/getservicosbycliente/:idcliente", ensureUserAuth, dadosServicos.getServicosByClienteId);
+
 
 //empresa
 router.post("/postcadastroempresa", empresaController.createNoAuth);
@@ -309,12 +314,14 @@ router.delete("/deletefluxograma/:idges", ensureUserAuth, gesController.deleteFl
 router.put("/updatenamefluxograma/:idges", ensureUserAuth, gesController.updateNameFluxograma);
 router.post("/postimagesat", ensureUserAuth, gesController.postImagesAt);
 router.get("/getimagesat/:idges", ensureUserAuth, gesController.getImagesAt);
+router.get("/gesgetallbyservico/:idservico", ensureUserAuth, gesController.getAllByServico);
 
 //S3
 router.post("/postfile", ensureUserAuth, upload.fields([{ name: 'file' }]), s3Controller.post);
 router.get("/getfile/:key", ensureUserAuth, s3Controller.getOne);
-router.delete("/deletefile/:key", ensureUserAuth, s3Controller.deleteOne)
-
+router.delete("/deletefile/:key", ensureUserAuth, s3Controller.deleteOne);
+router.post("/duplicarfile/:key", ensureUserAuth, s3Controller.duplicateFile);
+router.get("/getimage/:key", ensureUserAuth, s3Controller.getOneAWS);
 //RISCOS
 router.post("/cadastros/riscos/novorisco/postrisco", ensureUserAuth, dadosRisco.post);
 router.get("/cadastro/getallrisco", ensureUserAuth, dadosRisco.getAll);
@@ -322,5 +329,14 @@ router.get("/:idrisco/getrisco", ensureUserAuth, dadosRisco.get);
 router.put("/:idrisco/editrisco", ensureUserAuth, dadosRisco.put);
 router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
 
+//Copias
+router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
+
 //Ambiente Trabalho
 // router.post("/postambientetrabalho", ensureUserAuth, ATController.postAT);
+
+router.get("/getcache/:key", ensureUserAuth, dadosServicos.getCache);
+
+//PDF
+router.get("/generate-pdf", generatePdfHandler);
+router.get("/generatebasepdf", ensureUserAuth, pgrtrReportController.getPGRReport);

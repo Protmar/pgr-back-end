@@ -1,6 +1,17 @@
 import { Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { deleteDadosServicoByEmpresaServico, getDadosServicoByEmpresaServico, getDadosServicosByEmpresaCliente, getDadosServicosService, putDadosServicosService } from "../../services/servicos";
+import { deleteDadosServicoByEmpresaServico, getDadosServicoByEmpresaServico, getDadosServicosByEmpresaCliente, getDadosServicosByEmpresaClienteId, getDadosServicosService, putDadosServicosService } from "../../services/servicos";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 0 });
+function setCache(key: string, value: number) {
+  cache.set(key, value);
+}
+
+// Função para recuperar do cache
+function getCache(key: string) {
+    return cache.get(key);
+}
 
 export const dadosServicos = {
     post: async (req: AuthenticatedUserRequest,res: Response) => {
@@ -36,10 +47,8 @@ export const dadosServicos = {
 
     getServicosByCliente: async (req: AuthenticatedUserRequest,res: Response) => {
         try {
-            const { empresaId } = req.user!;
-            const { idcliente } = req.params;
-            
-            const servicos = await getDadosServicosByEmpresaCliente(empresaId, Number(idcliente));
+            const { empresaId } = req.user!;            
+            const servicos = await getDadosServicosByEmpresaCliente(empresaId);
         
             res.json(servicos);
         } catch (err) {
@@ -78,5 +87,58 @@ export const dadosServicos = {
               return res.status(400).json({ message: err.message });
             }
           }
-    }
+    },
+
+    selecionarServico: async (req: AuthenticatedUserRequest,res: Response) => {
+        try {
+            const { servico_id } = req.body;
+            
+            globalThis.servico_id = servico_id;
+            
+            return res.status(200).json({
+              message: "Servico selecionado com sucesso!",
+              servico_id,
+          });
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
+    },
+
+    getCache: async (req: AuthenticatedUserRequest, res: Response) => {
+      try {
+        const { key } = req.params;
+        
+        console.log("Chave recebida:", key);
+        const value = getCache(key);
+        
+        console.log("Valor recuperado do cache:", value);
+        
+        if (value === undefined) {
+          return res.status(404).json({ message: "Chave não encontrada no cache" });
+        }
+    
+        res.json(value);
+      } catch (err) {
+        if (err instanceof Error) {
+          return res.status(400).json({ message: err.message });
+        }
+      }
+    },
+    
+    getServicosByClienteId: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idcliente } = req.params;
+            
+            const servicos = await getDadosServicosByEmpresaClienteId(Number(idcliente));
+        
+            res.json(servicos);
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
+    },
+    
 }

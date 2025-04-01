@@ -87,7 +87,6 @@ export const authController = {
 
     try {
       const user = await userService.findByEmail(email);
-      console.log(user)
 
       if (!user) {
         return res.status(404).json({ message: "E-mail não registrado" });

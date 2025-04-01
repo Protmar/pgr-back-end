@@ -23,6 +23,12 @@ module.exports = {
         onDelete: "RESTRICT",
         allowNull: false,
       },
+      servico_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "servicos", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
       gerencia_id: {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "gerencias", key: "id" },

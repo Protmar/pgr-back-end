@@ -1,3 +1,4 @@
+import { getCache } from "../../controllers/cliente/cliente";
 import Servicos from "../../models/Servicos";
 
 export const getDadosServicosService = async (
@@ -18,6 +19,7 @@ export const getDadosServicosService = async (
     data_inicio: data_inicio,
     data_fim: data_fim,
     art_url: "",
+    in_use: false
   });
 
   return data;
@@ -25,16 +27,20 @@ export const getDadosServicosService = async (
 
 export const getDadosServicosByEmpresaCliente = async (
   idempresa: number,
-  idcliente: number
 ) => {
-  const data = await Servicos.findAll({
-    where: {
-      empresa_id: idempresa,
-      cliente_id: idcliente,
-    },
-  });
 
-  return data;
+  const idcliente = globalThis.cliente_id;
+
+  if(idcliente) {
+    const data = await Servicos.findAll({
+      where: {
+        empresa_id: idempresa,
+        cliente_id: idcliente,
+      },
+    });
+
+    return data;
+  }
 };
 
 export const getDadosServicoByEmpresaServico = async (
@@ -87,6 +93,19 @@ export const deleteDadosServicoByEmpresaServico = async (
     where: {
       empresa_id: idempresa,
       id: idservico,
+    },
+  });
+
+  return data;
+};
+
+export const getDadosServicosByEmpresaClienteId = async (
+  idcliente: number
+) => {
+
+  const data = await Servicos.findAll({
+    where: {
+      cliente_id: idcliente,
     },
   });
 

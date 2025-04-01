@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { deleteFileToS3, uploadFileToS3 } from "../../../services/aws/s3";
+import { copyFileInS3WithUniqueName, deleteFileToS3, getFileToS3, uploadFileToS3 } from "../../../services/aws/s3";
 import { AuthenticatedUserRequest } from "../../../middleware";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream"; // Importa o tipo Readable do Node.js
+import { get } from "http";
 
 const s3 = new S3Client({
     region: process.env.AWS_REGION || "",
@@ -76,6 +77,25 @@ export const s3Controller = {
         }
     },
 
+    getOneAWS: async (req: AuthenticatedUserRequest, res: Response) => {
+        const empresaId = req.user!.empresaId; // Mantido para consistência
+        const { key } = req.params;
+
+        if (!key) {
+            return res.status(400).json({ message: "Chave do arquivo não fornecida" });
+        }
+
+        try {
+            const data = await getFileToS3(key, empresaId)
+
+            res.json(data);
+            
+        } catch (error) {
+            console.error("Erro ao buscar arquivo do S3:", error);
+            res.status(500).json({ message: "Erro ao buscar arquivo" });
+        }
+    },
+
     deleteOne: async (req: AuthenticatedUserRequest, res: Response) => {
         const { key } = req.params;
 
@@ -91,6 +111,13 @@ export const s3Controller = {
             res.status(500).json({ message: "Erro ao deletar arquivo" });
         }
     },
+
+    duplicateFile: async (req: AuthenticatedUserRequest, res: Response) => {
+        const key = req.params.key;
+
+        const oldFile = await copyFileInS3WithUniqueName(key);
+        res.send(oldFile)
+    }
 };
 
 // Função auxiliar para converter Body em buffer

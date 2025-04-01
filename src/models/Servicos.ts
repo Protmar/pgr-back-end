@@ -6,6 +6,7 @@ import { EmpresaInstance } from "./Empresa"; // Importação do modelo de Empres
 export interface ServicoAttributes {
   id: number;
   empresa_id: number;
+  in_use: boolean;
   cliente_id: number;
   descricao: string;
   responsavel_aprovacao: string;
@@ -47,6 +48,9 @@ export const Servicos = sequelize.define<ServicoInstance>("servicos", {
     onDelete: "RESTRICT",
     allowNull: false,
   },
+  in_use: {
+    type: DataTypes.BOOLEAN
+},
   descricao: {
     type: DataTypes.STRING,
     allowNull: false,

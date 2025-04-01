@@ -1,12 +1,16 @@
 import dotenv from 'dotenv';
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, CopyObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import fs from 'fs';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { AtImagesUrls } from '../../../models/subdivisoesAmbienteTrabalho/AtImagesUrls';
+const sizeOf = require("image-size");
+const Sharp = require("sharp");
+
+dotenv.config();
+
 import { Ges } from '../../../models';
 import { Sequelize } from 'sequelize';
 import { S3 } from 'aws-sdk';
-dotenv.config();
 
 const s3 = new S3Client({
     region: process.env.AWS_REGION || "",
@@ -16,15 +20,11 @@ const s3 = new S3Client({
     },
 });
 
-const s3GetFile = new S3({
-    region: process.env.AWS_REGION || "",
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-    },
-});
-
 // Função para fazer upload de um arquivo para o S3
+import { Buffer } from 'buffer';
+import axios from 'axios';
+import sharp from 'sharp';
+
 export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: string, mimeType: string) => {
     const fileStream = fs.createReadStream(filePath);
     const key = `uploads/${fileName}`;
@@ -45,7 +45,9 @@ export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: 
             Key: key,
         }));
 
-        return url;
+        // Convertendo a URL para base64
+        const base64Url = Buffer.from(url).toString('base64');
+        return base64Url;
 
     } catch (error) {
         console.error("Erro ao enviar o arquivo para o S3:", error);
@@ -53,8 +55,9 @@ export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: 
     }
 };
 
+
 // Função para obter um arquivo do S3 e retornar o URL
-export const getFileToS3 = async (fileName: string, empresaId: number) => {
+export const getFileToS3 = async (fileName: string, empresaId?: number) => {
     const bucketName = process.env.AWS_S3_BUCKET_NAME;
     if (!bucketName) {
         throw new Error("AWS_S3_BUCKET_NAME não está definido");
@@ -66,14 +69,21 @@ export const getFileToS3 = async (fileName: string, empresaId: number) => {
     });
 
     try {
-        // Gerar URL assinada para acessar o arquivo
-        const url = await getSignedUrl(s3, command, { expiresIn: 3600 }); // URL expira em 1 hora
-        return url;
+        const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+        // Extraindo apenas a URL base do S3
+        const baseUrl = url.split("?")[0];
+
+        return {
+            fileName,
+            url: baseUrl,
+        };
     } catch (error) {
         console.error("Erro ao obter URL assinada do S3:", error);
         throw new Error("Erro ao obter URL assinada do S3");
     }
 };
+
 
 
 // Nova função para alterar o conteúdo de um arquivo já existente no S3
@@ -140,9 +150,56 @@ export const deleteFileToS3 = async (fileName: string) => {
     } catch (error) {
         console.error("Erro ao deletar o arquivo no S3:", error);
         throw new Error("Erro ao deletar o arquivo no S3");
-    }
+    };
+
+
 };
 
+export const copyFileInS3WithUniqueName = async (fileName: string) => {
+    const bucketName = process.env.AWS_S3_BUCKET_NAME;
+
+    if (!bucketName) {
+        throw new Error("AWS_S3_BUCKET_NAME não está definido");
+    }
+
+    // 1️⃣ Ajusta o caminho correto do arquivo original
+    const sourceKey = `uploads/${fileName}`;
+
+    // 2️⃣ Verifica se o arquivo existe no S3 antes de copiar
+    try {
+        await s3.send(new HeadObjectCommand({
+            Bucket: bucketName,
+            Key: sourceKey
+        }));
+    } catch (error) {
+        console.error(`Arquivo ${sourceKey} não encontrado no S3.`);
+        throw new Error("Arquivo não existe no S3.");
+    }
+
+    // 3️⃣ Criar novo nome com um timestamp, mantendo a extensão original
+    const fileExtension = fileName.includes('.') ? fileName.split('.').pop() : ''; // Pega a extensão se existir
+    const newFileName = fileExtension
+        ? `${fileName}-${Date.now()}.${fileExtension}`
+        : `${fileName}-${Date.now()}`;
+
+    const newKey = `uploads/${Date.now().toString()}`;
+
+    // 4️⃣ Copiar o arquivo para o novo nome
+    const copyCommand = new CopyObjectCommand({
+        Bucket: bucketName,
+        CopySource: `${bucketName}/${sourceKey}`, // ✅ Agora corretamente montado!
+        Key: newKey, // Novo caminho com nome único
+    });
+
+    try {
+        await s3.send(copyCommand);
+        console.log(`Arquivo copiado de ${sourceKey} para ${newKey} com sucesso!`);
+        return newKey;
+    } catch (error) {
+        console.error("Erro ao copiar o arquivo no S3:", error);
+        throw new Error("Erro ao copiar o arquivo no S3.");
+    }
+};
 
 
 

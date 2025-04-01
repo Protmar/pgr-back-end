@@ -16,6 +16,9 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       },
+      in_use: {
+        type: Sequelize.DataTypes.BOOLEAN
+    },
       cliente_id: {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "clientes", key: "id" },

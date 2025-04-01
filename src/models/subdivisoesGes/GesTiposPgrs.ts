@@ -37,16 +37,16 @@ export const GesTipoPgr = sequelize.define<Model<GesTipoPgrAttributes, GesTipoPg
         },
         created_at: {
             type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW, // 🔹 Definindo um valor padrão para evitar erro
+            defaultValue: DataTypes.NOW, 
         },
         updated_at: {
             type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW, // 🔹 Garantindo que não seja nulo
+            defaultValue: DataTypes.NOW, 
         },
     },
     {
-        timestamps: true, // 🔹 Habilita gerenciamento automático de timestamps
-        underscored: true, // 🔹 Mantém o padrão snake_case no banco de dados
+        timestamps: true, 
+        underscored: true, 
     }
 );
 

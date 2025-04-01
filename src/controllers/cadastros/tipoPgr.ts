@@ -46,7 +46,7 @@ export const dadosCadastroTipoPgr = {
     try {
       const { idges } = req.params;
       const data = await getOneTipoPgrByGesService(idges);
-      console.log(data)
+
       res.send(data[0].dataValues.tipo_pgr)
     } catch (err) {
       if (err instanceof Error) {

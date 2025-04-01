@@ -335,6 +335,7 @@ router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
 //Copias
 router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
 
+
 //MATRIZ PADRÃO
 router.post("/configuracoes/empresa/matrizpadrao/postmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.post);
 router.get("/configuracoes/empresa/matrizpadrao/getallmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.getAll);

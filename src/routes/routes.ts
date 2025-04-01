@@ -34,7 +34,6 @@ import { dadosCadastroTrajetoria } from "../controllers/cadastros/trajetoria";
 import { dadosCadastroMedidaDeControle } from "../controllers/cadastros/medidadecontrole";
 import { dadosCadastroFatoresRisco } from "../controllers/cadastros/fatoresrisco";
 import { s3Controller } from "../controllers/aws/s3";
-
 import { dadosCadastroAdministrativaExistente } from "../controllers/cadastros/medidacontroleadministrativaexistente";
 import { dadosCadastroColetivaExistente } from "../controllers/cadastros/medidacontrolecoletivaexistente";
 import { dadosCadastroIndividualExistente } from "../controllers/cadastros/medidacontroleindividualexistente";
@@ -45,7 +44,6 @@ import { dadosCadastroIndividualNecessaria } from "../controllers/cadastros/medi
 import { dadosCopias } from "../controllers/copias";
 import { generatePdfHandler } from "../pdfs/introducaoPdf";
 import { pgrtrReportController } from "../controllers/pdfs/pgrtrController";
-import { dadosMatriz } from "../controllers/cadastros/matriz";
 import { dadosMatrizPadrao } from "../controllers/configuracoes/empresa/matriz/matrizPadrao";
 import { dadosSeveridadeConsequencia } from "../controllers/cadastros/severidadeconsequencia";
 
@@ -336,13 +334,6 @@ router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
 
 //Copias
 router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
-
-//MATRIZ
-router.post("/cadastros/matriz/postmatriz", ensureUserAuth, dadosMatriz.post);
-router.get("/cadastro/getallmatriz", ensureUserAuth, dadosMatriz.getAll);
-router.get("/:matrizId/getmatriz", ensureUserAuth, dadosMatriz.get);
-router.put("/:matrizId/editmatriz", ensureUserAuth, dadosMatriz.put);
-router.delete("/:matrizId/deletematriz", ensureUserAuth, dadosMatriz.delete);
 
 //MATRIZ PADRÃO
 router.post("/configuracoes/empresa/matrizpadrao/postmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.post);

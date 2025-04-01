@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../database";
-import { Matriz } from "./Matriz";
+import { MatrizPadrao } from "./MatrizPadrao";
 
 export interface SeveridadeConsequenciaAttributes {
   id: number;
@@ -26,26 +26,23 @@ export const SeveridadeConsequencia = sequelize.define<
     },
     matriz_id: {
       type: DataTypes.INTEGER,
-      references: { model: "matrizes", key: "id" },
+      references: { model: "matriz_padroes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
       allowNull: true,
     },
     position: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     description: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     criterio: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
   },
-  { tableName: "matrizes" }
+  { tableName: "severidade_consequencias" }
 );
-SeveridadeConsequencia.belongsTo(Matriz, {
-  foreignKey: "matriz_id",
-});

@@ -3,30 +3,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable("parametros", {
+    await queryInterface.createTable("matriz_padroes", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
-      matriz_id: {
+      empresa_id: {
         type: Sequelize.DataTypes.INTEGER,
-        references: { model: "matrizes", key: "id" },
+        references: { model: "empresas", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "RESTRICT"
       },
-      position:{
+      size:{
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
-      description:{
+      tipo:{
         type: Sequelize.DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      criterio:{
+      parametro:{
         type: Sequelize.DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
@@ -40,6 +40,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("parametros");
+    await queryInterface.dropTable("matriz_padroes");
   }
 };

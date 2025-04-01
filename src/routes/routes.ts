@@ -45,6 +45,11 @@ import { dadosCadastroIndividualNecessaria } from "../controllers/cadastros/medi
 import { dadosCopias } from "../controllers/copias";
 import { generatePdfHandler } from "../pdfs/introducaoPdf";
 import { pgrtrReportController } from "../controllers/pdfs/pgrtrController";
+import { dadosMatriz } from "../controllers/cadastros/matriz";
+import { dadosMatrizPadrao } from "../controllers/configuracoes/empresa/matriz/matrizPadrao";
+import { dadosSeveridadeConsequencia } from "../controllers/cadastros/severidadeconsequencia";
+
+
 
 
 export const router = express.Router();
@@ -331,6 +336,23 @@ router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
 
 //Copias
 router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
+
+//MATRIZ
+router.post("/cadastros/matriz/postmatriz", ensureUserAuth, dadosMatriz.post);
+router.get("/cadastro/getallmatriz", ensureUserAuth, dadosMatriz.getAll);
+router.get("/:matrizId/getmatriz", ensureUserAuth, dadosMatriz.get);
+router.put("/:matrizId/editmatriz", ensureUserAuth, dadosMatriz.put);
+router.delete("/:matrizId/deletematriz", ensureUserAuth, dadosMatriz.delete);
+
+//MATRIZ PADRÃO
+router.post("/configuracoes/empresa/matrizpadrao/postmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.post);
+router.get("/configuracoes/empresa/matrizpadrao/getallmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.getAll);
+router.get("/:matrizId/getmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.get);
+router.put("/:matrizId/editmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.put);
+router.delete("/:matrizId/deletematrizpadrao", ensureUserAuth, dadosMatrizPadrao.delete);
+
+//SEVERIDADE CONSEQUENCIA (PADRÃO)
+router.post("/configuracoes/empresa/matrizpadrao/:matrizId/postseveridadeconsequencia", ensureUserAuth, dadosSeveridadeConsequencia.post);
 
 //Ambiente Trabalho
 // router.post("/postambientetrabalho", ensureUserAuth, ATController.postAT);

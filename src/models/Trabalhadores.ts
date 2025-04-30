@@ -1,28 +1,30 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { sequelize } from "../database";
+import { CadastroFuncao } from "./Funcoes";
 
 // Definição dos atributos do Trabalhador
 export interface TrabalhadorAttributes {
   id: number;
-  empresa_id: number;
-  gerencia_id: number;
-  cargo_id: number;
-  setor_id: number;
-  cliente_id: number;
-  servico_id: number;
-  codigo: string;
-  nome: string;
-  genero: string;
-  data_nascimento: string;
-  cpf: string;
-  rg: string;
-  orgao_expeditor: string;
-  nis_pis: string;
-  ctps: string;
-  serie: string;
-  uf: string;
-  jornada_trabalho: string;
-  cargo: string;
+  empresa_id?: number;
+  gerencia_id?: number;
+  cargo_id?: number;
+  setor_id?: number;
+  cliente_id?: number;
+  servico_id?: number;
+  funcao_id?: number;
+  codigo?: string;
+  nome?: string;
+  genero?: string;
+  data_nascimento?: string;
+  cpf?: string;
+  rg?: string;
+  orgao_expeditor?: string;
+  nis_pis?: string;
+  ctps?: string;
+  serie?: string;
+  uf?: string;
+  jornada_trabalho?: string;
+  cargo?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -82,6 +84,12 @@ export const Trabalhadores = sequelize.define<TrabalhadorInstance>(
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
     },
+    funcao_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "funcoes", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT"
+    },
     codigo: {
       type: DataTypes.STRING,
     },
@@ -132,5 +140,8 @@ export const Trabalhadores = sequelize.define<TrabalhadorInstance>(
   },
   { tableName: "trabalhadores" }
 );
-
+Trabalhadores.belongsTo(CadastroFuncao, {
+  foreignKey: "funcao_id",
+  as: "funcao",
+});
 export default Trabalhadores;

@@ -9,12 +9,27 @@ const formatarNome = (nome: string) => {
 
 export const funcaoPostService = async (
   empresaId: string,
-  descricao: string
+  returnData: any
 ) => {
-  const descricaoFormatada = formatarNome(descricao);
+  const descricaoFormatada = formatarNome(returnData.descricao);
+
+
+  const dadoExistente = await CadastroFuncao.findOne({
+    where: {
+      funcao: returnData.funcao,
+      empresa_id: Number(empresaId),
+    },
+  });
+
+  if (dadoExistente) {
+    return { success: false, error: "Função com essa Função já cadastrado." };
+  }
+
   const data = await CadastroFuncao.create({
     empresa_id: Number(empresaId),
     descricao: descricaoFormatada,
+    funcao: returnData.funcao,
+    cbo: returnData.cbo,
   });
 
   return data;
@@ -55,12 +70,16 @@ export const funcaoDeleteService = (empresaId: string, idfuncao: string) => {
 export const funcaoPutService = (
   empresaId: string,
   descricao: string,
+  cbo: string,
+  funcao: string,
   idfuncao: string
 ) => {
   const descricaoFormatada = formatarNome(descricao);
   const data = CadastroFuncao.update(
     {
       descricao: descricaoFormatada,
+      cbo: cbo,
+      funcao
     },
     {
       where: {

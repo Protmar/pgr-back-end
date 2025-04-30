@@ -43,10 +43,12 @@ import { dadosCadastroColetivaNecessaria } from "../controllers/cadastros/medida
 import { dadosCadastroAdministrativaNecessaria } from "../controllers/cadastros/medidacontroleadministrativanecessaria";
 import { dadosCadastroIndividualNecessaria } from "../controllers/cadastros/medidacontroleindividualnecessaria";
 import { dadosCopias } from "../controllers/copias";
-import { generatePdfHandler } from "../pdfs/introducaoPdf";
-import { pgrtrReportController } from "../controllers/pdfs/pgrtrController";
 import { dadosMatrizPadrao } from "../controllers/configuracoes/empresa/matriz/matrizPadrao";
 import { dadosSeveridadeConsequencia } from "../controllers/cadastros/severidadeconsequencia";
+import { pgrtrReportController } from "../controllers/pdfs/pgrtrController";
+import { pgrReportController } from "../controllers/pdfs/pgrController";
+import { responsavelTecnicoController } from "../controllers/responsavelTecnico";
+import { ltcatReportController } from "../controllers/pdfs/ltcatController";
 
 
 
@@ -79,6 +81,8 @@ router.get("/getservicosbycliente/:idcliente", ensureUserAuth, dadosServicos.get
 
 //empresa
 router.post("/postcadastroempresa", empresaController.createNoAuth);
+router.get("/getoneempresa", ensureUserAuth, empresaController.getOne);
+router.put("/updateempresa", ensureUserAuth, empresaController.put);
 
 //Rotas de pesquisa filtradas
 router.get("/pesquisa/:pesquisa", ensureUserAuth, pesquisaController.getCnpjNome);
@@ -114,6 +118,8 @@ router.get("/pesquisaindividualexistente/:pesquisa", ensureUserAuth, pesquisaCon
 router.get("/pesquisaadministrativanecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleAdministrativaNecessariaService);
 router.get("/pesquisacoletivanecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleColetivaNecessariaService);
 router.get("/pesquisaindividualnecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleIndividualNecessariaService);
+router.get("/pesquisaresponsaveistecnicos/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaResponsaveisTecnicos);
+router.get("/pesquisarges/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaGES);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, dadosTrabalhador.postTrabalhador);
@@ -121,6 +127,8 @@ router.get("/gettrabalhadores", ensureUserAuth, dadosTrabalhador.getAllTrabalhad
 router.get("/:idtrabalhador/gettrabalhador", ensureUserAuth, dadosTrabalhador.getTrabalhador);
 router.put("/:idtrabalhador/edittrabalhador", ensureUserAuth, dadosTrabalhador.putTrabalhador);
 router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalhador.deleteTrabalhador);
+
+router.post("/posttrabalhadorexcel", ensureUserAuth, dadosTrabalhador.uploadExcel);
 
 
 
@@ -319,6 +327,7 @@ router.put("/updatenamefluxograma/:idges", ensureUserAuth, gesController.updateN
 router.post("/postimagesat", ensureUserAuth, gesController.postImagesAt);
 router.get("/getimagesat/:idges", ensureUserAuth, gesController.getImagesAt);
 router.get("/gesgetallbyservico/:idservico", ensureUserAuth, gesController.getAllByServico);
+router.get("/gesgetallbycliente/:idcliente", ensureUserAuth, gesController.getAllGesByCliente)
 
 //S3
 router.post("/postfile", ensureUserAuth, upload.fields([{ name: 'file' }]), s3Controller.post);
@@ -353,6 +362,14 @@ router.post("/configuracoes/empresa/matrizpadrao/:matrizId/postseveridadeconsequ
 
 router.get("/getcache/:key", ensureUserAuth, dadosServicos.getCache);
 
+//Responsavel Tecnico
+router.get("/getallresponsaveltecnico", ensureUserAuth, responsavelTecnicoController.getAllResponsavelTecnico);
+router.get("/getoneresponsaveltecnico/:id", ensureUserAuth, responsavelTecnicoController.getOneReponsavelTecnico);
+router.post("/postresponsaveltecnico", ensureUserAuth, responsavelTecnicoController.postResponsavelTecnico);
+router.put("/editresponsaveltecnico/:id", ensureUserAuth, responsavelTecnicoController.putResponsavelTecnico);
+router.delete("/:id/deleteresponsaveltecnico", ensureUserAuth, responsavelTecnicoController.deleteResponsavelTecnico);
+
 //PDF
-router.get("/generate-pdf", generatePdfHandler);
-router.get("/generatebasepdf", ensureUserAuth, pgrtrReportController.getPGRReport);
+router.post("/generatebasepdfpgrtr", ensureUserAuth, pgrtrReportController.getPGRTRReport);
+router.post("/generatebasepdfpgr", ensureUserAuth, pgrReportController.getPGRReport);
+router.post("/generatebasepdfltcat", ensureUserAuth, ltcatReportController.getLTCATReport);

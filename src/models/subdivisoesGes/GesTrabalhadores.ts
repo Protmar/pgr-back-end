@@ -1,12 +1,14 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
 import Trabalhadores from "../Trabalhadores";
+import { CadastroFuncao } from "../Funcoes";
 
 export interface GesTrabalhadorAttributes {
     id: number;
     empresa_id?: number;
     id_ges: number;
     id_trabalhador: number;
+    id_funcao: number;
     created_at?: Date;
     updated_at?: Date;
 }
@@ -35,6 +37,12 @@ export const GesTrabalhador = sequelize.define<Model<GesTrabalhadorAttributes, G
             onUpdate: "CASCADE",
             onDelete: "RESTRICT"
         },
+        id_funcao: {
+            type: DataTypes.INTEGER,
+            references: { model: "funcoes", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "RESTRICT",
+        },
         created_at: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW, 
@@ -53,4 +61,9 @@ export const GesTrabalhador = sequelize.define<Model<GesTrabalhadorAttributes, G
 GesTrabalhador.belongsTo(Trabalhadores, {
     foreignKey: "id_trabalhador",
     as: "trabalhador",
+});
+
+GesTrabalhador.belongsTo(CadastroFuncao, {
+    foreignKey: "id_funcao",
+    as: "funcao",
 });

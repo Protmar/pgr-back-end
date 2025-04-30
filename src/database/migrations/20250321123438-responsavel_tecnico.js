@@ -3,30 +3,27 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-
-    await queryInterface.createTable("funcoes", {
+    await queryInterface.createTable('responsavel_tecnico', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
-      empresa_id: {
-        type: Sequelize.DataTypes.INTEGER,
-        references: { model: "empresas", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+      nome: {
+        type: Sequelize.DataTypes.STRING,
       },
       funcao: {
         type: Sequelize.DataTypes.STRING,
       },
-      descricao: {
-        allowNull: false,
-        type: Sequelize.DataTypes.TEXT,
-      },
-      cbo: {
-        allowNull: false,
+      numero_crea: {
         type: Sequelize.DataTypes.STRING,
+      },
+      estado_crea: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      empresa_id: {
+        type: Sequelize.DataTypes.INTEGER,
       },
       created_at: {
         allowNull: false,
@@ -35,12 +32,11 @@ module.exports = {
       updated_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
-      },
-    });
+      }
+    })
   },
 
   async down(queryInterface, Sequelize) {
-
-    await queryInterface.dropTable("funcoes");
+    await queryInterface.dropTable("responsavel_tecnico");
   }
 };

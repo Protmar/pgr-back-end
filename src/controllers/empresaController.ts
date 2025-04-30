@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { userService } from "../services/userService";
 import { empresaService } from "../services/empresaService";
 import { Role } from "../models/enums/role.enum";
+import { AuthenticatedUserRequest } from "../middleware";
 
 export const empresaController = {
 
@@ -71,8 +72,38 @@ export const empresaController = {
             return res.status(201).json({ empresa, user });
         } catch (err) {
             if (err instanceof Error) {
-              return res.status(400).json({ message: err.message });
+                return res.status(400).json({ message: err.message });
             }
-          }
+        }
+    },
+
+    getOne: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId } = req.user!;
+            const empresa = await empresaService.findOne(empresaId);
+            return res.status(200).json(empresa);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+        return res.status(404).json({ message: "Empresa não encontrada" });
+    },
+
+    put: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId } = req.user!;
+            const { params } = req.body;
+
+            const empresa = await empresaService.update(empresaId, params);
+
+            return res.status(200).json(empresa);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+            return res.status(404).json({ message: "Empresa não encontrada" });
+        }
     }
+
 };

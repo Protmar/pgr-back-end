@@ -6,8 +6,8 @@ export interface ClienteAttributes {
     id: number;
     empresa_id: number;
     cnpj?: string;
-    nome_fantasia: string;
-    razao_social: string;
+    nome_fantasia?: string;
+    razao_social?: string;
     cnae?: string;
     atividade_principal?: string;
     grau_de_risco?: string;

@@ -22,6 +22,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      id_funcao: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "funcoes", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT",
+      },
       created_at: {
         type: Sequelize.DataTypes.DATE,
       },

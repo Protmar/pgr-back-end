@@ -42,8 +42,10 @@ export const dadosCliente = {
 
     // Método POST para criar um novo cliente
     post: async (req: AuthenticatedUserRequest, res: Response) => {
+        const { empresaId } = req.user!;
+
+
         const {
-            empresa_id,
             cnpj,
             nome_fantasia,
             razao_social,
@@ -64,7 +66,7 @@ export const dadosCliente = {
 
         try {
             // Validação dos campos obrigatórios
-            if (!empresa_id || !nome_fantasia || !razao_social) {
+            if (!empresaId || !nome_fantasia || !razao_social) {
                 res.status(400).json({
                     message: "Campos obrigatórios não fornecidos: empresa_id, nome_fantasia, razao_social",
                 });
@@ -73,7 +75,7 @@ export const dadosCliente = {
 
             // Chama o serviço para criar o cliente
             const newCliente = await postDadosClienteService(
-                empresa_id,
+                empresaId,
                 cnpj,
                 nome_fantasia,
                 razao_social,

@@ -3,7 +3,9 @@ import { AuthenticatedUserRequest } from "../../middleware";
 import {
   deleteDadosTrabalhadorService,
   getDadosAllTrabalhadoresService,
+  getDadosTrabalhadoByIdService,
   getDadosTrabalhadorService,
+  postDadosTrabalhadorExcelService,
   postDadosTrabalhadorService,
   putDadosTrabalhadorService,
 } from "../../services/trabalhadores";
@@ -19,10 +21,11 @@ export const dadosTrabalhador = {
       .join(" ");
   },
 
-  postTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
+  postTrabalhador : async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const {
+        funcao_id,
         gerencia_id,
         cargo_id,
         setor_id,
@@ -40,13 +43,31 @@ export const dadosTrabalhador = {
         jornada_trabalho,
         dataCargo,
       } = req.body;
-
-      const formattedNome = dadosTrabalhador.capitalizeName(nome);
-
+  
+      // Debug: Exibir dados recebidos
+      console.log("Dados recebidos no body:", req.body);
+      console.log("Empresa ID do usuário autenticado:", empresaId);
+  
       const cliente_id = globalThis.cliente_id;
       const servico_id = globalThis.servico_id;
-
+  
+      // Debug: Verificar valores globais
+      console.log("cliente_id global:", cliente_id);
+      console.log("servico_id global:", servico_id);
+  
+      // Validação básica
+      if (!nome) {
+        return res.status(400).json({ message: "O campo 'nome' é obrigatório." });
+      }
+  
+      if (!cliente_id || !servico_id) {
+        return res.status(500).json({ message: "IDs globais de cliente ou serviço não definidos." });
+      }
+  
+      const formattedNome = dadosTrabalhador.capitalizeName(nome);
+  
       const data = await postDadosTrabalhadorService({
+        funcao_id: Number(funcao_id),
         cliente_id: Number(cliente_id),
         empresa_id: empresaId,
         gerencia_id,
@@ -67,7 +88,24 @@ export const dadosTrabalhador = {
         jornada_trabalho,
         cargo: dataCargo,
       });
+  
+      res.status(201).json(data);
+    } catch (err) {
+      console.error("Erro em postTrabalhador:", err);
+  
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+  
+      return res.status(500).json({ message: "Erro desconhecido ao cadastrar trabalhador." });
+    }
+  },
 
+  uploadExcel: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId } = req.user!;
+      const trabalhadores = req.body;
+      const data = await postDadosTrabalhadorExcelService(trabalhadores, empresaId.toString());
       res.send(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -109,6 +147,7 @@ export const dadosTrabalhador = {
       const { empresaId } = req.user!;
       const { idtrabalhador } = req.params;
       const {
+        valueFuncao,
         gerencia_id,
         cargo_id,
         setor_id,
@@ -130,6 +169,7 @@ export const dadosTrabalhador = {
       const formattedNome = dadosTrabalhador.capitalizeName(nome);
 
       const data = await putDadosTrabalhadorService(
+        Number(valueFuncao),
         empresaId.toString(),
         idtrabalhador,
         gerencia_id,

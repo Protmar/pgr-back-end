@@ -14,6 +14,16 @@ export const cargoPostService = async (
 ) => {
   const descricaoFormatada = formatarNome(descricao);
 
+  const dadoExistente = await CadastroCargo.findOne({
+      where: {
+        descricao: descricaoFormatada,
+      },
+    });
+  
+    if (dadoExistente) {
+      return { success: false, error: "Cargo com essa descrição já cadastrado." };
+    }
+
   const data = await CadastroCargo.create({
     empresa_id: Number(empresaId),
     descricao: descricaoFormatada,

@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { getFileToS3 } = require("../../services/aws/s3");
+const { convertToPng } = require("../utils/image-utils");
 const { getImageData } = require("../utils/report-utils");
 const { buildCapa } = require("./build-capa");
+const { buildGes } = require("./build-ges");
 const { buildIntroducao } = require("./build-introducao");
+const { buildRequisitos } = require("./build-requisitos");
 
 module.exports = {
   buildDocumentoBase: async ({
@@ -9,16 +13,21 @@ module.exports = {
     empresa,
     reportConfig,
     s3url,
+    servicoId,
+    gesIds
   }) => {
-    const logoCliente = await getImageData(
-      reportConfig.noImageUrl
-    );
+
+    const nomeLogo = cliente.dataValues.logo_url || null;
+
+    const urlImageLogoCliente = await getFileToS3(nomeLogo);
+    const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
+    
+
+    const logoCliente = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoCliente.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
     if (logoClienteWidth > 100) logoClienteWidth = 100;
 
-    const logoEmpresa = await getImageData(
-      reportConfig.noImageUrl
-    );
+    const logoEmpresa = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
     if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
 
@@ -31,8 +40,17 @@ module.exports = {
       pageSize: "A4",
       pageMargins: [50, 115, 50, 80],
       content: [
-        buildCapa(cliente),
-        await buildIntroducao(reportConfig)
+        {
+          stack: [
+            buildCapa(cliente), // Página 1: Capa
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' }, // Causa página em branco (página 2)
+            await buildIntroducao(empresa, reportConfig, servicoId, gesIds), // Página 3: Introdução
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            await buildRequisitos(empresa, reportConfig, servicoId, gesIds), // Página 4: Requisitos
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
+          ]
+        }
       ],
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -101,9 +119,10 @@ module.exports = {
                 image: logoCliente.data,
                 width: logoClienteWidth,
                 alignment: "center",
+                margin: [0, 0, 0, 5],
               },
               {
-                margin: 5,
+                margin: [5, 15, 5, 0],
                 border: [true, false, true, true],
                 text: "PROGRAMA DE GERENCIAMENTO DE RISCOS NO TRABALHO RURAL",
                 bold: true,
@@ -115,6 +134,7 @@ module.exports = {
                 image: logoEmpresa.data,
                 width: logoEmpresaWidth,
                 alignment: "center",
+                margin: [0, 0, 0, 5],
               },
             ],
           ],

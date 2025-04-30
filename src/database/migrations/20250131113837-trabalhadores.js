@@ -47,6 +47,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      funcao_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "funcoes", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT"
+      },
       codigo: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,

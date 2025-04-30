@@ -11,6 +11,7 @@ export const gesTrabalhadoresPost = async (
         empresa_id,
         id_ges,
         id_trabalhador: curso.value,
+        id_funcao: curso.funcao,
       })
     )
   );

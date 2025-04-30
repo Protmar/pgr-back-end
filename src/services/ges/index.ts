@@ -25,6 +25,7 @@ import uploadFileToS3, { deleteFileToS3 } from "../aws/s3";
 import { AtImagesUrls } from "../../models/subdivisoesAmbienteTrabalho/AtImagesUrls";
 import { Sequelize } from "sequelize";
 import { getCache } from "../../controllers/cliente/cliente";
+import { CadastroFuncao } from "../../models/Funcoes";
 
 export const gesPostService = async (
     empresa_id: number,
@@ -117,7 +118,8 @@ export const GesTrabalhadoresPost = async (
         listTrabalhadores.map((curso) =>
             GesTrabalhador.create({
                 id_ges,
-                id_trabalhador: curso.id
+                id_trabalhador: curso.id,
+                id_funcao: curso.funcao_id
             })
         )
     );
@@ -136,8 +138,58 @@ export const getAllGesService = async (empresa_id: number) => {
             { model: GesCurso, as: "cursos" },
             { model: GesRac, as: "racs" },
             { model: GesTipoPgr, as: "tiposPgr" },
-            { model: GesTrabalhador, as: "trabalhadores" },
-            { model: AmbienteTrabalho, as: "ambientesTrabalhos" },
+            { 
+                model: GesTrabalhador, 
+                as: "trabalhadores",
+                include: [
+                    {
+                        model: Trabalhadores,
+                        as: "trabalhador", 
+                        include: [
+                            {
+                                model: CadastroFuncao,
+                                as: "funcao",
+                            },
+                        ]
+                    },
+                ],
+            },
+            {
+                model: AmbienteTrabalho,
+                as: "ambientesTrabalhos",
+                include: [
+                    { model: CadastroTeto, as: "teto", attributes: ["descricao"] },
+                    { model: CadastroEdificacao, as: "edificacao", attributes: ["descricao"] },
+                    { model: CadastroParede, as: "parede", attributes: ["descricao"] },
+                    { model: CadastroVentilacao, as: "ventilacao", attributes: ["descricao"] },
+                    { model: CadastroIluminacao, as: "iluminacao", attributes: ["descricao"] },
+                    { model: CadastroPiso, as: "piso", attributes: ["descricao"] },
+                    {
+                        model: VeiculosAmbienteTrabalho,
+                        as: "veiculosAmbienteTrabalho",
+                        attributes: ["id"],
+                        include: [
+                            { model: CadastroVeiculo, as: "veiculo" },
+                        ]
+                    },
+                    {
+                        model: MobiliarioAmbienteTrabalho,
+                        as: "MobiliarioAmbienteTrabalho",
+                        attributes: ["id"],
+                        include: [
+                            { model: CadastroMobiliario, as: "mobiliario" },
+                        ]
+                    },
+                    {
+                        model: EquipamentosAmbienteTrabalho,
+                        as: "EquipamentoAmbienteTrabalho",
+                        attributes: ["id"],
+                        include: [
+                            { model: CadastroEquipamento, as: "equipamento" },
+                        ]
+                    },
+                ]
+            },
 
         ]
     });
@@ -147,21 +199,31 @@ export const getAllGesService = async (empresa_id: number) => {
 };
 
 
-export const getOneGesService = async (empresa_id: number, idges: number) => {
+export const getOneGesService = async (empresa_id: number, idges: number, clienteId?: number) => {
+    const whereClause: any = {
+        empresa_id,
+        id: idges,
+    };
+
+    if (clienteId !== undefined) {
+        whereClause.cliente_id = Number(clienteId);
+    }
+
     const data = await Ges.findOne({
-        where: {
-            empresa_id,
-            id: idges
-        },
+        where: whereClause,
         include: [
             {
-                model: GesCurso, as: "cursos"
-                , include: [
+                model: GesCurso, as: "cursos",
+                include: [
                     {
                         model: CadastroCursoObrigatorio,
                         as: "curso",
                     }
                 ]
+            },
+            {
+                model: AtImagesUrls,
+                as: "imagens",  
             },
             {
                 model: GesRac,
@@ -185,7 +247,7 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
                 include: [
                     {
                         model: Trabalhadores,
-                        as: "trabalhador", // A associação correta aqui é "trabalhador"
+                        as: "trabalhador",
                     },
                 ],
             },
@@ -230,6 +292,7 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
 
     return data;
 };
+
 
 export const gesPutService = async (
     newValuesMultiInput: any,
@@ -329,7 +392,8 @@ export const GesTrabalhadoresPut = async (
             listTrabalhadores.map((trabalhador) =>
                 GesTrabalhador.create({
                     id_ges,
-                    id_trabalhador: trabalhador.id
+                    id_trabalhador: trabalhador.id,
+                    id_funcao: trabalhador.funcao_id,
                 })
             )
         );
@@ -419,10 +483,53 @@ export const getImagesAtService = async (id_ges: number) => {
     }
 }
 
-export const getAllGesByServico = async (idServico: number) => {
+export const getCursosInString = async (id_curso:number) => {
+    try {
+        const data = await CadastroCursoObrigatorio.findOne({
+            where: {
+                id: id_curso,
+            }
+        })
+
+        return data?.get('descricao');
+    } catch (error) {
+        
+    }
+}
+
+export const getEpisInString = async (id_curso:number) => {
+    try {
+        const data = await CadastroEquipamento.findOne({
+            where: {
+                id: id_curso
+            }
+        })
+
+        return data?.get('descricao');
+    } catch (error) {
+        
+    }
+}
+
+export const getRacsInString = async (id_rac:number) => {
+    try {
+        const data = await CadastroRac.findOne({
+            where: {
+                id: id_rac
+            }
+        })
+
+        return data?.get('descricao');
+    } catch (error) {
+        
+    }
+}
+
+export const getAllGesByServico = async (empresaId: number, idServico: number) => {
     try {
         const data = await Ges.findAll({
             where: {
+                empresa_id: empresaId,
                 servico_id: idServico
             },
             include: [
@@ -457,7 +564,13 @@ export const getAllGesByServico = async (idServico: number) => {
                     include: [
                         {
                             model: Trabalhadores,
-                            as: "trabalhador", // A associação correta aqui é "trabalhador"
+                            as: "trabalhador", 
+                            include: [
+                                {
+                                    model: CadastroFuncao,
+                                    as: "funcao",
+                                },
+                            ]
                         },
                     ],
                 },
@@ -498,6 +611,21 @@ export const getAllGesByServico = async (idServico: number) => {
                     ]
                 }
             ]
+        })
+
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getAllGesByClienteService = async (empresaId:number, clienteId:number) => {
+    try {
+        const data = await Ges.findAll({
+            where: {
+                empresa_id: empresaId,
+                cliente_id: clienteId
+            }
         })
 
         return data;

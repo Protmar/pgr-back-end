@@ -4,18 +4,18 @@ import { AuthenticatedUserRequest } from "../../middleware";
 import { Cliente } from "../../models/Cliente";
 import { Empresa } from "../../models";
 
-const { buildDocumentoBase } = require("../../report-builder/documento-base-PGRTR/documento-base-builder");
+const { buildDocumentoBase } = require("../../report-builder/documento-base-LTCAT/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
 
 dotenv.config();
 
-export const pgrtrReportController = {
-    getPGRTRReport: async (req: AuthenticatedUserRequest, res: Response) => {
+export const ltcatReportController = {
+    getLTCATReport: async (req: AuthenticatedUserRequest, res: Response) => {
         const { empresaId } = req.user!;
         const { clientId, gesIds, servicoId } = req.body;
 
         try {
-            const reportOptions = await pgrtrReportController.getReportOptions(
+            const reportOptions = await ltcatReportController.getReportOptions(
                 Number(empresaId),
                 Number(clientId),
                 gesIds,

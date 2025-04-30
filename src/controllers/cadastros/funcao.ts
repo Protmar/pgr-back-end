@@ -52,10 +52,13 @@ export const dadosCadastroFuncao = {
     try {
       const { empresaId } = req.user!;
       const { idfuncao } = req.params;
-      const { descricao } = req.body;
+      const { descricao, cbo, funcao } = req.body;
+
       const data = await funcaoPutService(
         empresaId.toString(),
         descricao,
+        cbo,
+        funcao,
         idfuncao
       );
       res.send(data);

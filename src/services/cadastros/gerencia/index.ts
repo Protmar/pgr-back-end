@@ -12,6 +12,18 @@ export const gerenciaPostService = async (
   descricao: string
 ) => {
   const descricaoFormatada = formatarNome(descricao);
+
+  const dadoExistente = await CadastroGerencia.findOne({
+      where: {
+        descricao: descricaoFormatada,
+      },
+    });
+  
+    if (dadoExistente) {
+      return { success: false, error: "Gerencia com essa descrição já cadastrado." };
+    }
+
+
   const data = await CadastroGerencia.create({
     empresa_id: Number(empresaId),
     descricao: descricaoFormatada,

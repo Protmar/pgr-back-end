@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { router } from "./routes/routes";
 import { sequelize } from "./database/index";
 import session from "express-session";
+import bodyParser from 'body-parser';
+
 
 dotenv.config();
 
@@ -16,7 +18,10 @@ app.use(cors({
 }));
 
 app.use(express.static("public"));
-app.use(express.json());
+// app.use(express.json());
+
+app.use(bodyParser.json({ limit: '500mb' }));
+app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 
 app.use(
   session({

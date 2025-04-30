@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesByServico, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
+import { fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesByClienteService, getAllGesByServico, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
 import { GesAttributes } from "../../models/Ges";
 import { AmbienteTrabalhoAttributes } from "../../models/AmbienteTrabalho";
 import { getCache } from "../cliente/cliente";
@@ -9,109 +9,109 @@ import { getCache } from "../cliente/cliente";
 export const gesController = {
     postges: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-          // Verificando o arquivo enviado
-          const file = req.files && req.files['file'] ? req.files['file'][0] : null;
-      
-          // Verificando se req.body.params existe
-          if (!req.body.params) {
-            return res.status(400).json({ message: "Parâmetros ausentes na requisição." });
-          }
-      
-          let params;
-          try {
-            params = JSON.parse(req.body.params);
-          } catch (error) {
-            return res.status(400).json({ message: "Erro ao processar os parâmetros. JSON inválido." });
-          }
-      
-          // Verifica autenticação do usuário
-          if (!req.user) {
-            return res.status(401).json({ message: "Usuário não autenticado." });
-          }
-      
-          const { empresaId } = req.user;
-      
-          // Extraindo os parâmetros
-          const {
-            codigo,
-            descricaoges,
-            observacao,
-            responsavel,
-            cargo,
-            listCurso = [],
-            listRac = [],
-            tipoPgr,
-            listTrabalhadores = [],
-            area,
-            pedireito,
-            qntjanelas,
-            infoadicionais,
-            listequipamentos = [],
-            listmobiliarios = [],
-            listveiculos = [],
-            tipoEdificacaoId,
-            tetoId,
-            paredeId,
-            ventilacaoId,
-            iluminacaoId,
-            pisoId,
-            texto_caracterizacao_processos
-          } = params;
-      
-          // Dados do arquivo (se existir)
-          const fileData = file
-            ? {
-                path: file.path,
-                filename: file.filename,
-                mimetype: file.mimetype,
-              }
-            : null;
-              
+            // Verificando o arquivo enviado
+            const file = req.files && req.files['file'] ? req.files['file'][0] : null;
+
+            // Verificando se req.body.params existe
+            if (!req.body.params) {
+                return res.status(400).json({ message: "Parâmetros ausentes na requisição." });
+            }
+
+            let params;
+            try {
+                params = JSON.parse(req.body.params);
+            } catch (error) {
+                return res.status(400).json({ message: "Erro ao processar os parâmetros. JSON inválido." });
+            }
+
+            // Verifica autenticação do usuário
+            if (!req.user) {
+                return res.status(401).json({ message: "Usuário não autenticado." });
+            }
+
+            const { empresaId } = req.user;
+
+            // Extraindo os parâmetros
+            const {
+                codigo,
+                descricaoges,
+                observacao,
+                responsavel,
+                cargo,
+                listCurso = [],
+                listRac = [],
+                tipoPgr,
+                listTrabalhadores = [],
+                area,
+                pedireito,
+                qntjanelas,
+                infoadicionais,
+                listequipamentos = [],
+                listmobiliarios = [],
+                listveiculos = [],
+                tipoEdificacaoId,
+                tetoId,
+                paredeId,
+                ventilacaoId,
+                iluminacaoId,
+                pisoId,
+                texto_caracterizacao_processos
+            } = params;
+
+            // Dados do arquivo (se existir)
+            const fileData = file
+                ? {
+                    path: file.path,
+                    filename: file.filename,
+                    mimetype: file.mimetype,
+                }
+                : null;
+
 
             const data = await gesPostService(
-            empresaId,
-            listCurso,
-            listRac,
-            listTrabalhadores,
-            {
-              codigo,
-              descricao_ges: descricaoges,
-              observacao,
-              responsavel,
-              cargo,
-              tipo_pgr: tipoPgr,
-              texto_caracterizacao_processos
-            } as GesAttributes,
-            listequipamentos,
-            listmobiliarios,
-            listveiculos,
-            {
-              area,
-              pe_direito: pedireito,
-              qnt_janelas: qntjanelas,
-              informacoes_adicionais: infoadicionais,
-              tipo_edificacao_id: tipoEdificacaoId,
-              teto_id: tetoId,
-              parede_id: paredeId,
-              ventilacao_id: ventilacaoId,
-              iluminacao_id: iluminacaoId,
-              piso_id: pisoId,
-            } as AmbienteTrabalhoAttributes,
-            fileData?.path,
-            fileData?.filename,
-            fileData?.mimetype
-          );
+                empresaId,
+                listCurso,
+                listRac,
+                listTrabalhadores,
+                {
+                    codigo,
+                    descricao_ges: descricaoges,
+                    observacao,
+                    responsavel,
+                    cargo,
+                    tipo_pgr: tipoPgr,
+                    texto_caracterizacao_processos
+                } as GesAttributes,
+                listequipamentos,
+                listmobiliarios,
+                listveiculos,
+                {
+                    area,
+                    pe_direito: pedireito,
+                    qnt_janelas: qntjanelas,
+                    informacoes_adicionais: infoadicionais,
+                    tipo_edificacao_id: tipoEdificacaoId,
+                    teto_id: tetoId,
+                    parede_id: paredeId,
+                    ventilacao_id: ventilacaoId,
+                    iluminacao_id: iluminacaoId,
+                    piso_id: pisoId,
+                } as AmbienteTrabalhoAttributes,
+                fileData?.path,
+                fileData?.filename,
+                fileData?.mimetype
+            );
 
-      
-          return res.status(201).json(data);
+
+            return res.status(201).json(data);
         } catch (err) {
-          console.error("❌ Erro no postges:", err);
-          return res.status(400).json({
-            message: err instanceof Error ? err.message : "Erro desconhecido.",
-          });
+            console.error("❌ Erro no postges:", err);
+            return res.status(400).json({
+                message: err instanceof Error ? err.message : "Erro desconhecido.",
+            });
         }
-      },
-    
+    },
+
 
 
 
@@ -291,13 +291,28 @@ export const gesController = {
 
     getAllByServico: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
+            const { empresaId } = req.user!;
             const { idservico } = req.params;
-            const response = await getAllGesByServico(Number(idservico));
+            const response = await getAllGesByServico(empresaId, Number(idservico));
             return res.status(200).json(response);
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message });
             }
         }
-    }   
+    },
+
+    getAllGesByCliente: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+
+            const { empresaId } = req.user!;
+            const { idcliente } = req.params;
+            const response = await getAllGesByClienteService(empresaId, Number(idcliente));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    }
 }

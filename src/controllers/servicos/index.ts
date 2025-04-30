@@ -16,11 +16,11 @@ function getCache(key: string) {
 export const dadosServicos = {
     post: async (req: AuthenticatedUserRequest,res: Response) => {
         try {
-            const { cliente_id, descricao, responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
+            const { cliente_id, descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
 
             const { empresaId } = req.user!;
             
-            const newServico = await getDadosServicosService(empresaId, cliente_id, descricao, responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim);
+            const newServico = await getDadosServicosService(empresaId, cliente_id, descricao, responsavel_aprovacao,id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim);
         
             res.json(newServico);
         } catch (err) {
@@ -62,9 +62,9 @@ export const dadosServicos = {
         try {
             const { idservico } = req.params;
             const { empresaId } = req.user!;
-            const { descricao, responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
+            const { descricao, responsavel_aprovacao,id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
             
-            const servicos = await putDadosServicosService(empresaId, Number(idservico), descricao, responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim);
+            const servicos = await putDadosServicosService(empresaId, Number(idservico), {descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim});
         
             res.json(servicos);
         } catch (err) {
@@ -130,8 +130,10 @@ export const dadosServicos = {
     getServicosByClienteId: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { idcliente } = req.params;
+            const { empresaId } = req.user!;
+
             
-            const servicos = await getDadosServicosByEmpresaClienteId(Number(idcliente));
+            const servicos = await getDadosServicosByEmpresaClienteId(empresaId, Number(idcliente));
         
             res.json(servicos);
         } catch (err) {

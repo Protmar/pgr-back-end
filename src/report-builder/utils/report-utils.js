@@ -154,7 +154,40 @@ const tableLayouts = {
       return 2;
     },
   },
+
+  centerPGR: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    paddingTop: (index, node) => {
+      centerLTCATVertically(node, index);
+      return 2;
+    },
+
+    hLineWidth: () => 0.5,
+    vLineWidth: () => 0.5,
+    paddingLeft: () => 0,
+    paddingRight: () => 0,
+    hLineColor: () => "#D3D3D3",
+    vLineColor: () => "#D3D3D3"
+  },
+
+  centerPGRTR: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    paddingTop: (index, node) => {
+      centerLTCATVertically(node, index);
+      return 2;
+    },
+  },
+
+  centerLTCAT: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    paddingTop: (index, node) => {
+      centerLTCATVertically(node, index);
+      return 2;
+    },
+  },
 };
+
+
 
 const calcCellHeightByText = (inlines, maxWidth) => {
   if (!inlines) return 0;
@@ -251,6 +284,11 @@ const centerAllColumns = (node, rowIndex) => {
       cell._margin = [0, marginTop, 0, 0];
     }
   });
+};
+
+const centerLTCATVertically = (node, rowIndex) => {
+  //Na linha de índice 1, deve-se centralizar todas as células
+  centerAllColumns(node, rowIndex);
 };
 
 const centerPlanoAcaoVertically = (node, rowIndex) => {

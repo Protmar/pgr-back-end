@@ -13,6 +13,16 @@ export const setorPostService = async (
 ) => {
   const descricaoFormatada = formatarNome(descricao);
 
+  const dadoExistente = await CadastroSetor.findOne({
+      where: {
+        descricao: descricaoFormatada,
+      },
+    });
+  
+    if (dadoExistente) {
+      return { success: false, error: "Setor com essa descrição já cadastrado." };
+    }
+
   const data = await CadastroSetor.create({
     empresa_id: Number(empresaId),
     descricao: descricaoFormatada,

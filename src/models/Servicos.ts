@@ -6,14 +6,15 @@ import { EmpresaInstance } from "./Empresa"; // Importação do modelo de Empres
 export interface ServicoAttributes {
   id: number;
   empresa_id: number;
-  in_use: boolean;
-  cliente_id: number;
-  descricao: string;
-  responsavel_aprovacao: string;
-  cargo_responsavel_aprovacao: string;
-  data_inicio: Date;
-  data_fim: Date;
-  art_url: string;
+  in_use?: boolean;
+  cliente_id?: number;
+  descricao?: string;
+  responsavel_aprovacao?: string;
+  cargo_responsavel_aprovacao?: string;
+  id_responsavel_aprovacao?: number;
+  data_inicio?: Date;
+  data_fim?: Date;
+  art_url?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -62,6 +63,9 @@ export const Servicos = sequelize.define<ServicoInstance>("servicos", {
   cargo_responsavel_aprovacao: {
     type: DataTypes.STRING,
     allowNull: true,
+  },
+  id_responsavel_aprovacao: {
+    type: DataTypes.INTEGER,
   },
   data_inicio: {
     type: DataTypes.STRING,

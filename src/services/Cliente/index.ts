@@ -20,6 +20,7 @@ export const getDadosClienteService = async (
 };
 
 // Serviço para criar um novo cliente
+// Serviço para criar um novo cliente
 export const postDadosClienteService = async (
   empresa_id: number,
   cnpj: string,
@@ -38,29 +39,46 @@ export const postDadosClienteService = async (
   logo_url: string,
   add_documento_base_url: string
 ): Promise<{ success: boolean; cliente?: any; error?: string }> => {
-  // Criação do novo cliente no banco de dados
-  const cliente = await Cliente.create({
-    empresa_id,
-    cnpj,
-    nome_fantasia,
-    razao_social,
-    cnae,
-    atividade_principal,
-    grau_de_risco,
-    cep,
-    estado,
-    cidade,
-    localizacao_completa,
-    email_financeiro,
-    contato_financeiro,
-    observacoes,
-    logo_url,
-    add_documento_base_url,
-  });
+  try {
+    // Primeiro, verificar se já existe um cliente com o mesmo CNPJ e empresa_id
+    const dadoExistente = await Cliente.findOne({
+      where: {
+        empresa_id,
+        nome_fantasia
+      },
+    });
 
-  // Retorna o cliente criado
-  return { success: true, cliente };
+    if (dadoExistente) {
+      return { success: false, error: "Cliente com este nome já cadastrado." };
+    }
+
+    // Se não existir, cria um novo cliente
+    const cliente = await Cliente.create({
+      empresa_id,
+      cnpj,
+      nome_fantasia,
+      razao_social,
+      cnae,
+      atividade_principal,
+      grau_de_risco,
+      cep,
+      estado,
+      cidade,
+      localizacao_completa,
+      email_financeiro,
+      contato_financeiro,
+      observacoes,
+      logo_url,
+      add_documento_base_url,
+    });
+
+    return { success: true, cliente };
+  } catch (error: any) {
+    console.error("Erro ao criar cliente:", error);
+    return { success: false, error: error.message || "Erro ao criar cliente." };
+  }
 };
+
 
 export const getDadosAllClientesService = async (id: string): Promise<any> => {
   const data = await Cliente.findAll({

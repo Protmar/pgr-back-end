@@ -33,6 +33,8 @@ import { Risco } from "../../models/Risco";
 import { CadastroMedidaControleIndividualNecessaria } from "../../models/MedidaControleIndividualNecessaria";
 import { CadastroMedidaControleAdministrativaNecessaria } from "../../models/MedidaControleAdministrativaNecessaria";
 import { CadastroMedidaControleColetivaNecessaria } from "../../models/MedidaControleColetivaNecessaria";
+import ResponsavelTecnico from "../../models/ResponsavelTecnico";
+import { Ges } from "../../models";
 
 export const getDadosPesquisaCnpjNomeService = async (
   empresa_id: any,
@@ -57,6 +59,36 @@ export const getDadosPesquisaCnpjNomeService = async (
   });
 
   return data; // Retorna os dados encontrados
+};
+
+export const getDadosPesquisaGESService = async(
+  empresa_id: any,
+  pesquisa: any
+) => {
+  const data = await Ges.findAll({
+    where: {
+      empresa_id: empresa_id, // Busca exata pelo ID da empresa
+      [Op.or]: [
+        {
+          codigo: {
+            [Op.iLike]: `%${pesquisa}%`,
+          },
+        },
+        {
+          descricao_ges: {
+            [Op.iLike]: `%${pesquisa}%`,
+          } as any,
+        },
+        {
+          tipo_pgr: {
+            [Op.iLike]: `%${pesquisa}%`,
+          } as any,
+        },
+      ],
+    },
+  });
+
+  return data;
 };
 
 export const getDadosPesquisaDescDtIniDtFimService = async (
@@ -158,6 +190,11 @@ export const getDadosPesquisaDescFuncaoService = async (
       [Op.or]: [
         {
           descricao: {
+            [Op.iLike]: `%${pesquisa}%`,
+          },
+        },
+        {
+          funcao: {
             [Op.iLike]: `%${pesquisa}%`,
           },
         },
@@ -709,6 +746,35 @@ export const getDadosPesquisaPisoService = async (
           descricao: {
             [Op.iLike]: `%${pesquisa}%`,
           },
+        },
+      ],
+    },
+  });
+
+  return data;
+};
+
+export const getDadosPesquisaDescResponsaveisTecnicosService = async (
+  empresa_id: any,
+  pesquisa: any
+) => {
+  const data = await ResponsavelTecnico.findAll({
+    where: {
+      empresa_id: empresa_id,
+      [Op.or]: [
+        {
+          [Op.or]: [
+            {
+              nome: {
+                [Op.iLike]: `%${pesquisa}%`,
+              },
+            },
+            {
+              funcao: {
+                [Op.iLike]: `%${pesquisa}%`,
+              } as any,
+            }
+          ],
         },
       ],
     },

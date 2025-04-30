@@ -34,6 +34,9 @@ module.exports = {
       cargo_responsavel_aprovacao: {
         type: Sequelize.DataTypes.STRING,
       },
+      id_responsavel_aprovacao: {
+        type: Sequelize.DataTypes.INTEGER,
+      },
       data_inicio: {
         type: Sequelize.DataTypes.STRING,
       },

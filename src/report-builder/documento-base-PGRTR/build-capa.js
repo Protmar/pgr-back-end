@@ -12,7 +12,7 @@ module.exports = {
       stack: [
         {
           margin: [0, 180, 0, 0],
-          text: 'PGRTR – Programa de Gerenciamento de Riscos no Trabalho Rural',
+          text: 'PGR – Programa de Gerenciamento de Riscos no Trabalho Rural',
           bold: true,
           alignment: 'center',
           fontSize: 30,
@@ -41,13 +41,12 @@ module.exports = {
           fontSize: 16
         },
         {
-          margin: [60, 70, 60, 0],
+          margin: [60, 120, 60, 0],
           text: mesAnoCamelCase,
           bold: true,
           alignment: 'center',
           fontSize: 16
         },
-        { text: '', pageBreak: 'after' },
       ]
     }
   }

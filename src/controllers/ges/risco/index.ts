@@ -15,37 +15,45 @@ export const dadosRisco = {
       const {
         fatoresRiscoId,
         fonteGeradoraId,
+        trajetoriaId,
         exposicaoId,
         meioPropagacaoId,
-        trajetoriaId,
         transmitirESocial,
+        intensConc,
         ltLe,
+        comentario,
         nivelAcao,
         tecnicaUtilizadaId,
         estrategiaAmostragem,
+        desvioPadrao,
+        percentil,
+        observacao,
         probabFreq,
         conseqSeveridade,
         grauRisco,
         classeRisco,
-        observacao,
       } = req.body;
       const data = await postDadosRiscoService({
         empresa_id: empresaId,
         id_fator_risco: fatoresRiscoId,
         id_fonte_geradora: fonteGeradoraId,
+        id_trajetoria: trajetoriaId,
         id_exposicao: exposicaoId,
         id_meio_propagacao: meioPropagacaoId,
-        id_trajetoria: trajetoriaId,
         transmitir_esocial: transmitirESocial,
+        intens_conc: intensConc,
         lt_le: ltLe,
+        comentario: comentario,
         nivel_acao: nivelAcao,
         id_tecnica_utilizada: tecnicaUtilizadaId,
-        estrategia_amostragem: estrategiaAmostragem,
+        id_estrategia_amostragem: estrategiaAmostragem,
+        desvio_padrao: desvioPadrao,
+        percentil: percentil,
+        obs: observacao,
         probab_freq: probabFreq,
         conseq_severidade: conseqSeveridade,
         grau_risco: grauRisco,
         classe_risco: classeRisco,
-        obs: observacao,
       });
       res.send(data);
     } catch (err) {
@@ -91,19 +99,23 @@ export const dadosRisco = {
       const{
         fatoresRiscoId,
         fonteGeradoraId,
+        trajetoriaId,
         exposicaoId,
         meioPropagacaoId,
-        trajetoriaId,
         transmitirESocial,
+        intensConc,
         ltLe,
+        comentario,
         nivelAcao,
         tecnicaUtilizadaId,
         estrategiaAmostragem,
+        desvioPadrao,
+        percentil,
+        observacao,
         probabFreq,
         conseqSeveridade,
         grauRisco,
         classeRisco,
-        observacao,
       } = req.body
 
       const data = await putDadosRiscoService(
@@ -111,19 +123,23 @@ export const dadosRisco = {
         idrisco,
         fatoresRiscoId,
         fonteGeradoraId,
+        trajetoriaId,
         exposicaoId,
         meioPropagacaoId,
-        trajetoriaId,
         transmitirESocial,
+        intensConc,
         ltLe,
+        comentario,
         nivelAcao,
         tecnicaUtilizadaId,
         estrategiaAmostragem,
+        desvioPadrao,
+        percentil,
+        observacao,
         probabFreq,
         conseqSeveridade,
         grauRisco,
         classeRisco,
-        observacao,
       )
       res.send(data)
     }catch(error) {
@@ -135,10 +151,10 @@ export const dadosRisco = {
   delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idtrabalhador } = req.params;
+      const { idrisco } = req.params;
       const data = await deleteDadosRiscoService(
         empresaId.toString(),
-        idtrabalhador
+        idrisco
       );
       res.send(data);
     } catch (err) {

@@ -28,6 +28,10 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
+      is_padrao:{
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: false,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

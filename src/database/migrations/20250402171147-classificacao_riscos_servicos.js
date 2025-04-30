@@ -3,34 +3,39 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable("matrizes", {
+    await queryInterface.createTable('classificacao_riscos_servicos', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
-      servico_id: {
+      matriz_id: {
         type: Sequelize.DataTypes.INTEGER,
-        references: { model: "servicos", key: "id" },
+        references: { model: "matrizes", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+        onDelete: "CASCADE",
+        allowNull: false,
       },
-      size:{
+      grau_risco: {
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
-      tipo:{
+      classe_risco: {
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: false,
+      },
+      cor: {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
-      parametro:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false,
+      definicao: {
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: true,
       },
-      is_padrao:{
-        type: Sequelize.DataTypes.BOOLEAN,
-        allowNull: false,
+      forma_atuacao:{
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,
@@ -39,11 +44,11 @@ module.exports = {
       updated_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
-      },
-    });
+      }
+    })
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("matrizes");
+    await queryInterface.dropTable("classificacao_riscos_servicos");
   }
 };

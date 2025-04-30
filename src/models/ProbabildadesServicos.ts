@@ -8,7 +8,7 @@ import { Valor } from "./enums/valor";
 const enumSinal = Object.keys(Sinal);
 const enumValor = Object.keys(Valor);
 
-export interface ProbabilidadeAttributes {
+export interface ProbabilidadeServicoAttributes {
   id: number;
   matriz_id: number;
   position: number;
@@ -19,11 +19,11 @@ export interface ProbabilidadeAttributes {
   sem_protecao:boolean | null;
 }
 
-export interface ProbabilidadeCreationAttributes
-  extends Optional<ProbabilidadeAttributes, "id"> {}
+export interface ProbabilidadeServicoCreationAttributes
+  extends Optional<ProbabilidadeServicoAttributes, "id"> {}
 
-export const Probabilidade = sequelize.define<
-  Model<ProbabilidadeAttributes, ProbabilidadeCreationAttributes>
+export const ProbabilidadeServico = sequelize.define<
+  Model<ProbabilidadeServicoAttributes, ProbabilidadeServicoCreationAttributes>
 >(
   "probabilidade",
   {
@@ -35,10 +35,10 @@ export const Probabilidade = sequelize.define<
     },
     matriz_id: {
       type: DataTypes.INTEGER,
-      references: { model: "matriz_padroes", key: "id" },
+      references: { model: "matrizes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     position: {
       type: DataTypes.INTEGER,
@@ -73,6 +73,6 @@ export const Probabilidade = sequelize.define<
       allowNull: true,
     }
   },
-  { tableName: "probabilidades" }
+  { tableName: "probabilidades_servicos" }
 );
 

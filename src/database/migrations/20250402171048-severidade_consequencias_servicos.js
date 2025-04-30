@@ -3,34 +3,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable("matrizes", {
+    await queryInterface.createTable("severidade_consequencias_servicos", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
-      servico_id: {
+      matriz_id: {
         type: Sequelize.DataTypes.INTEGER,
-        references: { model: "servicos", key: "id" },
+        references: { model: "matrizes", key: "id" },
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
-      size:{
+      position:{
         type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
       },
-      tipo:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false,
+      description:{
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: true,
       },
-      parametro:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false,
-      },
-      is_padrao:{
-        type: Sequelize.DataTypes.BOOLEAN,
-        allowNull: false,
+      criterio:{
+        type: Sequelize.DataTypes.TEXT,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,
@@ -44,6 +40,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable("matrizes");
+    await queryInterface.dropTable("severidade_consequencias_servicos");
   }
 };

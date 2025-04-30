@@ -14,9 +14,13 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "empresas", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+        onDelete: "RESTRICT",
       },
       tipo: {
+        allowNull: false,
+        type: Sequelize.DataTypes.STRING,
+      },
+      parametro: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
@@ -47,6 +51,26 @@ module.exports = {
       nivel_acao: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
+      },
+      ltcat: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      laudo_insalubridade: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      pgr: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      pgrtr: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      laudo_periculosidade: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,

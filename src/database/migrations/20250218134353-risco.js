@@ -28,6 +28,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      id_trajetoria: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "trajetorias", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT"
+      },
       id_exposicao: {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "exposicoes", key: "id" },
@@ -40,19 +46,21 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
-      id_trajetoria: {
-        type: Sequelize.DataTypes.INTEGER,
-        references: { model: "trajetorias", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
-      },
       transmitir_esocial: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
+      intens_conc: {
+        allowNull: false,
+        type: Sequelize.DataTypes.INTEGER,
+      },
       lt_le: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
+      },
+      comentario: {
+        allowNull: false,
+        type: Sequelize.DataTypes.TEXT,
       },
       nivel_acao: {
         allowNull: false,
@@ -64,7 +72,21 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
-      estrategia_amostragem: {
+      id_estrategia_amostragem: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "estrategia_amostragens", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT"
+      },
+      desvio_padrao: {
+        allowNull: false,
+        type: Sequelize.DataTypes.INTEGER,
+      },
+      percentil: {
+        allowNull: false,
+        type: Sequelize.DataTypes.INTEGER,
+      },
+      obs: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },
@@ -81,10 +103,6 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
       },
       classe_risco: {
-        allowNull: false,
-        type: Sequelize.DataTypes.STRING,
-      },
-      obs: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
       },

@@ -21,6 +21,7 @@ export const dadosCadastroFatoresRisco = {
       const { empresaId } = req.user!;
       const {
         tipo,
+        parametro,
         ordem,
         codigo_esocial,
         descricao,
@@ -28,6 +29,11 @@ export const dadosCadastroFatoresRisco = {
         tecnica_utilizada,
         lt_le,
         nivel_acao,
+        ltcat,
+        laudo_insalubridade,
+        pgr,
+        pgrtr,
+        laudo_periculosidade,
       } = req.body;
       const formattedDescricao =
         dadosCadastroFatoresRisco.capitalizeName(descricao);
@@ -37,6 +43,7 @@ export const dadosCadastroFatoresRisco = {
       const data = await postDadosFatoresRiscoService({
         empresaId: empresaId,
         tipo,
+        parametro,
         ordem,
         codigo_esocial,
         descricao: formattedDescricao,
@@ -44,6 +51,11 @@ export const dadosCadastroFatoresRisco = {
         tecnica_utilizada,
         lt_le,
         nivel_acao,
+        ltcat,
+        laudo_insalubridade,
+        pgr,
+        pgrtr,
+        laudo_periculosidade,
       });
       res.send(data);
     } catch (err) {
@@ -84,12 +96,18 @@ export const dadosCadastroFatoresRisco = {
         const {
             tipo,
             ordem,
+            parametro,
             codigo_esocial,
             descricao,
             danos_saude,
             tecnica_utilizada,
             lt_le,
-            nivel_acao
+            nivel_acao,
+            ltcat,
+            laudo_insalubridade,
+            pgr,
+            pgrtr,
+            laudo_periculosidade,
         } = req.body;
         const formattedDescricao =
             dadosCadastroFatoresRisco.capitalizeName(descricao);
@@ -99,13 +117,19 @@ export const dadosCadastroFatoresRisco = {
             empresaId,
             Number (idfatoresrisco),
             tipo,
+            parametro,
             ordem,
             codigo_esocial,
             formattedDescricao,
             formattedDanosSaude,
             tecnica_utilizada,
             lt_le,
-            nivel_acao
+            nivel_acao,
+            ltcat,
+            laudo_insalubridade,
+            pgr,
+            pgrtr,
+            laudo_periculosidade,
         )
         res.send(data)
     }catch (err) {

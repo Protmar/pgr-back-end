@@ -2,7 +2,6 @@ import { DataTypes, Model, Optional } from "sequelize";
 import { Parametro } from "./enums/parametros.enum";
 import { TipoRisco } from "./enums/tipo_risco.enum";
 import { sequelize } from "../database";
-import { Cliente } from "./Cliente";
 import { Empresa } from "./Empresa";
 import { Probabilidade } from "./Probabilidades";
 import { SeveridadeConsequencia } from "./SeveridadeConsequencia";
@@ -17,6 +16,7 @@ export interface MatrizPadraoAttributes {
     size: number;
     tipo: string;
     parametro: string;
+    is_padrao: boolean;
 }
 
 export interface MatrizPadraoCreationAttributes
@@ -57,7 +57,11 @@ export interface MatrizPadraoCreationAttributes
             validate: {
                 isIn: [enumParametro]
             }
-        }
+        },
+    is_padrao:{
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+    }
     },
 {tableName: "matriz_padroes"},
 );

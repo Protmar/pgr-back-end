@@ -29,17 +29,24 @@ export const putDadosFatoresRiscoService = (
   empresaId: number,
   trabaladorId: number,
   tipo: string,
+  parametro: string,
   ordem: number,
   codigo_esocial: string,
   descricao: string,
   danos_saude: string,
   tecnica_utilizada: string,
   lt_le: string,
-  nivel_acao: string
+  nivel_acao: string,
+  ltcat: boolean,
+  laudo_insalubridade: boolean,
+  pgr: boolean,
+  pgrtr: boolean,
+  laudo_periculosidade: boolean,
 ) => {
   const data = CadastroFatoresRisco.update(
     {
       tipo,
+      parametro,
       ordem,
       codigo_esocial,
       descricao,
@@ -47,6 +54,11 @@ export const putDadosFatoresRiscoService = (
       tecnica_utilizada,
       lt_le,
       nivel_acao,
+      ltcat,
+      laudo_insalubridade,
+      pgr,
+      pgrtr,
+      laudo_periculosidade,
     },
     { where: { empresaId, id: trabaladorId } }
   );

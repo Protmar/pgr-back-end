@@ -3,14 +3,17 @@ import { sequelize } from "../database";
 import { EmpresaInstance } from "./Empresa";
 import bcrypt from "bcrypt";
 import { TipoRisco } from "./enums/tipo_risco.enum";
+import { Parametro } from "./enums/parametros.enum";
 
 const enumTipoRisco = Object.keys(TipoRisco);
+const enumParametro = Object.keys(Parametro);
 
 
 export interface CadastroFatoresRiscoAttributes {
   id: number;
   empresaId: number;
   tipo: string;
+  parametro: string;
   ordem: number;
   codigo_esocial: string;
   descricao: string;
@@ -18,6 +21,11 @@ export interface CadastroFatoresRiscoAttributes {
   tecnica_utilizada: string;
   lt_le:string;
   nivel_acao:string;
+  ltcat:boolean | null;
+  laudo_insalubridade:boolean | null;
+  pgr:boolean | null;
+  pgrtr:boolean | null;
+  laudo_periculosidade:boolean | null;
 }
 
 export interface CadastroFatoresRiscoCreationAttributes extends Optional<CadastroFatoresRiscoAttributes, 'id'> {}
@@ -44,6 +52,14 @@ export const CadastroFatoresRisco = sequelize.define<Model<CadastroFatoresRiscoA
       values: enumTipoRisco,
       validate: {
         isIn: [enumTipoRisco],
+      },
+    },
+    parametro: {
+      allowNull: false,
+      type: DataTypes.ENUM,
+      values: enumParametro,
+      validate: {
+        isIn: [enumParametro],
       },
     },
     ordem: {
@@ -73,6 +89,26 @@ export const CadastroFatoresRisco = sequelize.define<Model<CadastroFatoresRiscoA
     nivel_acao: {
       allowNull: false,
       type: DataTypes.STRING,
+    },
+    ltcat: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    laudo_insalubridade: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    pgr: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    pgrtr: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    laudo_periculosidade: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
     },
 
   },

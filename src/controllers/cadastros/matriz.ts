@@ -1,19 +1,24 @@
 import { Response } from "express";
-import { AuthenticatedUserRequest } from "../../../../middleware";
+import { AuthenticatedUserRequest } from "../../middleware";
+import Servicos from "../../models/Servicos";
 import {
-  matrizPadraoDelete,
-  matrizPadraoGet,
-  matrizPadraoGetAll,
-  matrizPadraoPostService,
-  matrizPadraoPut,
-  setMatrizPadraoService,
-} from "../../../../services/cadastros/matrizpadrao/matrizpadrao";
-import { Empresa } from "../../../../models";
+  matrizesServicoPostService,
+  matrizServicoDelete,
+  matrizServicoGet,
+  matrizServicoGetAll,
+  matrizServicoGetPadrao,
+  matrizServicoPut,
+  setMatrizService,
+} from "../../services/cadastros/matrizes/matrizservico";
 
-export const dadosMatrizPadrao = {
+export const dadosMatrizServico = {
   post: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
+      const servicoId = globalThis.servico_id;
+      if (!servicoId) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
+      }
+
       const {
         tipo,
         parametro,
@@ -29,7 +34,6 @@ export const dadosMatrizPadrao = {
         formaAtuacao,
       } = req.body;
 
-      // Validação básica
       if (!tipo || !parametro || !size) {
         return res
           .status(400)
@@ -53,7 +57,6 @@ export const dadosMatrizPadrao = {
         });
       }
 
-      // Validação específica para Quantitativo
       if (parametro === "Quantitativo") {
         for (let i = 0; i < paramDesc.length; i++) {
           const { sinal, valor, semMedidaProtecao } = paramDesc[i] || {};
@@ -64,18 +67,19 @@ export const dadosMatrizPadrao = {
           }
         }
       }
+
       //Validação para o campo is_padrao
       if (is_padrao !== undefined && typeof is_padrao !== "boolean") {
         return res.status(400).json({ message: "is_padrao deve ser booleano" });
       }
 
-      const empresa = await Empresa.findOne({ where: { id: empresaId } });
-      if (!empresa) {
-        return res.status(400).json({ message: "Empresa não encontrada" });
+      const servico = await Servicos.findOne({ where: { id: servicoId } });
+      if (!servico) {
+        return res.status(404).json({ message: "Serviço não encontrado" });
       }
 
-      const data = await matrizPadraoPostService({
-        empresa_id: empresaId,
+      const data = await matrizesServicoPostService({
+        servico_id: servicoId,
         tipo,
         parametro,
         size: Number(size),
@@ -87,50 +91,60 @@ export const dadosMatrizPadrao = {
         riskClasses,
         riskDesc,
         riskColors,
-        formaAtuacao, // Novo campo adicionado
+        formaAtuacao,
       });
 
       return res.status(201).json(data);
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
-      }
-      return res.status(500).json({ message: "Erro interno no servidor" });
+      return res.status(500).json({
+        message:
+          err instanceof Error ? err.message : "Erro interno no servidor",
+      });
     }
   },
 
   getAll: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
-      const data = await matrizPadraoGetAll(empresaId.toString());
-      res.send(data);
-    } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
+      const servicoId = globalThis.servico_id;
+      if (!servicoId) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
       }
+      const data = await matrizServicoGetAll(servicoId.toString());
+      return res.status(200).json(data);
+    } catch (err) {
+      return res.status(500).json({
+        message:
+          err instanceof Error ? err.message : "Erro interno no servidor",
+      });
     }
   },
 
   get: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
+      const servicoId = globalThis.servico_id;
+      if (!servicoId) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
+      }
       const { matrizId } = req.params;
-      const data = await matrizPadraoGet(empresaId.toString(), matrizId);
+      const data = await matrizServicoGet(servicoId.toString(), matrizId);
       if (!data) {
         return res.status(404).json({ message: "Matriz não encontrada" });
       }
-      res.send(data);
+      return res.status(200).json(data);
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
-      }
-      return res.status(500).json({ message: "Erro interno no servidor" });
+      return res.status(500).json({
+        message:
+          err instanceof Error ? err.message : "Erro interno no servidor",
+      });
     }
   },
 
   put: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
+      const servicoId = globalThis.servico_id;
+      if (!servicoId) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
+      }
       const { matrizId } = req.params;
       const {
         tipo,
@@ -144,7 +158,7 @@ export const dadosMatrizPadrao = {
         riskClasses,
         riskColors,
         riskDesc,
-        formaAtuacao, // Novo campo adicionado
+        formaAtuacao,
       } = req.body;
 
       if (!tipo || !parametro || !size) {
@@ -180,14 +194,12 @@ export const dadosMatrizPadrao = {
           }
         }
       }
-
       // Validação para o campo is_padrao
       if (is_padrao !== undefined && typeof is_padrao !== "boolean") {
         return res.status(400).json({ message: "is_padrao deve ser booleano" });
       }
-
-      const data = await matrizPadraoPut(
-        empresaId.toString(),
+      const data = await matrizServicoPut(
+        servicoId.toString(),
         size,
         tipo,
         parametro,
@@ -200,33 +212,43 @@ export const dadosMatrizPadrao = {
         riskColors,
         riskDesc,
         formaAtuacao,
-        is_padrao // Novo campo adicionado
+        is_padrao
       );
 
-      res.status(200).json({ message: "Matriz atualizada com sucesso", data });
+      return res
+        .status(200)
+        .json({ message: "Matriz atualizada com sucesso", data });
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
-      }
-      res.status(500).json({ message: "Erro interno ao atualizar matriz" });
+      return res.status(500).json({
+        message:
+          err instanceof Error ? err.message : "Erro interno no servidor",
+      });
     }
   },
 
   delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
-      const { matrizId } = req.params;
-      const data = await matrizPadraoDelete(empresaId.toString(), matrizId);
-      return res.status(201).json(data);
-    } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
+      const servicoId = globalThis.servico_id;
+      if (!servicoId) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
       }
+      const { matrizId } = req.params;
+      const data = await matrizServicoDelete(servicoId.toString(), matrizId);
+      if (data === 0) {
+        return res.status(404).json({ message: "Matriz não encontrada" });
+      }
+      return res.status(204).send(); // Alterado pra 204 (No Content)
+    } catch (err) {
+      return res.status(500).json({
+        message:
+          err instanceof Error ? err.message : "Erro interno no servidor",
+      });
     }
   },
+
   setPadrao: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
+      const servicoId = globalThis.servico_id;
       const { idMatriz, tipo, parametro } = req.body;
 
       // Validação
@@ -236,8 +258,8 @@ export const dadosMatrizPadrao = {
           .json({ message: "idMatriz, tipo e parametro são obrigatórios" });
       }
 
-      const data = await setMatrizPadraoService(
-        empresaId.toString(),
+      const data = await setMatrizService(
+        servicoId.toString(),
         idMatriz,
         tipo,
         parametro
@@ -245,7 +267,6 @@ export const dadosMatrizPadrao = {
       if (!data) {
         return res.status(404).json({ message: "Matriz não encontrada" });
       }
-
       res
         .status(200)
         .json({ message: "Matriz definida como padrão com sucesso", data });
@@ -256,6 +277,23 @@ export const dadosMatrizPadrao = {
       return res
         .status(500)
         .json({ message: "Erro interno ao definir matriz padrão" });
+    }
+  },
+  getPadrao: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { servicoId, tipo, parametro } = req.query;
+      console.log("Parâmetros recebidos:", { servicoId, tipo, parametro });
+      if (!servicoId || !tipo || !parametro) {
+        return res.status(400).json({ message: "servicoId, tipo e parametro são obrigatórios" });
+      }
+      const data = await matrizServicoGetPadrao(servicoId as string, tipo as string, parametro as string);
+      if (!data) {
+        return res.status(404).json({ message: "Matriz padrão não encontrada" });
+      }
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error("Erro no getPadrao:", err);
+      return res.status(500).json({ message: err instanceof Error ? err.message : "Erro interno" });
     }
   },
 };

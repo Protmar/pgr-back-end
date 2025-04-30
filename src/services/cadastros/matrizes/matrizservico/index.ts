@@ -1,15 +1,15 @@
-import { Op } from 'sequelize'; // Importa os operadores do Sequelize
+import { Op } from "sequelize";
 import { sequelize } from "../../../../database";
-import { ClassificacaoRisco } from "../../../../models/ClassificacaoRisco";
-import { MatrizPadrao } from "../../../../models/MatrizPadrao";
-import { Probabilidade } from "../../../../models/Probabilidades";
-import { SeveridadeConsequencia } from "../../../../models/SeveridadeConsequencia";
-import { probabilidadePostService } from "../probabilidades";
-import { severidadeConsequenciaPostService } from "../severidadeconsequencia";
+import { ClassificacaoRiscoServico } from "../../../../models/ClassificacaoRiscoServico";
+import { Matriz } from "../../../../models/Matriz";
+import { ProbabilidadeServico } from "../../../../models/ProbabildadesServicos";
+import { SeveridadeConsequenciaServico } from "../../../../models/SeveridadeConsequenciaServico";
+import { probabilidadeServicoPostService } from "../probabilidadesservico";
+import { severidadeConsequenciaServicoPostService } from "../severidadeconsequenciaservico";
 
-export const matrizPadraoPostService = async (params: any) => {
+export const matrizesServicoPostService = async (params: any) => {
   const {
-    empresa_id,
+    servico_id,
     tipo,
     parametro,
     size,
@@ -21,16 +21,16 @@ export const matrizPadraoPostService = async (params: any) => {
     riskClasses,
     riskDesc,
     riskColors,
-    formaAtuacao, // Novo campo adicionado
+    formaAtuacao,
   } = params;
 
   try {
     if (is_padrao) {
-      await MatrizPadrao.update(
+      await Matriz.update(
         { is_padrao: false },
         {
           where: {
-            empresa_id: Number(empresa_id),
+            servico_id: Number(servico_id),
             tipo,
             parametro,
             is_padrao: true,
@@ -39,8 +39,8 @@ export const matrizPadraoPostService = async (params: any) => {
       );
     }
 
-    const matrizData = await MatrizPadrao.create({
-      empresa_id,
+    const matrizData = await Matriz.create({
+      servico_id,
       tipo,
       parametro,
       size,
@@ -51,7 +51,7 @@ export const matrizPadraoPostService = async (params: any) => {
 
     // Cria os registros de SeveridadeConsequencia
     for (let i = 0; i < size; i++) {
-      await severidadeConsequenciaPostService({
+      await severidadeConsequenciaServicoPostService({
         matriz_id: matrizId,
         position: i + 1,
         description: texts[i] || "",
@@ -63,7 +63,7 @@ export const matrizPadraoPostService = async (params: any) => {
     for (let i = 0; i < size; i++) {
       if (parametro === "Quantitativo") {
         const { sinal, valor, semMedidaProtecao } = paramDesc[i] || {};
-        await probabilidadePostService({
+        await probabilidadeServicoPostService({
           matriz_id: matrizId,
           position: i + 1,
           description: colTexts[i] || "",
@@ -73,7 +73,7 @@ export const matrizPadraoPostService = async (params: any) => {
           sem_protecao: semMedidaProtecao ?? null, // Usa null se undefined
         });
       } else {
-        await probabilidadePostService({
+        await probabilidadeServicoPostService({
           matriz_id: matrizId,
           position: i + 1,
           description: colTexts[i] || "",
@@ -135,7 +135,7 @@ export const matrizPadraoPostService = async (params: any) => {
             ? classToIndex[classeRisco]
             : -1;
 
-        await ClassificacaoRisco.create({
+        await ClassificacaoRiscoServico.create({
           matriz_id: matrizId,
           grau_risco: grauRisco,
           classe_risco: classeRisco,
@@ -153,24 +153,25 @@ export const matrizPadraoPostService = async (params: any) => {
   }
 };
 
-export const matrizPadraoGetAll = async (empresaId: string) => {
-  const data = await MatrizPadrao.findAll({
-    where: {
-      empresa_id: Number(empresaId),
-    },
+export const matrizServicoGetAll = async (servicoId: string) => {
+  if (!servicoId || isNaN(Number(servicoId))) {
+    return []; // Retorna array vazio se servicoId for inválido
+  }
+  const data = await Matriz.findAll({
+    where: { servico_id: Number(servicoId) },
   });
-  return data;
+  return data || []; // Sempre retorna array
 };
 
-export const matrizPadraoGet = async (empresaId: string, matrizId: string) => {
-  const data = await MatrizPadrao.findOne({
+export const matrizServicoGet = async (servicoId: string, matrizId: string) => {
+  const data = await Matriz.findOne({
     where: {
-      empresa_id: Number(empresaId),
+      servico_id: Number(servicoId),
       id: matrizId,
     },
     include: [
       {
-        model: Probabilidade,
+        model: ProbabilidadeServico,
         as: "probabilidades",
         attributes: [
           "position",
@@ -182,12 +183,12 @@ export const matrizPadraoGet = async (empresaId: string, matrizId: string) => {
         ],
       },
       {
-        model: SeveridadeConsequencia,
+        model: SeveridadeConsequenciaServico,
         as: "severidades",
         attributes: ["position", "description", "criterio"],
       },
       {
-        model: ClassificacaoRisco,
+        model: ClassificacaoRiscoServico,
         as: "classificacaoRisco",
         attributes: [
           "grau_risco",
@@ -202,18 +203,18 @@ export const matrizPadraoGet = async (empresaId: string, matrizId: string) => {
   return data;
 };
 
-export const matrizPadraoDelete = (empresaId: string, matrizId: string) => {
-  const data = MatrizPadrao.destroy({
+export const matrizServicoDelete = (servicoId: string, matrizId: string) => {
+  const data = Matriz.destroy({
     where: {
-      empresa_id: Number(empresaId),
+      servico_id: Number(servicoId),
       id: matrizId,
     },
   });
   return data;
 };
 
-export const matrizPadraoPut = async (
-  empresaId: string,
+export const matrizServicoPut = async (
+  servicoId: string,
   size: string,
   tipo: string,
   parametro: string,
@@ -245,40 +246,40 @@ export const matrizPadraoPut = async (
     !parametro ||
     !matrizId
   ) {
-    throw new Error("Dados de entrada inválidos. Verifique size, tipo, parametro e arrays.");
+    throw new Error(
+      "Dados de entrada inválidos. Verifique size, tipo, parametro e arrays."
+    );
   }
 
-  const transaction = await MatrizPadrao.sequelize!.transaction();
+  const transaction = await Matriz.sequelize!.transaction();
 
   try {
-    // Se is_padrao for true, desmarca outras matrizes padrão, exceto a matriz atual
     if (is_padrao) {
-      await MatrizPadrao.update(
+      await Matriz.update(
         { is_padrao: false },
         {
           where: {
-            empresa_id: Number(empresaId),
+            servico_id: Number(servicoId),
             tipo,
             parametro,
             is_padrao: true,
-            id: { [Op.ne]: Number(matrizId) }, // Exclui a matriz atual
+            id: { [Op.ne]: Number(matrizId) },
           },
           transaction,
         }
       );
     }
 
-    // Atualiza a matriz
-    const [updatedRows] = await MatrizPadrao.update(
+    const [updatedRows] = await Matriz.update(
       {
         size: numericSize,
         tipo,
         parametro,
-        is_padrao: is_padrao || false, // Inclui is_padrao na atualização
+        is_padrao: is_padrao || false,
       },
       {
         where: {
-          empresa_id: Number(empresaId),
+          servico_id: Number(servicoId),
           id: matrizId,
         },
         transaction,
@@ -290,13 +291,22 @@ export const matrizPadraoPut = async (
     }
 
     await Promise.all([
-      SeveridadeConsequencia.destroy({ where: { matriz_id: matrizId }, transaction }),
-      Probabilidade.destroy({ where: { matriz_id: matrizId }, transaction }),
-      ClassificacaoRisco.destroy({ where: { matriz_id: matrizId }, transaction }),
+      SeveridadeConsequenciaServico.destroy({
+        where: { matriz_id: matrizId },
+        transaction,
+      }),
+      ProbabilidadeServico.destroy({
+        where: { matriz_id: matrizId },
+        transaction,
+      }),
+      ClassificacaoRiscoServico.destroy({
+        where: { matriz_id: matrizId },
+        transaction,
+      }),
     ]);
 
     for (let i = 0; i < numericSize; i++) {
-      await SeveridadeConsequencia.create(
+      await SeveridadeConsequenciaServico.create(
         {
           matriz_id: Number(matrizId),
           position: i + 1,
@@ -310,7 +320,7 @@ export const matrizPadraoPut = async (
     for (let i = 0; i < numericSize; i++) {
       if (parametro === "Quantitativo") {
         const { sinal, valor, semMedidaProtecao } = paramDesc[i] || {};
-        await Probabilidade.create(
+        await ProbabilidadeServico.create(
           {
             matriz_id: Number(matrizId),
             position: i + 1,
@@ -323,7 +333,7 @@ export const matrizPadraoPut = async (
           { transaction }
         );
       } else {
-        await Probabilidade.create(
+        await ProbabilidadeServico.create(
           {
             matriz_id: Number(matrizId),
             position: i + 1,
@@ -342,11 +352,15 @@ export const matrizPadraoPut = async (
       const uniqueValues = Array.from(
         new Set(
           Array.from({ length: numericSize }, (_, rowIndex) =>
-            Array.from({ length: numericSize }, (_, colIndex) => (rowIndex + 1) * (colIndex + 1))
+            Array.from(
+              { length: numericSize },
+              (_, colIndex) => (rowIndex + 1) * (colIndex + 1)
+            )
           ).flat()
         )
       ).sort((a, b) => a - b);
 
+      // Mapeia as classes de risco únicas e suas posições
       const uniqueClasses: string[] = [];
       const classToIndex: { [key: string]: number } = {};
       uniqueValues.forEach((grauRisco) => {
@@ -358,28 +372,40 @@ export const matrizPadraoPut = async (
       });
 
       const adjustedRiskDesc = Array(uniqueClasses.length).fill("");
-      for (let i = 0; i < Math.min(riskDesc.length, uniqueClasses.length); i++) {
+      for (
+        let i = 0;
+        i < Math.min(riskDesc.length, uniqueClasses.length);
+        i++
+      ) {
         adjustedRiskDesc[i] = riskDesc[i] || "";
       }
 
       const adjustedFormaAtuacao = Array(uniqueClasses.length).fill("");
-      for (let i = 0; i < Math.min(formaAtuacao.length, uniqueClasses.length); i++) {
+      for (
+        let i = 0;
+        i < Math.min(formaAtuacao.length, uniqueClasses.length);
+        i++
+      ) {
         adjustedFormaAtuacao[i] = formaAtuacao[i] || "";
       }
 
       for (let i = 0; i < uniqueValues.length; i++) {
         const grauRisco = uniqueValues[i];
         const classeRisco = riskClasses[grauRisco] || "";
-        const classIndex = classToIndex[classeRisco] !== undefined ? classToIndex[classeRisco] : -1;
+        const classIndex =
+          classToIndex[classeRisco] !== undefined
+            ? classToIndex[classeRisco]
+            : -1;
 
-        await ClassificacaoRisco.create(
+        await ClassificacaoRiscoServico.create(
           {
             matriz_id: Number(matrizId),
             grau_risco: grauRisco,
             classe_risco: classeRisco,
             cor: riskColors[grauRisco] || "#000000",
             definicao: classIndex >= 0 ? adjustedRiskDesc[classIndex] : "",
-            forma_atuacao: classIndex >= 0 ? adjustedFormaAtuacao[classIndex] : "",
+            forma_atuacao:
+              classIndex >= 0 ? adjustedFormaAtuacao[classIndex] : "", // Novo campo adicionado
           },
           { transaction }
         );
@@ -392,57 +418,77 @@ export const matrizPadraoPut = async (
   } catch (error) {
     await transaction.rollback();
     console.error("Erro ao atualizar matriz, transação revertida:", error);
-    throw error instanceof Error ? error : new Error("Erro desconhecido ao atualizar matriz");
+    throw error instanceof Error
+      ? error
+      : new Error("Erro desconhecido ao atualizar matriz");
   }
 };
 
-export const setMatrizPadraoService = async (
-  empresaId: string,
+export const setMatrizService = async (
+  servicoId: string,
   matrizId: string,
   tipo: string,
   parametro: string
 ) => {
-
   try {
-    // Desmarca qualquer matriz padrão existente para o mesmo tipo, parametro e empresa
-    await MatrizPadrao.update(
+    await Matriz.update(
       { is_padrao: false },
       {
         where: {
-          empresa_id: Number(empresaId),
+          servico_id: Number(servicoId),
           tipo,
           parametro,
           is_padrao: true,
-        }
+        },
       }
     );
 
-    // Marca a matriz especificada como padrão
-    const [updatedRows] = await MatrizPadrao.update(
+    const [updatedRows] = await Matriz.update(
       { is_padrao: true },
       {
         where: {
           id: Number(matrizId),
-          empresa_id: Number(empresaId),
+          servico_id: Number(servicoId),
           tipo,
           parametro,
-        }
+        },
       }
     );
 
     if (updatedRows === 0) {
-      throw new Error("Matriz não encontrada ou não pertence ao tipo/parâmetro/empresa");
+      throw new Error(
+        "Matriz não encontrada ou não pertence ao tipo/parâmetro/empresa"
+      );
     }
 
-    // Retorna a matriz atualizada
-    const matrizData = await MatrizPadrao.findOne({
+    const matrizData = await Matriz.findOne({
       where: {
         id: Number(matrizId),
-      }
+      },
     });
-
     return matrizData;
   } catch (error) {
-    throw error instanceof Error ? error : new Error("Erro ao definir matriz padrão");
+    throw error instanceof Error
+      ? error
+      : new Error("Erro ao definir matriz padrão");
   }
+};
+
+export const matrizServicoGetPadrao = async (servicoId: string, tipo: string, parametro: string) => {
+  console.log("Buscando matriz com:", { servicoId, tipo, parametro });
+  const data = await Matriz.findOne({
+    where: {
+      servico_id: Number(servicoId),
+      tipo,
+      parametro,
+      is_padrao: true,
+    },
+    include: [
+      { model: ProbabilidadeServico, as: "probabilidades" },
+      { model: SeveridadeConsequenciaServico, as: "severidades" },
+      { model: ClassificacaoRiscoServico, as: "classificacaoRisco" },
+    ],
+  });
+  console.log("Matriz encontrada:", data);
+  return data;
 };

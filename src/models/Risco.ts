@@ -38,6 +38,7 @@ export interface RiscoAttributes {
   conseq_severidade: string;
   grau_risco: string;
   classe_risco: string;
+  ges_id?: number;
 }
 
 export interface RiscoCreationAttributes
@@ -95,6 +96,12 @@ export const Risco = sequelize.define<
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
       allowNull: true,
+    },
+    ges_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "ges", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT"
     },
     transmitir_esocial: {
       allowNull: false,

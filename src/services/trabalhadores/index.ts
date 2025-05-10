@@ -43,15 +43,15 @@ export const postDadosTrabalhadorExcelService = async (
         throw new Error('O parâmetro empresaId não é válido.');
       }
 
-      if (!item.cpf || item.cpf.length !== 11 || !/^\d+$/.test(item.cpf)) {
+      if (!item.cpf || item.cpf.length < 11) {
         throw new Error(`CPF inválido no item ${index + 1}: ${item.cpf}`);
       }
 
-      if (!item.rg || item.rg.length < 5 || !/^\d+$/.test(item.rg)) {
+      if (!item.rg || item.rg.length < 9) {
         throw new Error(`RG inválido no item ${index + 1}: ${item.rg}`);
       }
 
-      if (!item.pis || item.pis.length !== 11 || !/^\d+$/.test(item.pis)) {
+      if (!item.pis) {
         throw new Error(`PIS inválido no item ${index + 1}: ${item.pis}`);
       }
 

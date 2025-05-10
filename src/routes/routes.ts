@@ -335,7 +335,8 @@ router.put("/updatenamefluxograma/:idges", ensureUserAuth, gesController.updateN
 router.post("/postimagesat", ensureUserAuth, gesController.postImagesAt);
 router.get("/getimagesat/:idges", ensureUserAuth, gesController.getImagesAt);
 router.get("/gesgetallbyservico/:idservico", ensureUserAuth, gesController.getAllByServico);
-router.get("/gesgetallbycliente/:idcliente", ensureUserAuth, gesController.getAllGesByCliente)
+router.get("/gesgetallbycliente/:idcliente", ensureUserAuth, gesController.getAllGesByCliente);
+router.delete("/deleteimageat/:idimageat", ensureUserAuth, gesController.deleteImageAt);
 
 //S3
 router.post("/postfile", ensureUserAuth, upload.fields([{ name: 'file' }]), s3Controller.post);
@@ -387,3 +388,8 @@ router.delete("/:id/deleteresponsaveltecnico", ensureUserAuth, responsavelTecnic
 router.post("/generatebasepdfpgrtr", ensureUserAuth, pgrtrReportController.getPGRTRReport);
 router.post("/generatebasepdfpgr", ensureUserAuth, pgrReportController.getPGRReport);
 router.post("/generatebasepdfltcat", ensureUserAuth, ltcatReportController.getLTCATReport);
+
+//SALVAR IMAGENS RISCOS
+router.post("/postimagerisco", ensureUserAuth, dadosRisco.postImagePerigo);
+router.delete("/deleteimagerisco/:idrisco/:origem", ensureUserAuth, dadosRisco.deleteImagePerigo);
+router.get("/getimages/:idrisco/:origem", ensureUserAuth, dadosRisco.getImagesPerigo);

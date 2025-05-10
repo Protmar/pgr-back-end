@@ -1,3 +1,8 @@
+import { CadastroFatoresRisco } from "../../../models/FatoresRisco";
+import { ImagensFichaCampo } from "../../../models/imagensRiscos/ImagensFichaCampo";
+import { ImagensFotoAvaliacao } from "../../../models/imagensRiscos/ImagensFotoAvaliação";
+import { ImagensHistogramas } from "../../../models/imagensRiscos/ImagensHistogramas";
+import { ImagensMemorialCalculo } from "../../../models/imagensRiscos/ImagensMemorialCalculo";
 import { Risco, RiscoCreationAttributes } from "../../../models/Risco";
 
 export const postDadosRiscoService = (params: RiscoCreationAttributes) => {
@@ -14,6 +19,9 @@ export const getDadosRiscoService = (empresaId: string, riscoId: string) => {
   }
   const data = Risco.findOne({
     where: { empresa_id: Number(empresaId), id: Number(riscoId) },
+    include: [
+      { model: CadastroFatoresRisco, as: 'fatores_risco', attributes: ["descricao"] },
+    ]
   });
 
   return data;
@@ -22,6 +30,9 @@ export const getDadosRiscoService = (empresaId: string, riscoId: string) => {
 export const getDadosAllRiscoService = (empresaId: string) => {
   const data = Risco.findAll({
     where: { empresa_id: Number(empresaId) },
+    include: [
+      { model: CadastroFatoresRisco, as: 'fatores_risco', attributes: ["descricao"] },
+    ]
   });
   return data;
 };
@@ -86,3 +97,95 @@ export const deleteDadosRiscoService = (empresaId: string, riscoId: string) => {
   });
   return data;
 };
+
+export const postImagePerigoService = async (tiporisco: string, risco_id: number, url: string) => {
+
+  console.log({
+    tiporisco,
+    risco_id,
+    url
+  })
+  if(tiporisco === "fichaCampo"){
+    const data = await ImagensFichaCampo.create({
+      risco_id,
+      url
+
+    });
+    console.log("AAA", data)
+    return data;
+  }
+
+  if(tiporisco === "memorialCalculo"){
+    const data = await ImagensMemorialCalculo.create({
+      risco_id,
+      url
+    });
+    return data;
+  }
+
+  if(tiporisco === "histogramas"){
+    const data = await ImagensHistogramas.create({
+      risco_id,
+      url
+    });
+    return data;
+  }
+
+  if(tiporisco === "fotosAvaliacao"){
+    const data = await ImagensFotoAvaliacao.create({
+      risco_id,
+      url
+    });
+    return data;
+  }
+
+};
+
+export const getImagesPerigoService = (risco_id: string, origem: any) => {
+  
+  if(origem == "fichaCampo"){
+    const data = ImagensFichaCampo.findAll({ where: { risco_id: Number(risco_id) } });
+    return data;
+  }
+
+  if(origem == "memorialCalculo"){
+    const data = ImagensMemorialCalculo.findAll({ where: { risco_id: Number(risco_id) } });
+    return data;
+  }
+
+  if(origem == "histogramas"){
+    const data = ImagensHistogramas.findAll({ where: { risco_id: Number(risco_id) } });
+    return data;
+  }
+
+  if(origem == "fotosAvaliacao"){
+    const data = ImagensFotoAvaliacao.findAll({ where: { risco_id: Number(risco_id) } });
+    return data;
+  }
+
+};
+
+export const deleteImagePerigoService = (id: string, origem: any) => {
+
+  console.log("AAA", id, origem)
+  
+  if(origem == "fichaCampo"){
+    const data = ImagensFichaCampo.destroy({ where: { id: Number(id) } });
+    return data;
+  }
+
+  if(origem == "memorialCalculo"){
+    const data = ImagensMemorialCalculo.destroy({ where: { id: Number(id) } });
+    return data;
+  }
+
+  if(origem == "histogramas"){
+    const data = ImagensHistogramas.destroy({ where: { id: Number(id) } });
+    return data;
+  }
+
+  if(origem == "fotosAvaliacao"){
+    const data = ImagensFotoAvaliacao.destroy({ where: { id: Number(id) } });
+    return data;
+  }
+}

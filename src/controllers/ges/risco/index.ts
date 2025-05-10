@@ -2,9 +2,12 @@ import { Response } from "express";
 import { AuthenticatedUserRequest } from "../../../middleware";
 import {
   deleteDadosRiscoService,
+  deleteImagePerigoService,
   getDadosAllRiscoService,
   getDadosRiscoService,
+  getImagesPerigoService,
   postDadosRiscoService,
+  postImagePerigoService,
   putDadosRiscoService,
 } from "../../../services/ges/gesRiscos";
 
@@ -156,6 +159,48 @@ export const dadosRisco = {
         empresaId.toString(),
         idrisco
       );
+      res.send(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+  
+  postImagePerigo:async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const {
+        risco_id,
+        url,
+        tipo_risco
+      } = req.body;
+
+
+      const data = await postImagePerigoService(tipo_risco, risco_id, url);
+      res.send(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  getImagesPerigo: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { idrisco, origem } = req.params;
+      const data = await getImagesPerigoService(idrisco, origem);
+      res.send(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  deleteImagePerigo: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { idrisco, origem } = req.params;
+      const data = await deleteImagePerigoService(idrisco, origem);
       res.send(data);
     } catch (err) {
       if (err instanceof Error) {

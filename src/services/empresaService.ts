@@ -14,9 +14,9 @@ interface MatrizPadraoComAssociacoes extends MatrizPadraoAttributes {
 }
 
 // Tipagem para o Model com associações (instâncias Sequelize)
-interface ProbabilidadeModel extends Model<ProbabilidadeAttributes>, ProbabilidadeAttributes {}
-interface SeveridadeConsequenciaModel extends Model<SeveridadeConsequenciaAttributes>, SeveridadeConsequenciaAttributes {}
-interface ClassificacaoRiscoModel extends Model<ClassificacaoRiscoAttributes>, ClassificacaoRiscoAttributes {}
+interface ProbabilidadeModel extends Model<ProbabilidadeAttributes>, ProbabilidadeAttributes { }
+interface SeveridadeConsequenciaModel extends Model<SeveridadeConsequenciaAttributes>, SeveridadeConsequenciaAttributes { }
+interface ClassificacaoRiscoModel extends Model<ClassificacaoRiscoAttributes>, ClassificacaoRiscoAttributes { }
 
 interface MatrizPadraoModel extends Model<MatrizPadraoAttributes>, MatrizPadraoAttributes {
   probabilidades: ProbabilidadeModel[];
@@ -25,6 +25,20 @@ interface MatrizPadraoModel extends Model<MatrizPadraoAttributes>, MatrizPadraoA
 }
 
 export const empresaService = {
+
+  findOne: async (id: number) => {
+    const empresa = await Empresa.findOne({ where: { id } });
+    return empresa;
+  },
+
+  update: async (empresaId: number, params: any) => {
+    const empresa = await Empresa.update(params, {
+      where: { id: empresaId },
+    });
+
+    return empresa;
+  },
+
   create: async (attributes: EmpresaCreationAttributes) => {
     try {
       // Cria a nova empresa
@@ -78,10 +92,10 @@ export const empresaService = {
           colTexts: probabilidades.map((p: ProbabilidadeAttributes) => p.description || ""),
           paramDesc: parametro === "Quantitativo"
             ? probabilidades.map((p: ProbabilidadeAttributes) => ({
-                sinal: p.sinal || null,
-                valor: p.valor || null,
-                semMedidaProtecao: p.sem_protecao ?? null,
-              }))
+              sinal: p.sinal || null,
+              valor: p.valor || null,
+              semMedidaProtecao: p.sem_protecao ?? null,
+            }))
             : probabilidades.map((p: ProbabilidadeAttributes) => p.criterio || ""),
           riskClasses: classificacaoRisco.reduce(
             (acc: { [key: number]: string }, r: ClassificacaoRiscoAttributes) => {

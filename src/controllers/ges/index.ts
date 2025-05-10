@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesByClienteService, getAllGesByServico, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
+import { deleteImageAtService, fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesByClienteService, getAllGesByServico, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
 import { GesAttributes } from "../../models/Ges";
 import { AmbienteTrabalhoAttributes } from "../../models/AmbienteTrabalho";
 import { getCache } from "../cliente/cliente";
@@ -55,7 +55,7 @@ export const gesController = {
                 ventilacaoId,
                 iluminacaoId,
                 pisoId,
-                texto_caracterizacao_processos
+                texto_caracterizacao_processos,
             } = params;
 
             // Dados do arquivo (se existir)
@@ -80,7 +80,7 @@ export const gesController = {
                     responsavel,
                     cargo,
                     tipo_pgr: tipoPgr,
-                    texto_caracterizacao_processos
+                    texto_caracterizacao_processos,
                 } as GesAttributes,
                 listequipamentos,
                 listmobiliarios,
@@ -108,7 +108,7 @@ export const gesController = {
             console.error("❌ Erro no postges:", err);
             return res.status(400).json({
                 message: err instanceof Error ? err.message : "Erro desconhecido.",
-            });
+            });     
         }
     },
 
@@ -141,7 +141,8 @@ export const gesController = {
                 pisoId,
                 fluxogramaName,
                 servico_id,
-                texto_caracterizacao_processos
+                texto_caracterizacao_processos,
+                risco_id
             } = req.body;
 
             // Verifica se o ID foi informado
@@ -163,7 +164,7 @@ export const gesController = {
                     nome_fluxograma: fluxogramaName,
                     tipo_pgr: tipoPgr,
                     servico_id,
-                    texto_caracterizacao_processos
+                    texto_caracterizacao_processos,
                 } as GesAttributes,
                 {
                     area: area,
@@ -261,12 +262,10 @@ export const gesController = {
 
     postImagesAt: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            const {
-                name,
-                id_ges,
-                nome_fluxograma
-            } = req.body;
+            const { name, id_ges, nome_fluxograma } = req.body;
 
+
+            console.log(id_ges)
             const response = await postImagesAtService(name, id_ges, nome_fluxograma);
             return res.status(200).json(response);
 
@@ -287,6 +286,18 @@ export const gesController = {
                 return res.status(400).json({ message: err.message });
             }
         }
+    },
+
+    deleteImageAt: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idimageat } = req.params;
+            const response = await deleteImageAtService(Number(idimageat));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }  
     },
 
     getAllByServico: async (req: AuthenticatedUserRequest, res: Response) => {

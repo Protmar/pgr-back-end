@@ -14,12 +14,10 @@ import {
 export const dadosMatrizServico = {
   post: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const servicoId = globalThis.servico_id;
-      if (!servicoId) {
-        return res.status(401).json({ message: "Serviço ID não fornecido" });
-      }
+
 
       const {
+        servicoid,
         tipo,
         parametro,
         size,
@@ -33,6 +31,11 @@ export const dadosMatrizServico = {
         riskColors,
         formaAtuacao,
       } = req.body;
+
+      let servicoId = servicoid;
+      if (!servicoId) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
+      }
 
       if (!tipo || !parametro || !size) {
         return res

@@ -8,6 +8,6 @@ export const sequelize = new Sequelize({
     username: "postgres",
     password: "123456",
     define: {
-        underscored: true // snake_case
+        underscored: true
     }
 });

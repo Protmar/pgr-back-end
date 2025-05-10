@@ -46,6 +46,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      ges_id: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "ges", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT"
+      },
       transmitir_esocial: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,

@@ -451,6 +451,8 @@ export const fluxogramaUpdateNameService = async (ges_id: number, fluxogramaName
             }
         })
 
+        return data
+
     } catch (error) {
         console.error(error)
     }
@@ -625,6 +627,20 @@ export const getAllGesByClienteService = async (empresaId:number, clienteId:numb
             where: {
                 empresa_id: empresaId,
                 cliente_id: clienteId
+            }
+        })
+
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const deleteImageAtService = async (id:number) => {
+    try {
+        const data = await AtImagesUrls.destroy({
+            where: {
+                name: id
             }
         })
 

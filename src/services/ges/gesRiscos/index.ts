@@ -37,6 +37,13 @@ export const getDadosAllRiscoService = (empresaId: string) => {
   return data;
 };
 
+export const getRiscoByGesService = (empresaId: string, gesId: string) => {
+  const data = Risco.findAll({
+    where: { empresa_id: Number(empresaId), ges_id: Number(gesId) },
+  });
+  return data;
+};
+
 export const putDadosRiscoService = (
   empresa_id: string,
   id_risco: string,
@@ -46,7 +53,7 @@ export const putDadosRiscoService = (
   id_exposicao: string,
   id_meio_propagacao: string,
   transmitir_esocial: string,
-  intens_conc:number,
+  intens_conc: number,
   lt_le: string,
   comentario: string,
   nivel_acao: string,
@@ -98,68 +105,70 @@ export const deleteDadosRiscoService = (empresaId: string, riscoId: string) => {
   return data;
 };
 
-export const postImagePerigoService = async (tiporisco: string, risco_id: number, url: string) => {
+export const postImagePerigoService = async (tiporisco: string, risco_id: number, url: string, file_type?: string) => {
 
   console.log({
     tiporisco,
     risco_id,
     url
   })
-  if(tiporisco === "fichaCampo"){
+  if (tiporisco === "fichaCampo") {
     const data = await ImagensFichaCampo.create({
       risco_id,
-      url
-
+      url,
+      file_type
     });
-    console.log("AAA", data)
     return data;
   }
 
-  if(tiporisco === "memorialCalculo"){
+  if (tiporisco === "memorialCalculo") {
     const data = await ImagensMemorialCalculo.create({
       risco_id,
-      url
+      url,
+      file_type
     });
     return data;
   }
 
-  if(tiporisco === "histogramas"){
+  if (tiporisco === "histogramas") {
     const data = await ImagensHistogramas.create({
       risco_id,
-      url
+      url,
+      file_type
     });
     return data;
   }
 
-  if(tiporisco === "fotosAvaliacao"){
+  if (tiporisco === "fotosAvaliacao") {
     const data = await ImagensFotoAvaliacao.create({
       risco_id,
-      url
+      url,
+      file_type
     });
     return data;
   }
 
 };
 
-export const getImagesPerigoService = (risco_id: string, origem: any) => {
-  
-  if(origem == "fichaCampo"){
-    const data = ImagensFichaCampo.findAll({ where: { risco_id: Number(risco_id) } });
+export const getImagesPerigoService = (risco_id: string, origem: any, tipo: string) => {
+
+  if (origem == "fichaCampo") {
+    const data = ImagensFichaCampo.findAll({ where: { risco_id: Number(risco_id), file_type: tipo } });
     return data;
   }
 
-  if(origem == "memorialCalculo"){
-    const data = ImagensMemorialCalculo.findAll({ where: { risco_id: Number(risco_id) } });
+  if (origem == "memorialCalculo") {
+    const data = ImagensMemorialCalculo.findAll({ where: { risco_id: Number(risco_id), file_type: tipo } });
     return data;
   }
 
-  if(origem == "histogramas"){
-    const data = ImagensHistogramas.findAll({ where: { risco_id: Number(risco_id) } });
+  if (origem == "histogramas") {
+    const data = ImagensHistogramas.findAll({ where: { risco_id: Number(risco_id), file_type: tipo } });
     return data;
   }
 
-  if(origem == "fotosAvaliacao"){
-    const data = ImagensFotoAvaliacao.findAll({ where: { risco_id: Number(risco_id) } });
+  if (origem == "fotosAvaliacao") {
+    const data = ImagensFotoAvaliacao.findAll({ where: { risco_id: Number(risco_id), file_type: tipo } });
     return data;
   }
 
@@ -167,24 +176,22 @@ export const getImagesPerigoService = (risco_id: string, origem: any) => {
 
 export const deleteImagePerigoService = (id: string, origem: any) => {
 
-  console.log("AAA", id, origem)
-  
-  if(origem == "fichaCampo"){
+  if (origem == "fichaCampo") {
     const data = ImagensFichaCampo.destroy({ where: { id: Number(id) } });
     return data;
   }
 
-  if(origem == "memorialCalculo"){
+  if (origem == "memorialCalculo") {
     const data = ImagensMemorialCalculo.destroy({ where: { id: Number(id) } });
     return data;
   }
 
-  if(origem == "histogramas"){
+  if (origem == "histogramas") {
     const data = ImagensHistogramas.destroy({ where: { id: Number(id) } });
     return data;
   }
 
-  if(origem == "fotosAvaliacao"){
+  if (origem == "fotosAvaliacao") {
     const data = ImagensFotoAvaliacao.destroy({ where: { id: Number(id) } });
     return data;
   }

@@ -1,40 +1,57 @@
 import { Model, DataTypes, Optional } from "sequelize";
 import { sequelize } from "../../database";
 import { Risco } from "../Risco";
-// Atualize a interface para tornar o id opcional na criação
+
+// Interface com todos os atributos da tabela
 export interface ImagensFotoAvaliacaoAttributes {
-    id: number;
-    risco_id: number;
-    url: string;
+  id: number;
+  risco_id: number;
+  url: string;
+  file_type?: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
-// Use a versão `Optional` para tornar id opcional durante a criação
-export interface ImagensFotoAvaliacaoCreationAttributes extends Optional<ImagensFotoAvaliacaoAttributes, 'id'> {}
+// Interface para criação (id é opcional ao criar)
+export interface ImagensFotoAvaliacaoCreationAttributes
+  extends Optional<ImagensFotoAvaliacaoAttributes, "id"> {}
 
-export const ImagensFotoAvaliacao = sequelize.define<Model<ImagensFotoAvaliacaoAttributes, ImagensFotoAvaliacaoCreationAttributes>>(
-    "images_foto_avaliacao",
-    {
-        id: {
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true,
-            type: DataTypes.INTEGER,
-          },
-          risco_id: {
-            type: DataTypes.INTEGER,
-            references: { model: "riscos", key: "id" },
-            onUpdate: "CASCADE",
-            onDelete: "CASCADE",
-            allowNull: false,
-          },
-          url: {
-            type: DataTypes.STRING,
-            allowNull: false,
-          },
-    }
+// Definição do model
+export const ImagensFotoAvaliacao = sequelize.define<
+  Model<ImagensFotoAvaliacaoAttributes, ImagensFotoAvaliacaoCreationAttributes>
+>(
+  "ImagensFotoAvaliacao",
+  {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
+    risco_id: {
+      type: DataTypes.INTEGER,
+      references: { model: "riscos", key: "id" }, // model: "risco" (deve bater com o nome da tabela referenciada)
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+      allowNull: false,
+    },
+    url: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    file_type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: "images_foto_avaliacao", // Nome da tabela real no banco
+    timestamps: true, // ou true se tiver `createdAt` e `updatedAt`
+  }
 );
 
+// Associação com o model Risco
 ImagensFotoAvaliacao.belongsTo(Risco, {
-    foreignKey: "id",
-    as: "risco",
-})
+  foreignKey: "risco_id",
+  as: "riscos",
+});

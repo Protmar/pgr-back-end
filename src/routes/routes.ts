@@ -344,12 +344,14 @@ router.get("/getfile/:key", ensureUserAuth, s3Controller.getOne);
 router.delete("/deletefile/:key", ensureUserAuth, s3Controller.deleteOne);
 router.post("/duplicarfile/:key", ensureUserAuth, s3Controller.duplicateFile);
 router.get("/getimage/:key", ensureUserAuth, s3Controller.getOneAWS);
+
 //RISCOS
 router.post("/cadastros/riscos/novorisco/postrisco", ensureUserAuth, dadosRisco.post);
 router.get("/cadastro/getallrisco", ensureUserAuth, dadosRisco.getAll);
 router.get("/:idrisco/getrisco", ensureUserAuth, dadosRisco.get);
 router.put("/:idrisco/editrisco", ensureUserAuth, dadosRisco.put);
 router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
+router.get("/getriscobyges/:idges", ensureUserAuth, dadosRisco.getRiscoByGes);
 
 //Copias
 router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
@@ -392,4 +394,4 @@ router.post("/generatebasepdfltcat", ensureUserAuth, ltcatReportController.getLT
 //SALVAR IMAGENS RISCOS
 router.post("/postimagerisco", ensureUserAuth, dadosRisco.postImagePerigo);
 router.delete("/deleteimagerisco/:idrisco/:origem", ensureUserAuth, dadosRisco.deleteImagePerigo);
-router.get("/getimages/:idrisco/:origem", ensureUserAuth, dadosRisco.getImagesPerigo);
+router.get("/getimages/:idrisco/:origem/:tipo", ensureUserAuth, dadosRisco.getImagesPerigo);

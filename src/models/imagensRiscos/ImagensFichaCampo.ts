@@ -7,6 +7,7 @@ export interface ImagensFichaCampoAttributes {
   id: number;
   risco_id: number;
   url: string;
+  file_type?: string;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -19,7 +20,7 @@ export interface ImagensFichaCampoCreationAttributes
 export const ImagensFichaCampo = sequelize.define<
   Model<ImagensFichaCampoAttributes, ImagensFichaCampoCreationAttributes>
 >(
-  "ImagensFichaCampo", // Nome do model
+  "ImagensFichaCampo",
   {
     id: {
       allowNull: false,
@@ -35,6 +36,10 @@ export const ImagensFichaCampo = sequelize.define<
       allowNull: false,
     },
     url: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    file_type: {
       type: DataTypes.STRING,
       allowNull: false,
     },

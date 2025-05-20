@@ -58,7 +58,7 @@ module.exports = {
       },
       intens_conc: {
         allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.DataTypes.DECIMAL,
       },
       lt_le: {
         allowNull: false,
@@ -86,11 +86,11 @@ module.exports = {
       },
       desvio_padrao: {
         allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.DataTypes.DECIMAL,
       },
       percentil: {
         allowNull: false,
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.DataTypes.DECIMAL,
       },
       obs: {
         allowNull: false,

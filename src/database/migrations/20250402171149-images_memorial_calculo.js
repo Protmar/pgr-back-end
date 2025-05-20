@@ -21,6 +21,10 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: false,
       },
+      file_type: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

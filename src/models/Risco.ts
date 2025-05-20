@@ -112,7 +112,7 @@ export const Risco = sequelize.define<
       },
     },
     intens_conc: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false,
     },
     lt_le: {
@@ -142,11 +142,11 @@ export const Risco = sequelize.define<
       allowNull: true,
     },
     desvio_padrao: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false,
     },
     percentil: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false,
     },
     obs: {

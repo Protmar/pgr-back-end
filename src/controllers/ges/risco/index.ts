@@ -6,6 +6,7 @@ import {
   getDadosAllRiscoService,
   getDadosRiscoService,
   getImagesPerigoService,
+  getRiscoByGesService,
   postDadosRiscoService,
   postImagePerigoService,
   putDadosRiscoService,
@@ -35,6 +36,7 @@ export const dadosRisco = {
         conseqSeveridade,
         grauRisco,
         classeRisco,
+        gesId
       } = req.body;
       const data = await postDadosRiscoService({
         empresa_id: empresaId,
@@ -57,6 +59,7 @@ export const dadosRisco = {
         conseq_severidade: conseqSeveridade,
         grau_risco: grauRisco,
         classe_risco: classeRisco,
+        ges_id: gesId
       });
       res.send(data);
     } catch (err) {
@@ -86,6 +89,23 @@ export const dadosRisco = {
       const data = await getDadosRiscoService(
         empresaId.toString(),
         idrisco
+      );
+      res.send(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  getRiscoByGes: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId } = req.user!;
+      const { idges } = req.params;
+
+      const data = await getRiscoByGesService(
+        empresaId.toString(),
+        idges
       );
       res.send(data);
     } catch (err) {
@@ -172,11 +192,12 @@ export const dadosRisco = {
       const {
         risco_id,
         url,
-        tipo_risco
+        tipo_risco,
+        file_type
       } = req.body;
 
 
-      const data = await postImagePerigoService(tipo_risco, risco_id, url);
+      const data = await postImagePerigoService(tipo_risco, risco_id, url, file_type);
       res.send(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -187,8 +208,8 @@ export const dadosRisco = {
 
   getImagesPerigo: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { idrisco, origem } = req.params;
-      const data = await getImagesPerigoService(idrisco, origem);
+      const { idrisco, origem, tipo } = req.params;
+      const data = await getImagesPerigoService(idrisco, origem, tipo.replace(" ", "/"));
       res.send(data);
     } catch (err) {
       if (err instanceof Error) {

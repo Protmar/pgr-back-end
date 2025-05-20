@@ -25,14 +25,14 @@ export interface RiscoAttributes {
   id_exposicao?: string;
   id_meio_propagacao?: string;
   transmitir_esocial: string;
-  intens_conc?: number;
-  lt_le: string;
+  intens_conc?: number | null;
+  lt_le?: string | null;
   comentario?: string;
-  nivel_acao: string;
+  nivel_acao?: string | null;
   id_tecnica_utilizada?: string;
-  id_estrategia_amostragem: string;
-  desvio_padrao?: number;
-  percentil?: number;
+  id_estrategia_amostragem?: string | null;
+  desvio_padrao?: number | null;
+  percentil?: number | null;
   obs: string;
   probab_freq: string;
   conseq_severidade: string;
@@ -59,42 +59,42 @@ export const Risco = sequelize.define<
       references: { model: "empresas", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_fator_risco: {
       type: DataTypes.INTEGER,
       references: { model: "fatores_riscos", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_fonte_geradora: {
       type: DataTypes.INTEGER,
       references: { model: "fontes_geradoras", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_trajetoria: {
       type: DataTypes.INTEGER,
       references: { model: "trajetorias", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_exposicao: {
       type: DataTypes.INTEGER,
       references: { model: "exposicoes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_meio_propagacao: {
       type: DataTypes.INTEGER,
       references: { model: "meios_de_propagacoes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     transmitir_esocial: {
       allowNull: false,
@@ -106,26 +106,26 @@ export const Risco = sequelize.define<
     },
     intens_conc: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     lt_le: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     comentario: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     nivel_acao: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     id_tecnica_utilizada: {
       type: DataTypes.INTEGER,
       references: { model: "tecnicas_utilizadas", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_estrategia_amostragem: {
       type: DataTypes.INTEGER,
@@ -136,11 +136,11 @@ export const Risco = sequelize.define<
     },
     desvio_padrao: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     percentil: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     obs: {
       type: DataTypes.STRING,
@@ -159,12 +159,8 @@ export const Risco = sequelize.define<
       allowNull: false,
     },
     classe_risco: {
+      type: DataTypes.STRING,
       allowNull: false,
-      type: DataTypes.ENUM,
-      values: enumClasseRisco,
-      validate: {
-        isIn: [enumClasseRisco],
-      },
     },
   },
   { tableName: "riscos" }

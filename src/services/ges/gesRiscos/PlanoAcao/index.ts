@@ -112,15 +112,15 @@ export const getDadosPlanoAcaoService = async (
     include: [
       {
         model: CadastroMedidaControleColetivaNecessaria,
-        as: "medidasColetivasNecessarias",
+        as: "medidas_coletivas_necessarias",
       },
       {
         model: CadastroMedidaControleAdministrativaNecessaria,
-        as: "medidasAdministrativasNecessarias",
+        as: "medidas_administrativas_necessarias",
       },
       {
         model: CadastroMedidaControleIndividualNecessaria,
-        as: "medidasIndividualNecessarias",
+        as: "medidas_individual_necessarias",
       },
     ],
   });
@@ -137,15 +137,15 @@ export const getAllDadosPlanoAcaoService = async (riscoId: string) => {
     include: [
       {
         model: CadastroMedidaControleColetivaNecessaria,
-        as: "medidasColetivasNecessarias",
+        as: "medidas_coletivas_necessarias",
       },
       {
         model: CadastroMedidaControleAdministrativaNecessaria,
-        as: "medidasAdministrativasNecessarias",
+        as: "medidas_administrativas_necessarias",
       },
       {
         model: CadastroMedidaControleIndividualNecessaria,
-        as: "medidasIndividualNecessarias",
+        as: "medidas_individual_necessarias",
       },
     ],
   });
@@ -228,15 +228,15 @@ export const putDadosPlanoAcaoService = async (
       include: [
         {
           model: CadastroMedidaControleColetivaNecessaria,
-          as: "medidasColetivasNecessarias",
+          as: "medidas_coletivas_necessarias",
         },
         {
           model: CadastroMedidaControleAdministrativaNecessaria,
-          as: "medidasAdministrativasNecessarias",
+          as: "medidas_administrativas_necessarias",
         },
         {
           model: CadastroMedidaControleIndividualNecessaria,
-          as: "medidasIndividualNecessarias",
+          as: "medidas_individual_necessarias",
         },
       ],
       transaction,

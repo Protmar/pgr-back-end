@@ -36,6 +36,7 @@ export const dadosPlanoAcao = {
         medidasAdministrativasNecessarias: medidaAdministrativaNecessarias || [],
         medidasIndividualNecessarias: medidaIndividualNecessarias || [],
       });
+      
 
       console.log("Plano de ação criado:", planoAcao.toJSON());
       res.status(201).json({
@@ -144,11 +145,19 @@ export const dadosPlanoAcao = {
 export const medidaColetivaController = {
   getAll: async (req: any, res: any) => {
     try {
-      const medidas = await medidaColetivaNecessariasService.getAll();
+      const { riscoId } = req.params;
+      const data = await getAllDadosPlanoAcaoService(riscoId);
+      // Transformar a resposta para camelCase
+      const responseData = data.map((plano: any) => ({
+        ...plano.toJSON(),
+        medidaColetivaNecessarias: plano.medidas_coletivas_necessarias || [],
+        medidaAdministrativaNecessarias: plano.medidas_administrativas_necessarias || [],
+        medidaIndividualNecessarias: plano.medidas_individual_necessarias || [],
+      }));
       res.status(200).json({
         success: true,
-        data: medidas,
-        message: 'Medidas coletivas encontradas',
+        data: responseData,
+        message: 'Planos de ação encontrados',
       });
     } catch (err) {
       if (err instanceof Error) {

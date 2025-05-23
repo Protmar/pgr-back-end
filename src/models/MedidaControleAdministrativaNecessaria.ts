@@ -14,7 +14,7 @@ export interface CadastroMedidaControleAdministrativaNecessariaAttributes {
 export interface CadastroMedidaControleAdministrativaNecessariaCreationAttributes extends Optional<CadastroMedidaControleAdministrativaNecessariaAttributes, 'id'> {}
 
 export const CadastroMedidaControleAdministrativaNecessaria = sequelize.define<Model<CadastroMedidaControleAdministrativaNecessariaAttributes, CadastroMedidaControleAdministrativaNecessariaCreationAttributes>>(
-    "medida_controle_administrativa_necessaria",
+    "medida_controle_administrativa_necessarias",
     {
         id: {
             type: DataTypes.INTEGER,

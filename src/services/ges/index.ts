@@ -26,6 +26,17 @@ import { AtImagesUrls } from "../../models/subdivisoesAmbienteTrabalho/AtImagesU
 import { Sequelize } from "sequelize";
 import { getCache } from "../../controllers/cliente/cliente";
 import { CadastroFuncao } from "../../models/Funcoes";
+import { Risco } from "../../models/Risco";
+import { CadastroFatoresRisco } from "../../models/FatoresRisco";
+import { CadastroFonteGeradora } from "../../models/FontesGeradoras";
+import { CadastroMedidaControleAdministrativaExistente } from "../../models/MedidaControleAdministrativaExistente";
+import { CadastroMedidaControleColetivaExistente } from "../../models/MedidaControleColetivaExistente";
+import { CadastroMedidaControleIndividualExistente } from "../../models/MedidaControleIndividualExistente";
+import { RiscoAdministrativoExistente } from "../../models/Risco/RiscoAdministrativoExistente";
+import { RiscoColetivoExistente } from "../../models/Risco/RiscoColetivoExistente";
+import { RiscoIndividualExistente } from "../../models/Risco/RiscoIndividualExistente";
+import { CadastroCargo } from "../../models/Cargos";
+import { PlanoAcaoRisco } from "../../models/Risco/PlanoAcao/PlanoAcaoRisco";
 
 export const gesPostService = async (
     empresa_id: number,
@@ -40,7 +51,7 @@ export const gesPostService = async (
     pathFluxograma?: string,
     fileNameFluxograma?: any,
     mimeTypeFluxograma?: string
-) => {  
+) => {
     const cliente_id = globalThis.cliente_id;
     const servico_id = globalThis.servico_id;
     const ges = await Ges.create({ ...params, servico_id, empresa_id, nome_fluxograma: fileNameFluxograma, cliente_id });
@@ -138,13 +149,13 @@ export const getAllGesService = async (empresa_id: number) => {
             { model: GesCurso, as: "cursos" },
             { model: GesRac, as: "racs" },
             { model: GesTipoPgr, as: "tiposPgr" },
-            { 
-                model: GesTrabalhador, 
+            {
+                model: GesTrabalhador,
                 as: "trabalhadores",
                 include: [
                     {
                         model: Trabalhadores,
-                        as: "trabalhador", 
+                        as: "trabalhador",
                         include: [
                             {
                                 model: CadastroFuncao,
@@ -199,7 +210,7 @@ export const getAllGesService = async (empresa_id: number) => {
 };
 
 
-export const getOneGesService = async (empresa_id: number, idges: number, clienteId?: number) => {
+export const getOneGesRiscoService = async (empresa_id: number, idges: number, clienteId?: number) => {
     const whereClause: any = {
         empresa_id,
         id: idges,
@@ -213,34 +224,151 @@ export const getOneGesService = async (empresa_id: number, idges: number, client
         where: whereClause,
         include: [
             {
-                model: GesCurso, as: "cursos",
+                model: Risco, as: "riscos",
                 include: [
                     {
-                        model: CadastroCursoObrigatorio,
-                        as: "curso",
+                        model: CadastroFatoresRisco,
+                        as: "fatorRisco",
+                    },
+                    {
+                        model: CadastroFonteGeradora,
+                        as: "fonteGeradora",
+                    },
+                    {
+                        model: RiscoAdministrativoExistente,
+                        as: "risco_administrativa_existente",
+                    },
+                    {
+                        model: RiscoColetivoExistente,
+                        as: "risco_coletivo_existente",
+                    },
+                    {
+                        model: RiscoIndividualExistente,
+                        as: "risco_individual_existente",
                     }
-                ]
+                ],
             },
+        ]
+    })
+
+    return data;
+}
+
+// services/ges/getRiscos.ts
+export const getRiscos = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [
             {
-                model: AtImagesUrls,
-                as: "imagens",  
+                model: Risco,
+                as: "riscos",
+                include: [
+                    {
+                        model: CadastroFatoresRisco,
+                        as: "fatorRisco"
+                    },
+                    {
+                        model: CadastroFonteGeradora,
+                        as: "fonteGeradora"
+                    },
+                    {
+                        model: RiscoAdministrativoExistente,
+                        as: "relacoes_administrativas",
+                        include: [
+                            {
+                                model: CadastroMedidaControleAdministrativaExistente,
+                                as: "medidas_administrativas_existentes",
+                                attributes: ["descricao"]
+                            }
+                        ]
+                    },
+                    {
+                        model: RiscoColetivoExistente,
+                        as: "relacoes_coletivas",
+                        include: [
+                            {
+                                model: CadastroMedidaControleColetivaExistente,
+                                as: "medidas_coletivas_existentes",
+                                attributes: [["descricao", "descrica"]] 
+                            }
+                        ]
+                    },
+                    {
+                        model: RiscoIndividualExistente,
+                        as: "relacoes_individuais",
+                        include: [
+                            {
+                                model: CadastroMedidaControleIndividualExistente,
+                                as: "medidas_individuais_existentes",
+                                attributes: [["descricao", "desc"]]
+                            }
+                        ]
+                    },
+                    {
+                        model: PlanoAcaoRisco,
+                        as: "planosAcao"    
+                    }
+                ],
             },
+        ],
+    });
+};
+
+// services/ges/getCursos.ts
+export const getCursos = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [
+            {
+                model: GesCurso,
+                as: "cursos",
+                include: [{ model: CadastroCursoObrigatorio, as: "curso" }],
+            },
+        ],
+    });
+};
+
+// services/ges/getImagens.ts
+export const getImagens = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [{ model: AtImagesUrls, as: "imagens" }],
+    });
+};
+
+// services/ges/getRacs.ts
+export const getRacs = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [
             {
                 model: GesRac,
                 as: "racs",
-                include: [
-                    {
-                        model: CadastroRac,
-                        as: "rac",
-                    }
-                ]
+                include: [{ model: CadastroRac, as: "rac" }],
             },
+        ],
+    });
+};
+
+// services/ges/getTiposPgr.ts
+export const getTiposPgr = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [
             {
-                model: GesTipoPgr, as: "tiposPgr",
-                include: [
-                    { model: CadastroTipoPgr, as: "tipoPgr" }
-                ]
+                model: GesTipoPgr,
+                as: "tiposPgr",
+                include: [{ model: CadastroTipoPgr, as: "tipoPgr" }],
             },
+        ],
+    });
+};
+
+// services/ges/getTrabalhadores.ts
+export const getTrabalhadores = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [
             {
                 model: GesTrabalhador,
                 as: "trabalhadores",
@@ -251,6 +379,15 @@ export const getOneGesService = async (empresa_id: number, idges: number, client
                     },
                 ],
             },
+        ],
+    });
+};
+
+// services/ges/getAmbientesTrabalho.ts
+export const getAmbientesTrabalho = async (empresa_id: number, idges: number) => {
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
+        include: [
             {
                 model: AmbienteTrabalho,
                 as: "ambientesTrabalhos",
@@ -265,33 +402,57 @@ export const getOneGesService = async (empresa_id: number, idges: number, client
                         model: VeiculosAmbienteTrabalho,
                         as: "veiculosAmbienteTrabalho",
                         attributes: ["id"],
-                        include: [
-                            { model: CadastroVeiculo, as: "veiculo" },
-                        ]
+                        include: [{ model: CadastroVeiculo, as: "veiculo" }],
                     },
                     {
                         model: MobiliarioAmbienteTrabalho,
                         as: "MobiliarioAmbienteTrabalho",
                         attributes: ["id"],
-                        include: [
-                            { model: CadastroMobiliario, as: "mobiliario" },
-                        ]
+                        include: [{ model: CadastroMobiliario, as: "mobiliario" }],
                     },
                     {
                         model: EquipamentosAmbienteTrabalho,
                         as: "EquipamentoAmbienteTrabalho",
                         attributes: ["id"],
-                        include: [
-                            { model: CadastroEquipamento, as: "equipamento" },
-                        ]
+                        include: [{ model: CadastroEquipamento, as: "equipamento" }],
                     },
-                ]
-            }
-        ]
+                ],
+            },
+        ],
     });
-
-    return data;
 };
+
+// services/ges/getOneGesService.ts
+export const getOneGesService = async (empresa_id: number, idges: number, clienteId?: number) => {
+    const whereClause: any = { empresa_id, id: idges };
+    if (clienteId !== undefined) {
+        whereClause.cliente_id = Number(clienteId);
+    }
+
+    const [riscos, cursos, imagens, racs, tiposPgr, trabalhadores, ambientesTrabalho] = await Promise.all([
+        getRiscos(empresa_id, idges),
+        getCursos(empresa_id, idges),
+        getImagens(empresa_id, idges),
+        getRacs(empresa_id, idges),
+        getTiposPgr(empresa_id, idges),
+        getTrabalhadores(empresa_id, idges),
+        getAmbientesTrabalho(empresa_id, idges),
+    ]);
+
+    return {
+        dataValues: {
+            ...riscos?.dataValues,
+            riscos: riscos?.dataValues || [],
+            cursos: cursos?.dataValues || [],
+            imagens: imagens?.dataValues || [],
+            racs: racs?.dataValues || [],
+            tiposPgr: tiposPgr?.dataValues || [],
+            trabalhadores: trabalhadores?.dataValues || [],
+            ambientesTrabalhos: ambientesTrabalho?.dataValues || [],
+        },
+    };
+};
+
 
 
 export const gesPutService = async (
@@ -329,7 +490,7 @@ export const gesCursoPut = async (
             }
         })
     })
-    
+
     cursos.updatedCursos.map(async (e: any) => {
         await GesCurso.create({
             id_ges,
@@ -485,7 +646,7 @@ export const getImagesAtService = async (id_ges: number) => {
     }
 }
 
-export const getCursosInString = async (id_curso:number) => {
+export const getCursosInString = async (id_curso: number) => {
     try {
         const data = await CadastroCursoObrigatorio.findOne({
             where: {
@@ -495,11 +656,11 @@ export const getCursosInString = async (id_curso:number) => {
 
         return data?.get('descricao');
     } catch (error) {
-        
+
     }
 }
 
-export const getEpisInString = async (id_curso:number) => {
+export const getEpisInString = async (id_curso: number) => {
     try {
         const data = await CadastroEquipamento.findOne({
             where: {
@@ -509,11 +670,11 @@ export const getEpisInString = async (id_curso:number) => {
 
         return data?.get('descricao');
     } catch (error) {
-        
+
     }
 }
 
-export const getRacsInString = async (id_rac:number) => {
+export const getRacsInString = async (id_rac: number) => {
     try {
         const data = await CadastroRac.findOne({
             where: {
@@ -523,7 +684,7 @@ export const getRacsInString = async (id_rac:number) => {
 
         return data?.get('descricao');
     } catch (error) {
-        
+
     }
 }
 
@@ -566,7 +727,7 @@ export const getAllGesByServico = async (empresaId: number, idServico: number) =
                     include: [
                         {
                             model: Trabalhadores,
-                            as: "trabalhador", 
+                            as: "trabalhador",
                             include: [
                                 {
                                     model: CadastroFuncao,
@@ -621,7 +782,7 @@ export const getAllGesByServico = async (empresaId: number, idServico: number) =
     }
 }
 
-export const getAllGesByClienteService = async (empresaId:number, clienteId:number) => {
+export const getAllGesByClienteService = async (empresaId: number, clienteId: number) => {
     try {
         const data = await Ges.findAll({
             where: {
@@ -636,7 +797,7 @@ export const getAllGesByClienteService = async (empresaId:number, clienteId:numb
     }
 }
 
-export const deleteImageAtService = async (id:number) => {
+export const deleteImageAtService = async (id: number) => {
     try {
         const data = await AtImagesUrls.destroy({
             where: {

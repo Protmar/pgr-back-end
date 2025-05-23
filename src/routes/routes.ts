@@ -37,7 +37,7 @@ import { s3Controller } from "../controllers/aws/s3";
 import { dadosCadastroAdministrativaExistente } from "../controllers/cadastros/medidacontroleadministrativaexistente";
 import { dadosCadastroColetivaExistente } from "../controllers/cadastros/medidacontrolecoletivaexistente";
 import { dadosCadastroIndividualExistente } from "../controllers/cadastros/medidacontroleindividualexistente";
-import { dadosRisco } from "../controllers/ges/risco";
+import { dadosRisco, medidaAdministrativaController, medidaColetivaController, medidaIndividualController } from "../controllers/ges/risco";
 import { dadosCadastroColetivaNecessaria } from "../controllers/cadastros/medidacontrolecoletivanecessaria";
 import { dadosCadastroAdministrativaNecessaria } from "../controllers/cadastros/medidacontroleadministrativanecessaria";
 import { dadosCadastroIndividualNecessaria } from "../controllers/cadastros/medidacontroleindividualnecessaria";
@@ -50,6 +50,7 @@ import { ltcatReportController } from "../controllers/pdfs/ltcatController";
 
 import { dadosMatrizServico } from "../controllers/cadastros/matriz";
 import { dadosCadastroEstrategiaAmostragem } from "../controllers/cadastros/estrategiaamostragem";
+import { dadosPlanoAcao } from "../controllers/ges/risco/planoacao";
 
 
 
@@ -353,6 +354,19 @@ router.put("/:idrisco/editrisco", ensureUserAuth, dadosRisco.put);
 router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
 router.get("/getriscobyges/:idges", ensureUserAuth, dadosRisco.getRiscoByGes);
 
+
+router.get("/cadastros/medidascoletivas", ensureUserAuth, medidaColetivaController.getAll);
+router.get("/cadastros/medidasadministrativas", ensureUserAuth, medidaAdministrativaController.getAll);
+router.get("/cadastros/medidasindividuais", ensureUserAuth, medidaIndividualController.getAll);
+//PLANO DE AÇÃO
+router.post("/riscos/:riscoId/planoacao", ensureUserAuth, dadosPlanoAcao.post);
+router.get("/riscos/:riscoId/planoacao", ensureUserAuth, dadosPlanoAcao.getAll);
+router.get("/riscos/:riscoId/planoacao/:planoAcaoId", ensureUserAuth, dadosPlanoAcao.get);
+router.put("/riscos/:riscoId/planoacao/:planoAcaoId", ensureUserAuth, dadosPlanoAcao.put);
+router.delete("/riscos/:riscoId/planoacao/:planoAcaoId", ensureUserAuth, dadosPlanoAcao.delete);
+router.get("/medidascoletivas", ensureUserAuth, medidaColetivaController.getAll);
+router.get("/medidasadministrativas", ensureUserAuth, medidaAdministrativaController.getAll);
+router.get("/medidasindividuais", ensureUserAuth, medidaIndividualController.getAll);
 //Copias
 router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
 

@@ -61,7 +61,7 @@ module.exports = {
         type: Sequelize.DataTypes.DECIMAL,
       },
       lt_le: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },
       comentario: {
@@ -69,7 +69,7 @@ module.exports = {
         type: Sequelize.DataTypes.TEXT,
       },
       nivel_acao: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DataTypes.STRING,
       },
       id_tecnica_utilizada: {
@@ -82,7 +82,8 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "estrategia_amostragens", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+        onDelete: "RESTRICT",
+        allowNull: true
       },
       desvio_padrao: {
         allowNull: false,
@@ -91,6 +92,7 @@ module.exports = {
       percentil: {
         allowNull: false,
         type: Sequelize.DataTypes.DECIMAL,
+
       },
       obs: {
         allowNull: false,

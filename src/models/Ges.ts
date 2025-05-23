@@ -10,6 +10,7 @@ import { CadastroTeto } from "./Tetos";
 import { CadastroParede } from "./Paredes";
 import { CadastroVentilacao } from "./Ventilacoes";
 import { AtImagesUrls } from "./subdivisoesAmbienteTrabalho/AtImagesUrls";
+import { Risco } from "./Risco";
 
 export interface GesAttributes {
   id: number;
@@ -131,4 +132,9 @@ Ges.hasMany(AtImagesUrls, {
   as: "imagens",
   onDelete: "CASCADE",
   hooks: true,
+});
+
+Ges.hasMany(Risco, {
+  foreignKey: "ges_id",
+  as: "riscos",
 });

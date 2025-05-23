@@ -12,6 +12,9 @@ import { CadastroMedidaControleIndividualExistente } from "./MedidaControleIndiv
 import { TransmitirEsocial } from "./enums/transmitir_esocial.enum";
 import { ClasseRisco } from "./enums/classe_risco.enum";
 import { CadastroEstrategiaAmostragem } from "./EstrategiaAmostragem";
+import { RiscoAdministrativoExistente } from "./Risco/RiscoAdministrativoExistente";
+import { RiscoIndividualExistente } from "./Risco/RiscoIndividualExistente";
+import { RiscoColetivoExistente } from "./Risco/RiscoColetivoExistente";
 
 const enumTransmitirEsocial = Object.keys(TransmitirEsocial);
 const enumClasseRisco = Object.keys(ClasseRisco);
@@ -25,14 +28,14 @@ export interface RiscoAttributes {
   id_exposicao?: string;
   id_meio_propagacao?: string;
   transmitir_esocial: string;
-  intens_conc?: number;
-  lt_le: string;
+  intens_conc?: number | null;
+  lt_le?: string | null;
   comentario?: string;
-  nivel_acao: string;
+  nivel_acao?: string | null;
   id_tecnica_utilizada?: string;
-  id_estrategia_amostragem: string;
-  desvio_padrao?: number;
-  percentil?: number;
+  id_estrategia_amostragem?: string | null;
+  desvio_padrao?: number | null;
+  percentil?: number | null;
   obs: string;
   probab_freq: string;
   conseq_severidade: string;
@@ -60,42 +63,42 @@ export const Risco = sequelize.define<
       references: { model: "empresas", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_fator_risco: {
       type: DataTypes.INTEGER,
       references: { model: "fatores_riscos", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_fonte_geradora: {
       type: DataTypes.INTEGER,
       references: { model: "fontes_geradoras", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_trajetoria: {
       type: DataTypes.INTEGER,
       references: { model: "trajetorias", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_exposicao: {
       type: DataTypes.INTEGER,
       references: { model: "exposicoes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_meio_propagacao: {
       type: DataTypes.INTEGER,
       references: { model: "meios_de_propagacoes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     ges_id: {
       type: DataTypes.INTEGER,
@@ -114,25 +117,26 @@ export const Risco = sequelize.define<
     intens_conc: {
       type: DataTypes.DECIMAL,
       allowNull: false,
+
     },
     lt_le: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     comentario: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     nivel_acao: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     id_tecnica_utilizada: {
       type: DataTypes.INTEGER,
       references: { model: "tecnicas_utilizadas", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
+      allowNull: false,
     },
     id_estrategia_amostragem: {
       type: DataTypes.INTEGER,
@@ -148,6 +152,7 @@ export const Risco = sequelize.define<
     percentil: {
       type: DataTypes.DECIMAL,
       allowNull: false,
+
     },
     obs: {
       type: DataTypes.STRING,
@@ -166,21 +171,19 @@ export const Risco = sequelize.define<
       allowNull: false,
     },
     classe_risco: {
+      type: DataTypes.STRING,
       allowNull: false,
-      type: DataTypes.ENUM,
-      values: enumClasseRisco,
-      validate: {
-        isIn: [enumClasseRisco],
-      },
     },
   },
   { tableName: "riscos" }
 );
 Risco.belongsTo(CadastroFatoresRisco, {
   foreignKey: "id_fator_risco",
+  as: "fatorRisco"
 });
 Risco.belongsTo(CadastroFonteGeradora, {
   foreignKey: "id_fonte_geradora",
+  as: "fonteGeradora"
 });
 Risco.belongsTo(CadastroExposicao, {
   foreignKey: "id_exposicao",
@@ -196,4 +199,41 @@ Risco.belongsTo(CadastroTecnicaUtilizada, {
 });
 Risco.belongsTo(CadastroEstrategiaAmostragem, {
   foreignKey: "id_estrategia_amostragem",
+});
+
+
+Risco.belongsToMany(CadastroMedidaControleAdministrativaExistente, {
+  through: RiscoAdministrativoExistente,
+  foreignKey: "id_risco",
+  otherKey: "id_medida_controle_administrativa_existentes",
+  as: "medidas_administrativas_existentes",
+});
+
+Risco.hasMany(RiscoAdministrativoExistente, {
+  foreignKey: "id_risco",
+  as: "relacoes_administrativas", 
+});
+
+Risco.belongsToMany(CadastroMedidaControleColetivaExistente, {
+  through: RiscoColetivoExistente,
+  foreignKey: "id_risco",
+  otherKey: "id_medida_controle_coletiva_existentes",
+  as: "medidas_coletivas_existentes",
+});
+
+Risco.hasMany(RiscoColetivoExistente, {
+  foreignKey: "id_risco",
+  as: "relacoes_coletivas", 
+});
+
+Risco.belongsToMany(CadastroMedidaControleIndividualExistente, {
+  through: RiscoIndividualExistente,
+  foreignKey: "id_risco",
+  otherKey: "id_medida_controle_individual_existentes",
+  as: "medidas_individuais_existentes",
+});
+
+Risco.hasMany(RiscoIndividualExistente, {
+  foreignKey: "id_risco",
+  as: "relacoes_individuais", 
 });

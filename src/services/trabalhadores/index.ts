@@ -10,6 +10,7 @@ import { GesTrabalhador } from "../../models/subdivisoesGes/GesTrabalhadores";
 import Trabalhadores, {
   TrabalhadorCreationAttributes,
 } from "../../models/Trabalhadores";
+import { ATPostService } from "../ambientesTrabalho";
 
 export const postDadosTrabalhadorService = (
   params: TrabalhadorCreationAttributes
@@ -107,20 +108,20 @@ export const postDadosTrabalhadorExcelService = async (
       }
 
       let cargo = await CadastroCargo.findOne({ where: { descricao: item.cargo, empresa_id: empresaId } });
-let cargoId: number;
-let cargoDescricao: string;
+      let cargoId: number;
+      let cargoDescricao: string;
 
-if (cargo) {
-  cargoId = cargo.dataValues.id;
-  cargoDescricao = cargo.dataValues.descricao;
-} else {
-  const novoCargo = await CadastroCargo.create({
-    descricao: item.cargo,
-    empresa_id: Number(empresaId),
-  });
-  cargoId = novoCargo.dataValues.id;
-  cargoDescricao = novoCargo.dataValues.descricao;
-}
+      if (cargo) {
+        cargoId = cargo.dataValues.id;
+        cargoDescricao = cargo.dataValues.descricao;
+      } else {
+        const novoCargo = await CadastroCargo.create({
+          descricao: item.cargo,
+          empresa_id: Number(empresaId),
+        });
+        cargoId = novoCargo.dataValues.id;
+        cargoDescricao = novoCargo.dataValues.descricao;
+      }
 
       let funcao = await CadastroFuncao.findOne({ where: { funcao: item.funcao, empresa_id: empresaId } });
       let funcaoId = funcao ? funcao.dataValues.id : null;
@@ -160,7 +161,10 @@ if (cargo) {
           nome_fluxograma: "",
           empresa_id: Number(empresaId),
         });
+        
+        
         gesId = novoGes.dataValues.id;
+        await ATPostService(Number(novoGes.dataValues.empresa_id), [], [], [], [], gesId, "", "", "");
       }
 
       const novoTrabalhador = {

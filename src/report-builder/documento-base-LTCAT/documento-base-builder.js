@@ -15,7 +15,6 @@ module.exports = {
     gesIds
   }) => {
 
-    console.log(cliente)
     const nomeLogo = cliente.dataValues.logo_url || null;
 
     const urlImageLogoCliente = await getFileToS3(nomeLogo);

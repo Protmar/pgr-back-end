@@ -41,10 +41,10 @@ export const dadosCadastroColetivaNecessaria = {
   get: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idcoletivanecessasria } = req.params;
+      const { idcoletivanecessaria } = req.params;
       const data = await coletivaNecessariaGetService(
         empresaId.toString(),
-        idcoletivanecessasria
+        idcoletivanecessaria
       );
       res.send(data);
     } catch (err) {
@@ -57,12 +57,12 @@ export const dadosCadastroColetivaNecessaria = {
   put: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idcoletivanecessasria } = req.params;
+      const { idcoletivanecessaria } = req.params;
       const { descricao } = req.body;
       const data = await coletivaNecessariaPutService(
         empresaId.toString(),
         descricao,
-        idcoletivanecessasria
+        idcoletivanecessaria
       );
       res.send(data);
     } catch (err) {
@@ -75,10 +75,10 @@ export const dadosCadastroColetivaNecessaria = {
   delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idcoletivanecessasria } = req.params;
+      const { idcoletivanecessaria } = req.params;
       const data = await coletivaNecessariaDeleteService(
         empresaId.toString(),
-        idcoletivanecessasria
+        idcoletivanecessaria
       );
       res.send(data);
     } catch (err) {

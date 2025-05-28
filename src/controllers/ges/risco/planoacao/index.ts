@@ -142,21 +142,21 @@ export const dadosPlanoAcao = {
   },
 };
 
-export const medidaColetivaController = {
+export const medidaColetivaPlanoAcaoController = {
   getAll: async (req: any, res: any) => {
     try {
       const { riscoId } = req.params;
-      const data = await getAllDadosPlanoAcaoService(riscoId);
+      const data = await medidaColetivaNecessariasService.getAll();
       // Transformar a resposta para camelCase
-      const responseData = data.map((plano: any) => ({
-        ...plano.toJSON(),
-        medidaColetivaNecessarias: plano.medidas_coletivas_necessarias || [],
-        medidaAdministrativaNecessarias: plano.medidas_administrativas_necessarias || [],
-        medidaIndividualNecessarias: plano.medidas_individual_necessarias || [],
-      }));
+      // const responseData = data.map((plano: any) => ({
+      //   ...plano.toJSON(),
+      //   medidaColetivaNecessarias: plano.medidas_coletivas_necessarias || [],
+      //   medidaAdministrativaNecessarias: plano.medidas_administrativas_necessarias || [],
+      //   medidaIndividualNecessarias: plano.medidas_individual_necessarias || [],
+      // }));
       res.status(200).json({
         success: true,
-        data: responseData,
+        data: data,
         message: 'Planos de ação encontrados',
       });
     } catch (err) {
@@ -168,7 +168,7 @@ export const medidaColetivaController = {
   },
 };
 
-export const medidaAdministrativaController = {
+export const medidaAdministrativaPlanoAcaoController = {
   getAll: async (req: any, res: any) => {
     try {
       const medidas = await medidaAdministrativaNecessariasService.getAll();
@@ -186,7 +186,7 @@ export const medidaAdministrativaController = {
   },
 };
 
-export const medidaIndividualController = {
+export const medidaIndividualPlanoAcaoController = {
   getAll: async (req: any, res: any) => {
     try {
       const medidas = await medidaIndividualNecessariasService.getAll();

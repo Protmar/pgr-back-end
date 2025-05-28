@@ -38,10 +38,13 @@ export interface RiscoAttributes {
   conseq_severidade: string;
   grau_risco: string;
   classe_risco: string;
+  conclusao_ltcat?: string | null;
+  conclusao_periculosidade?: string | null;
+  conclusao_insalubridade?: string | null;
 }
 
 export interface RiscoCreationAttributes
-  extends Optional<RiscoAttributes, "id"> {}
+  extends Optional<RiscoAttributes, "id"|"conclusao_ltcat"|"conclusao_periculosidade"|"conclusao_insalubridade"> {}
 
 export const Risco = sequelize.define<
   Model<RiscoAttributes, RiscoCreationAttributes>
@@ -161,6 +164,18 @@ export const Risco = sequelize.define<
     classe_risco: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    conclusao_ltcat: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    conclusao_periculosidade: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    conclusao_insalubridade: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   { tableName: "riscos" }

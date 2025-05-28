@@ -17,6 +17,7 @@ import { Risco } from "../../../models/Risco";
 import { RiscoColetivoExistente } from "../../../models/Risco/RiscoColetivoExistente";
 import { RiscoAdministrativoExistente } from "../../../models/Risco/RiscoAdministrativoExistente";
 import { RiscoIndividualExistente } from "../../../models/Risco/RiscoIndividualExistente";
+import { medidaAdministrativaNecessariasService, medidaColetivaNecessariasService, medidaIndividualNecessariasService } from "../../../services/ges/gesRiscos/PlanoAcao";
 
 export const dadosRisco = {
   post: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -44,6 +45,9 @@ export const dadosRisco = {
       medidasColetivas,
       medidasAdministrativas,
       medidasIndividuais,
+      conclusao_insalubridade,
+      conclusao_periculosidade,
+      conclusao_ltcat,
     } = req.body;
 
     try {
@@ -73,6 +77,9 @@ export const dadosRisco = {
         conseq_severidade,
         grau_risco,
         classe_risco,
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
       });
 
       // Log do risco criado
@@ -176,9 +183,12 @@ export const dadosRisco = {
         conseqSeveridade,
         grauRisco,
         classeRisco,
-        medidasColetivas, // Novo: array de IDs
-        medidasAdministrativas, // Novo: array de IDs
-        medidasIndividuais, // Novo: array de IDs
+        medidasColetivas,
+        medidasAdministrativas,
+        medidasIndividuais,
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
       } = req.body;
 
       const data = await putDadosRiscoService(
@@ -205,7 +215,10 @@ export const dadosRisco = {
         classeRisco,
         medidasColetivas || [], // Garante que seja um array
         medidasAdministrativas || [], // Garante que seja um array
-        medidasIndividuais || [] // Garante que seja um array
+        medidasIndividuais || [], // Garante que seja um array
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
       );
 
       res.status(200).json(data);

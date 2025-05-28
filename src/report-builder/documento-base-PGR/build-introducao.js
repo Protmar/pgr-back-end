@@ -228,12 +228,11 @@ module.exports = {
                         }
                     };
 
-                    const ambiente = ges.ambientesTrabalhos?.[0] || {};
+                    const ambiente = ges.ambientesTrabalhos?.ambientesTrabalhos[0].dataValues || {};
                     const episText = await getEpisObrigatorios(ambiente.EquipamentoAmbienteTrabalho);
 
                     const createAmbienteInfo = (ambiente, episText) => {
                         const info = [];
-
                         if (ambiente.area) info.push({ text: `• Área: ${ambiente.area}\n` });
                         if (ambiente.pe_direito) info.push({ text: `• Pé Direito: ${ambiente.pe_direito}\n` });
                         if (ambiente.qnt_janelas) info.push({ text: `• Qtd. Janelas: ${ambiente.qnt_janelas}\n` });
@@ -274,7 +273,7 @@ module.exports = {
                             {
                                 text: createAmbienteInfo(ambiente, episText),
                                 fontSize: 10,
-                                alignment: "center",
+                                alignment: "justfy",
                                 margin: [5, 0, 5, 0],
                                 lineHeight: 1,
                             },

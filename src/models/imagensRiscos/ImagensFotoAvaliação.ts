@@ -50,8 +50,8 @@ export const ImagensFotoAvaliacao = sequelize.define<
   }
 );
 
-// Associação com o model Risco
-ImagensFotoAvaliacao.belongsTo(Risco, {
-  foreignKey: "risco_id",
-  as: "riscos",
-});
+// // Associação com o model Risco
+// ImagensFotoAvaliacao.belongsTo(Risco, {
+//   foreignKey: "risco_id",
+//   as: "riscos",
+// });

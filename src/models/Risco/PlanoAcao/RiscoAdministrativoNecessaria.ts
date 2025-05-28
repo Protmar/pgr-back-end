@@ -54,16 +54,22 @@ export const RiscoAdministrativoNecessaria = sequelize.define<
   }
 );
 
-PlanoAcaoRisco.belongsToMany(CadastroMedidaControleAdministrativaNecessaria, {
-  through: RiscoAdministrativoNecessaria,
-  foreignKey: "id_plano_acao_riscos",
-  otherKey: "id_medida_controle_administrativa_necessarias",
-  as: "medidas_administrativas_necessarias"
+RiscoAdministrativoNecessaria.belongsTo(CadastroMedidaControleAdministrativaNecessaria, {
+  foreignKey: "id_medida_controle_administrativa_necessarias",
+  as: "medidas_administrativas_necessarias",
 });
 
-CadastroMedidaControleAdministrativaNecessaria.belongsToMany(PlanoAcaoRisco, {
-  through: RiscoAdministrativoNecessaria,
-  foreignKey: "id_medida_controle_administrativa_necessarias",
-  otherKey: "id_plano_acao_riscos",
-  as: "riscos",
-});
+
+// PlanoAcaoRisco.belongsToMany(CadastroMedidaControleAdministrativaNecessaria, {
+//   through: RiscoAdministrativoNecessaria,
+//   foreignKey: "id_plano_acao_riscos",
+//   otherKey: "id_medida_controle_administrativa_necessarias",
+//   as: "medidas_administrativas_necessarias"
+// });
+
+// CadastroMedidaControleAdministrativaNecessaria.belongsToMany(PlanoAcaoRisco, {
+//   through: RiscoAdministrativoNecessaria,
+//   foreignKey: "id_medida_controle_administrativa_necessarias",
+//   otherKey: "id_plano_acao_riscos",
+//   as: "riscos",
+// });

@@ -5,6 +5,7 @@ const { getImageData } = require("../utils/report-utils");
 const { buildCapa } = require("./build-capa");
 const { buildGes } = require("./build-ges");
 const { buildIntroducao } = require("./build-introducao");
+const { buildInventarioRiscos } = require("./build-inventario-riscos");
 const { buildRequisitos } = require("./build-requisitos");
 
 module.exports = {
@@ -21,16 +22,15 @@ module.exports = {
 
     const urlImageLogoCliente = await getFileToS3(nomeLogo);
     const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
-    
 
     const logoCliente = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoCliente.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
     if (logoClienteWidth > 100) logoClienteWidth = 100;
 
-    const logoEmpresa = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
+    const logoEmpresa = empresa.dataValues.logoUrl ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
     if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
-
+    
     const docDefinitions = {
       defaultStyle: {
         font: "Calibri",
@@ -42,13 +42,15 @@ module.exports = {
       content: [
         {
           stack: [
-            buildCapa(cliente), // Página 1: Capa
-            { text: '', pageBreak: 'before', pageOrientation: 'landscape' }, // Causa página em branco (página 2)
-            await buildIntroducao(empresa, reportConfig, servicoId, gesIds), // Página 3: Introdução
+            // buildCapa(cliente), // Página 1: Capa
+            // { text: '', pageBreak: 'before', pageOrientation: 'landscape' }, // Causa página em branco (página 2)
+            // await buildIntroducao(empresa, reportConfig, servicoId, gesIds), // Página 3: Introdução
+            // { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            // await buildRequisitos(empresa, reportConfig, servicoId, gesIds), // Página 4: Requisitos
+            // { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            // await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
             { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            await buildRequisitos(empresa, reportConfig, servicoId, gesIds), // Página 4: Requisitos
-            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
+            await buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds), // Página 6: Inventário de riscos
           ]
         }
       ],

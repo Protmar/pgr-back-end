@@ -21,6 +21,7 @@ import { Risco } from "../../../models/Risco";
 import { RiscoColetivoExistente } from "../../../models/Risco/RiscoColetivoExistente";
 import { RiscoAdministrativoExistente } from "../../../models/Risco/RiscoAdministrativoExistente";
 import { RiscoIndividualExistente } from "../../../models/Risco/RiscoIndividualExistente";
+import { medidaAdministrativaNecessariasService, medidaColetivaNecessariasService, medidaIndividualNecessariasService } from "../../../services/ges/gesRiscos/PlanoAcao";
 
 export const dadosRisco = {
   post: async (req: AuthenticatedUserRequest, res: Response) => {

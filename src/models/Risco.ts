@@ -15,6 +15,11 @@ import { CadastroEstrategiaAmostragem } from "./EstrategiaAmostragem";
 import { RiscoAdministrativoExistente } from "./Risco/RiscoAdministrativoExistente";
 import { RiscoIndividualExistente } from "./Risco/RiscoIndividualExistente";
 import { RiscoColetivoExistente } from "./Risco/RiscoColetivoExistente";
+import { PlanoAcaoRisco } from "./Risco/PlanoAcao/PlanoAcaoRisco";
+import { ImagensFichaCampo } from "./imagensRiscos/ImagensFichaCampo";
+import { ImagensFotoAvaliacao } from "./imagensRiscos/ImagensFotoAvaliação";
+import { ImagensHistogramas } from "./imagensRiscos/ImagensHistogramas";
+import { ImagensMemorialCalculo } from "./imagensRiscos/ImagensMemorialCalculo";
 
 const enumTransmitirEsocial = Object.keys(TransmitirEsocial);
 const enumClasseRisco = Object.keys(ClasseRisco);
@@ -177,6 +182,25 @@ export const Risco = sequelize.define<
   },
   { tableName: "riscos" }
 );
+
+Risco.hasMany(ImagensFichaCampo, {
+  foreignKey: "risco_id",  
+  as: "imagensFichaCampo",
+});
+Risco.hasMany(ImagensFotoAvaliacao, {
+  foreignKey: "risco_id",  
+  as: "imagensFotoAvaliacao",
+});
+Risco.hasMany(ImagensHistogramas, {
+  foreignKey: "risco_id",  
+  as: "imagensHistogramas",
+});
+Risco.hasMany(ImagensMemorialCalculo, {
+  foreignKey: "risco_id",  
+  as: "imagensMemorialCalculo",
+})
+
+
 Risco.belongsTo(CadastroFatoresRisco, {
   foreignKey: "id_fator_risco",
   as: "fatorRisco"
@@ -187,20 +211,29 @@ Risco.belongsTo(CadastroFonteGeradora, {
 });
 Risco.belongsTo(CadastroExposicao, {
   foreignKey: "id_exposicao",
+  as: "exposicao"
 });
 Risco.belongsTo(CadastroMeioDePropagacao, {
   foreignKey: "id_meio_propagacao",
+  as: "meioPropagacao"
 });
 Risco.belongsTo(CadastroTrajetoria, {
   foreignKey: "id_trajetoria",
+  as: "trajetoria"
 });
 Risco.belongsTo(CadastroTecnicaUtilizada, {
   foreignKey: "id_tecnica_utilizada",
+  as: "tecnicaUtilizada"
 });
 Risco.belongsTo(CadastroEstrategiaAmostragem, {
   foreignKey: "id_estrategia_amostragem",
 });
 
+
+Risco.hasMany(PlanoAcaoRisco, {
+  foreignKey: "id_risco",
+  as: "planosAcao",
+});
 
 Risco.belongsToMany(CadastroMedidaControleAdministrativaExistente, {
   through: RiscoAdministrativoExistente,

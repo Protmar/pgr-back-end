@@ -37,6 +37,20 @@ import { RiscoColetivoExistente } from "../../models/Risco/RiscoColetivoExistent
 import { RiscoIndividualExistente } from "../../models/Risco/RiscoIndividualExistente";
 import { CadastroCargo } from "../../models/Cargos";
 import { PlanoAcaoRisco } from "../../models/Risco/PlanoAcao/PlanoAcaoRisco";
+import { RiscoAdministrativoNecessaria } from "../../models/Risco/PlanoAcao/RiscoAdministrativoNecessaria";
+import { RiscoColetivoNecessaria } from "../../models/Risco/PlanoAcao/RiscoColetivoNecessaria";
+import { RiscoIndividualNecessaria } from "../../models/Risco/PlanoAcao/RiscoIndividualNecessaria";
+import { CadastroMedidaControleAdministrativaNecessaria } from "../../models/MedidaControleAdministrativaNecessaria";
+import { CadastroMedidaControleColetivaNecessaria } from "../../models/MedidaControleColetivaNecessaria";
+import { CadastroMedidaControleIndividualNecessaria } from "../../models/MedidaControleIndividualNecessaria";
+import { CadastroExposicao } from "../../models/Exposicoes";
+import { CadastroMeioDePropagacao } from "../../models/MeiosDePropagacoes";
+import { CadastroTrajetoria } from "../../models/Trajetorias";
+import { CadastroTecnicaUtilizada } from "../../models/TecnicasUtilizadas";
+import { ImagensFichaCampo } from "../../models/imagensRiscos/ImagensFichaCampo";
+import { ImagensFotoAvaliacao } from "../../models/imagensRiscos/ImagensFotoAvaliação";
+import { ImagensHistogramas } from "../../models/imagensRiscos/ImagensHistogramas";
+import { ImagensMemorialCalculo } from "../../models/imagensRiscos/ImagensMemorialCalculo";
 
 export const gesPostService = async (
     empresa_id: number,
@@ -264,6 +278,46 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                 as: "riscos",
                 include: [
                     {
+                        model: ImagensFichaCampo,
+                        as: "imagensFichaCampo",
+                        attributes: ["url", "file_type"]
+                    },
+                    {
+                        model: ImagensFotoAvaliacao,
+                        as: "imagensFotoAvaliacao",
+                        attributes: ["url", "file_type"]
+                    },
+                    {
+                        model: ImagensHistogramas,
+                        as: "imagensHistogramas",
+                        attributes: ["url", "file_type"]
+                    },
+                    {
+                        model: ImagensMemorialCalculo,
+                        as: "imagensMemorialCalculo",
+                        attributes: ["url", "file_type"]
+                    },
+                    {
+                        model: CadastroTecnicaUtilizada,
+                        as: "tecnicaUtilizada",
+                        attributes: ["descricao"]
+                    },
+                    {
+                        model: CadastroExposicao,
+                        as: "exposicao",
+                        attributes: ["descricao"]
+                    },
+                    {
+                        model: CadastroMeioDePropagacao,
+                        as: "meioPropagacao",
+                        attributes: ["descricao"]
+                    },
+                    {
+                        model: CadastroTrajetoria,
+                        as: "trajetoria",
+                        attributes: ["descricao"]
+                    },
+                    {
                         model: CadastroFatoresRisco,
                         as: "fatorRisco"
                     },
@@ -289,7 +343,7 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                             {
                                 model: CadastroMedidaControleColetivaExistente,
                                 as: "medidas_coletivas_existentes",
-                                attributes: [["descricao", "descrica"]] 
+                                attributes: [["descricao", "descrica"]]
                             }
                         ]
                     },
@@ -306,7 +360,44 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                     },
                     {
                         model: PlanoAcaoRisco,
-                        as: "planosAcao"    
+                        as: "planosAcao",
+                        attributes: ["responsavel", "data_prevista", "data_realizada"],
+                        include: [
+                            {
+                                model: RiscoAdministrativoNecessaria,
+                                as: "riscosAdministrativosNecessaria",
+                                include: [
+                                    {
+                                        model: CadastroMedidaControleAdministrativaNecessaria,
+                                        as: "medidas_administrativas_necessarias",
+                                        attributes: ["descricao"] 
+                                    }
+                                ]
+                            },
+                            {
+                                model: RiscoColetivoNecessaria,
+                                as: "riscosColetivosNecessaria",
+                                include: [
+                                    {
+                                        model: CadastroMedidaControleColetivaNecessaria,
+                                        as: "medidas_coletivas_necessarias",
+                                        attributes: ["descricao"]
+                                    },
+                                ]
+
+                            },
+                            {
+                                model: RiscoIndividualNecessaria,
+                                as: "riscosIndividuaisNecessaria",
+                                include: [
+                                    {
+                                        model: CadastroMedidaControleIndividualNecessaria,
+                                        as: "medidas_individuais_necessarias",
+                                        attributes: ["descricao"]
+                                    },
+                                ]
+                            }
+                        ]
                     }
                 ],
             },

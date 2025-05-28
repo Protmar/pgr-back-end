@@ -137,15 +137,15 @@ export const getAllDadosPlanoAcaoService = async (riscoId: string) => {
     include: [
       {
         model: CadastroMedidaControleColetivaNecessaria,
-        as: "medidas_coletivas_necessarias",
+        as: "medidas_coletivas_necessarias"
       },
       {
         model: CadastroMedidaControleAdministrativaNecessaria,
-        as: "medidas_administrativas_necessarias",
+        as: "medidas_administrativas_necessarias"
       },
       {
         model: CadastroMedidaControleIndividualNecessaria,
-        as: "medidas_individual_necessarias",
+        as: "medidas_individual_necessarias"
       },
     ],
   });

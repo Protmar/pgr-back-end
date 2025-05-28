@@ -39,7 +39,7 @@ export const ImagensHistogramas = sequelize.define<Model<ImagensHistogramasAttri
   }
 );
 
-ImagensHistogramas.belongsTo(Risco, {
-  foreignKey: "id",
-  as: "risco",
-})
+// ImagensHistogramas.belongsTo(Risco, {
+//   foreignKey: "id",
+//   as: "risco",
+// })

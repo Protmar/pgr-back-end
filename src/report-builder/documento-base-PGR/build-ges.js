@@ -105,6 +105,7 @@ module.exports = {
             const tableBody = [];
 
             for (const item of filteredData) {
+                console.log(item)
                 const ambiente = item.ambientesTrabalhos?.[0] || {};
                 const gesData = await getGesData(item.trabalhadores);
                 // console.log(item.trabalhadores[0].dataValues.trabalhador.dataValues.funcao.dataValues.descricao);

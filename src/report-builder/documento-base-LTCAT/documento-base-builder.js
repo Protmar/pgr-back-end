@@ -19,13 +19,12 @@ module.exports = {
 
     const urlImageLogoCliente = await getFileToS3(nomeLogo);
     const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
-    
 
     const logoCliente = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoCliente.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
     if (logoClienteWidth > 100) logoClienteWidth = 100;
 
-    const logoEmpresa = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
+    const logoEmpresa = empresa.dataValues.logoUrl ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
     if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
 

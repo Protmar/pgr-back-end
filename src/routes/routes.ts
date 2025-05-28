@@ -50,7 +50,7 @@ import { ltcatReportController } from "../controllers/pdfs/ltcatController";
 
 import { dadosMatrizServico } from "../controllers/cadastros/matriz";
 import { dadosCadastroEstrategiaAmostragem } from "../controllers/cadastros/estrategiaamostragem";
-import { dadosPlanoAcao } from "../controllers/ges/risco/planoacao";
+import { dadosPlanoAcao, medidaAdministrativaPlanoAcaoController, medidaColetivaPlanoAcaoController, medidaIndividualPlanoAcaoController } from "../controllers/ges/risco/planoacao";
 
 
 
@@ -364,9 +364,10 @@ router.get("/riscos/:riscoId/planoacao", ensureUserAuth, dadosPlanoAcao.getAll);
 router.get("/riscos/:riscoId/planoacao/:planoAcaoId", ensureUserAuth, dadosPlanoAcao.get);
 router.put("/riscos/:riscoId/planoacao/:planoAcaoId", ensureUserAuth, dadosPlanoAcao.put);
 router.delete("/riscos/:riscoId/planoacao/:planoAcaoId", ensureUserAuth, dadosPlanoAcao.delete);
-router.get("/medidascoletivas", ensureUserAuth, medidaColetivaController.getAll);
-router.get("/medidasadministrativas", ensureUserAuth, medidaAdministrativaController.getAll);
-router.get("/medidasindividuais", ensureUserAuth, medidaIndividualController.getAll);
+
+router.get("/medidascoletivas", ensureUserAuth, medidaColetivaPlanoAcaoController.getAll);
+router.get("/medidasadministrativas", ensureUserAuth, medidaAdministrativaPlanoAcaoController.getAll);
+router.get("/medidasindividuais", ensureUserAuth, medidaIndividualPlanoAcaoController.getAll);
 //Copias
 router.post("/copias/ges", ensureUserAuth, dadosCopias.post);
 

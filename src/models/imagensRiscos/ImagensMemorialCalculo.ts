@@ -48,8 +48,8 @@ export const ImagensMemorialCalculo = sequelize.define<
   }
 );
 
-// Associação com o model Risco
-ImagensMemorialCalculo.belongsTo(Risco, {
-  foreignKey: "risco_id",
-  as: "riscos",
-});
+// // Associação com o model Risco
+// ImagensMemorialCalculo.belongsTo(Risco, {
+//   foreignKey: "risco_id",
+//   as: "riscos",
+// });

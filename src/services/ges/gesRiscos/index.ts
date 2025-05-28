@@ -3,7 +3,7 @@ import { ImagensFichaCampo } from "../../../models/imagensRiscos/ImagensFichaCam
 import { ImagensFotoAvaliacao } from "../../../models/imagensRiscos/ImagensFotoAvaliação";
 import { ImagensHistogramas } from "../../../models/imagensRiscos/ImagensHistogramas";
 import { ImagensMemorialCalculo } from "../../../models/imagensRiscos/ImagensMemorialCalculo";
-import { sequelize } from "../../../database"; 
+import { sequelize } from "../../../database";
 import { Risco, RiscoCreationAttributes } from "../../../models/Risco";
 import { CadastroMedidaControleColetivaExistente } from "../../../models/MedidaControleColetivaExistente";
 import { CadastroMedidaControleAdministrativaExistente } from "../../../models/MedidaControleAdministrativaExistente";
@@ -11,6 +11,7 @@ import { CadastroMedidaControleIndividualExistente } from "../../../models/Medid
 import { RiscoColetivoExistente } from "../../../models/Risco/RiscoColetivoExistente";
 import { RiscoAdministrativoExistente } from "../../../models/Risco/RiscoAdministrativoExistente";
 import { RiscoIndividualExistente } from "../../../models/Risco/RiscoIndividualExistente";
+import { PlanoAcaoRisco } from "../../../models/Risco/PlanoAcao/PlanoAcaoRisco";
 
 export const postDadosRiscoService = async (
   params: RiscoCreationAttributes & {
@@ -128,6 +129,11 @@ export const getDadosRiscoService = async (
 export const getRiscoByGesService = (empresaId: string, gesId: string) => {
   const data = Risco.findAll({
     where: { empresa_id: Number(empresaId), ges_id: Number(gesId) },
+    include: [
+      {
+        model: CadastroFatoresRisco, as: 'fatorRisco', attributes: ["tipo", "descricao"]
+      },
+    ]
   });
 
   return data;
@@ -143,7 +149,7 @@ export const getDadosAllRiscoService = async (empresaId: string) => {
     where: { empresa_id: empresaIdNumber },
     include: [
       {
-         model: CadastroFatoresRisco, as: 'fatores_risco', attributes: ["descricao"] 
+        model: CadastroFatoresRisco, as: 'fatores_risco', attributes: ["descricao"]
       },
       {
         model: CadastroMedidaControleColetivaExistente,

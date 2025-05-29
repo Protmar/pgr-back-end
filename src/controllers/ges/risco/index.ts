@@ -49,7 +49,10 @@ export const dadosRisco = {
       medidasColetivas,
       medidasAdministrativas,
       medidasIndividuais,
-      ges_id
+      ges_id,
+      conclusao_insalubridade,
+      conclusao_periculosidade,
+      conclusao_ltcat,
     } = req.body;
 
     try {
@@ -80,7 +83,10 @@ export const dadosRisco = {
         conseq_severidade,
         grau_risco,
         classe_risco,
-        ges_id
+        ges_id,
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
       });
 
       // Log do risco criado
@@ -184,10 +190,13 @@ export const dadosRisco = {
         conseqSeveridade,
         grauRisco,
         classeRisco,
-        medidasColetivas, // Novo: array de IDs
-        medidasAdministrativas, // Novo: array de IDs
-        medidasIndividuais, // Novo: array de IDs
-      } = req.body
+        medidasColetivas,
+        medidasAdministrativas,
+        medidasIndividuais,
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
+      } = req.body;
 
       const data = await putDadosRiscoService(
         empresaId.toString(),
@@ -213,7 +222,10 @@ export const dadosRisco = {
         classeRisco,
         medidasColetivas || [], // Garante que seja um array
         medidasAdministrativas || [], // Garante que seja um array
-        medidasIndividuais || [] // Garante que seja um array
+        medidasIndividuais || [], // Garante que seja um array
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
       );
 
       res.status(200).json(data);

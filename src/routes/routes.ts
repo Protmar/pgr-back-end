@@ -354,7 +354,6 @@ router.put("/:idrisco/editrisco", ensureUserAuth, dadosRisco.put);
 router.delete("/:idrisco/deleterisco", ensureUserAuth, dadosRisco.delete);
 router.get("/getriscobyges/:idges", ensureUserAuth, dadosRisco.getRiscoByGes);
 
-
 router.get("/cadastros/medidascoletivas", ensureUserAuth, medidaColetivaController.getAll);
 router.get("/cadastros/medidasadministrativas", ensureUserAuth, medidaAdministrativaController.getAll);
 router.get("/cadastros/medidasindividuais", ensureUserAuth, medidaIndividualController.getAll);

@@ -42,15 +42,15 @@ module.exports = {
       content: [
         {
           stack: [
-            // buildCapa(cliente), // Página 1: Capa
-            // { text: '', pageBreak: 'before', pageOrientation: 'landscape' }, // Causa página em branco (página 2)
-            // await buildIntroducao(empresa, reportConfig, servicoId, gesIds), // Página 3: Introdução
-            // { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            // await buildRequisitos(empresa, reportConfig, servicoId, gesIds), // Página 4: Requisitos
-            // { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            // await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
+            buildCapa(cliente), // Página 1: Capa
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' }, // Causa página em branco (página 2)
+            await buildIntroducao(empresa, reportConfig, servicoId, gesIds), // Página 3: Introdução
             { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            await buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds), // Página 6: Inventário de riscos
+            await buildRequisitos(empresa, reportConfig, servicoId, gesIds), // Página 4: Requisitos
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            await buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds, cliente), // Página 6: Inventário de riscos
           ]
         }
       ],

@@ -23,6 +23,7 @@ export const ltcatReportController = {
             );
 
             const docDefinitions = await buildDocumentoBase(reportOptions);
+            
             const pdfBuffer = await generatePdf(docDefinitions);
 
             res.setHeader('Content-Type', 'application/pdf');

@@ -22,47 +22,46 @@ export const postDadosRiscoService = async (
 ) => {
   const transaction = await sequelize.transaction();
   try {
-    // Cria o risco
+      
     const risco = await Risco.create(params, { transaction });
     const id_risco = risco.get("id") as number;
 
-    // Salva as medidas coletivas
+
     if (params.medidasColetivas && params.medidasColetivas.length > 0) {
       await RiscoColetivoExistente.bulkCreate(
         params.medidasColetivas.map((id) => ({
-          id_risco, // Usa o ID do risco criado
+          id_risco, 
           id_medida_controle_coletiva_existentes: id,
         })),
         { transaction }
       );
     }
 
-    // Salva as medidas administrativas
     if (
       params.medidasAdministrativas &&
       params.medidasAdministrativas.length > 0
     ) {
       await RiscoAdministrativoExistente.bulkCreate(
         params.medidasAdministrativas.map((id) => ({
-          id_risco, // Usa o ID do risco criado
+          id_risco, 
           id_medida_controle_administrativa_existentes: id,
         })),
         { transaction }
       );
     }
 
-    // Salva as medidas individuais
+
     if (params.medidasIndividuais && params.medidasIndividuais.length > 0) {
       await RiscoIndividualExistente.bulkCreate(
         params.medidasIndividuais.map((id) => ({
-          id_risco, // Usa o ID do risco criado
+          id_risco, 
           id_medida_controle_individual_existentes: id,
         })),
         { transaction }
       );
     }
 
-    // Busca o risco com as associações incluídas
+
     const riscoComMedidas = await Risco.findOne({
       where: { id: id_risco, empresa_id: params.empresa_id },
       include: [
@@ -193,7 +192,10 @@ export const putDadosRiscoService = async (
   classe_risco: string,
   medidasColetivas?: number[],
   medidasAdministrativas?: number[],
-  medidasIndividuais?: number[]
+  medidasIndividuais?: number[],
+  conclusaoLtcat?: string,
+  conclusaoPericulosidade?: string,
+  conclusaoInsalubridade?: string
 ) => {
   const empresaIdNumber = Number(empresa_id);
   const riscoIdNumber = Number(id_risco);
@@ -227,6 +229,9 @@ export const putDadosRiscoService = async (
         grau_risco,
         classe_risco,
         obs,
+        conclusao_ltcat: conclusaoLtcat,
+        conclusao_insalubridade: conclusaoPericulosidade,
+        conclusao_periculosidade: conclusaoInsalubridade,
       },
       { where: { empresa_id: empresaIdNumber, id: riscoIdNumber }, transaction }
     );
@@ -276,7 +281,6 @@ export const putDadosRiscoService = async (
       );
     }
 
-    // Busca o risco com as associações incluídas
     const riscoComMedidas = await Risco.findOne({
       where: { id: riscoIdNumber, empresa_id: empresaIdNumber },
       include: [
@@ -323,7 +327,6 @@ export const deleteDadosRiscoService = async (
 
   const transaction = await sequelize.transaction();
   try {
-    // Remove associações nas tabelas de junção explicitamente
     await RiscoColetivoExistente.destroy({
       where: { id_risco: riscoIdNumber },
       transaction,
@@ -337,7 +340,6 @@ export const deleteDadosRiscoService = async (
       transaction,
     });
 
-    // Deleta o risco
     const data = await Risco.destroy({
       where: { empresa_id: empresaIdNumber, id: riscoIdNumber },
       transaction,

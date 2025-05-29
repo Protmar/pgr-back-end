@@ -145,7 +145,7 @@ export const dadosPlanoAcao = {
 export const medidaColetivaPlanoAcaoController = {
   getAll: async (req: any, res: any) => {
     try {
-      const { riscoid } = req.params;
+      const { riscoId } = req.params;
       const data = await medidaColetivaNecessariasService.getAll();
       // Transformar a resposta para camelCase
       // const responseData = data.map((plano: any) => ({

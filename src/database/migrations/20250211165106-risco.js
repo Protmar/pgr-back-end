@@ -96,7 +96,7 @@ module.exports = {
       },
       obs: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       probab_freq: {
         allowNull: false,
@@ -113,6 +113,18 @@ module.exports = {
       classe_risco: {
         allowNull: false,
         type: Sequelize.DataTypes.STRING,
+      },
+      conclusao_ltcat:{
+        allowNull: true,
+        type: Sequelize.DataTypes.TEXT,
+      },
+      conclusao_periculosidade: {
+        allowNull: true,
+        type: Sequelize.DataTypes.TEXT,
+      },
+      conclusao_insalubridade: {
+        allowNull: true,
+        type: Sequelize.DataTypes.TEXT,
       },
       created_at: {
         allowNull: false,

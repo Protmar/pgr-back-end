@@ -320,6 +320,7 @@ module.exports = {
         };
 
         const todasImagens = [];
+        const todosPDFS = [];
 
         const generateLaudoAsOneTable = async () => {
             const body = [];
@@ -843,24 +844,32 @@ module.exports = {
                         risco.dataValues?.imagensFichaCampo?.forEach(e => {
                             if (e.dataValues.file_type === 'image/png') {
                                 todasImagens.push({ tabela: "Ficha de Campo", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" });
+                            } else {
+                                todosPDFS.push({ tabela: "Ficha de Campo", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" })
                             }
                         });
 
                         risco.dataValues?.imagensFotoAvaliacao?.forEach(e => {
                             if (e.dataValues.file_type === 'image/png') {
                                 todasImagens.push({ tabela: "Foto Avaliação", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" });
+                            } else {
+                                todosPDFS.push({ tabela: "Foto Avaliação", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" })
                             }
                         });
 
                         risco.dataValues?.imagensHistogramas?.forEach(e => {
                             if (e.dataValues.file_type === 'image/png') {
                                 todasImagens.push({ tabela: "Histogramas", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" });
+                            } else {
+                                todosPDFS.push({ tabela: "Histogramas", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" })
                             }
                         });
 
                         risco.dataValues?.imagensMemorialCalculo?.forEach(e => {
                             if (e.dataValues.file_type === 'image/png') {
                                 todasImagens.push({ tabela: "Memorial de Cálculo", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" });
+                            } else {
+                                todosPDFS.push({ tabela: "Memorial de Cálculo", tipo: risco?.dataValues.fatorRisco.dataValues.tipo, descricaoRisco: risco?.dataValues.fatorRisco.dataValues.descricao, url: e.dataValues.url, base64: "" })
                             }
                         });
 
@@ -909,6 +918,11 @@ module.exports = {
                 // )
 
             }
+
+            await Promise.all(todosPDFS.map(async (e) => {
+                const dataUrl = await getFileToS3(e.url);
+                e.url = dataUrl.url;
+            }));
 
             await Promise.all(todasImagens.map(async (e) => {
                 const dataUrl = await getFileToS3(e.url);

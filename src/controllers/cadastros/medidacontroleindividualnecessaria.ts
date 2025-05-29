@@ -43,10 +43,10 @@ export const dadosCadastroIndividualNecessaria = {
   get: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idindividualnecessasria } = req.params;
+      const { idindividualnecessaria } = req.params;
       const data = await individualNecessariaGetService(
         empresaId.toString(),
-        idindividualnecessasria
+        idindividualnecessaria
       );
       res.send(data);
     } catch (err) {
@@ -59,12 +59,12 @@ export const dadosCadastroIndividualNecessaria = {
   put: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idindividualnecessasria } = req.params;
+      const { idindividualnecessaria } = req.params;
       const { descricao } = req.body;
       const data = await individualNecessariaPutService(
         empresaId.toString(),
         descricao,
-        idindividualnecessasria
+        idindividualnecessaria
       );
       res.send(data);
     } catch (err) {
@@ -77,10 +77,10 @@ export const dadosCadastroIndividualNecessaria = {
   delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
-      const { idindividualnecessasria } = req.params;
+      const { idindividualnecessaria } = req.params;
       const data = await individualNecessariaDeleteService(
         empresaId.toString(),
-        idindividualnecessasria
+        idindividualnecessaria
       );
       res.send(data);
     } catch (err) {

@@ -4,6 +4,7 @@ import { EmpresaInstance } from "./Empresa";
 import bcrypt from "bcrypt";
 import { TipoRisco } from "./enums/tipo_risco.enum";
 import { Parametro } from "./enums/parametros.enum";
+import { ItemNr } from "./ItemNr";
 
 const enumTipoRisco = Object.keys(TipoRisco);
 const enumParametro = Object.keys(Parametro);
@@ -112,4 +113,9 @@ export const CadastroFatoresRisco = sequelize.define<Model<CadastroFatoresRiscoA
     },
 
   },
-)
+  {tableName: "fatores_riscos"}
+);
+CadastroFatoresRisco.hasMany(ItemNr, {
+  foreignKey: "fator_risco_id",
+  as: "itensNormas",
+})

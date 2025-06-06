@@ -12,6 +12,7 @@ import { CadastroMedidaControleIndividualExistente } from "./MedidaControleIndiv
 import { TransmitirEsocial } from "./enums/transmitir_esocial.enum";
 import { ClasseRisco } from "./enums/classe_risco.enum";
 import { CadastroEstrategiaAmostragem } from "./EstrategiaAmostragem";
+import { CadastroExigenciaAtividade } from "./ExigenciasAtividades";
 
 const enumTransmitirEsocial = Object.keys(TransmitirEsocial);
 const enumClasseRisco = Object.keys(ClasseRisco);
@@ -23,6 +24,7 @@ export interface RiscoAttributes {
   id_fonte_geradora?: string;
   id_trajetoria?: string;
   id_exposicao?: string;
+  id_exigencia_atividade?: string;
   id_meio_propagacao?: string;
   transmitir_esocial: string;
   intens_conc?: number | null;
@@ -77,6 +79,13 @@ export const Risco = sequelize.define<
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
       allowNull: false,
+    },
+    id_exigencia_atividade:{
+      type: DataTypes.INTEGER,
+      references: { model: "exigencia_atividade", key: "id" },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+      allowNull: true,
     },
     id_trajetoria: {
       type: DataTypes.INTEGER,
@@ -188,6 +197,9 @@ Risco.belongsTo(CadastroFonteGeradora, {
 });
 Risco.belongsTo(CadastroExposicao, {
   foreignKey: "id_exposicao",
+});
+Risco.belongsTo(CadastroExigenciaAtividade, {
+  foreignKey: "id_exigencia_atividade",
 });
 Risco.belongsTo(CadastroMeioDePropagacao, {
   foreignKey: "id_meio_propagacao",

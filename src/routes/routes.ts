@@ -48,6 +48,7 @@ import { dadosMatrizPadrao } from "../controllers/configuracoes/empresa/matriz/m
 import { dadosMatrizServico } from "../controllers/cadastros/matriz";
 import { dadosCadastroEstrategiaAmostragem } from "../controllers/cadastros/estrategiaamostragem";
 import { dadosPlanoAcao, medidaAdministrativaPlanoAcaoController, medidaColetivaPlanoAcaoController, medidaIndividualPlanoAcaoController } from "../controllers/ges/risco/planoacao";
+import { dadosCadastroExigenciaAtividade } from "../controllers/cadastros/exigenciaatividade";
 
 
 
@@ -199,6 +200,12 @@ router.delete("/:idtrabalhador/deletetrabalhador", ensureUserAuth, dadosTrabalha
     router.get("/:idequipamento/getequipamento", ensureUserAuth, dadosCadastroEquipamento.get);
     router.put("/:idequipamento/editequipamento", ensureUserAuth, dadosCadastroEquipamento.put);
     router.delete("/:idequipamento/deleteequipamento", ensureUserAuth, dadosCadastroEquipamento.delete);
+    //Exigencia da atividade
+    router.post("/cadastro/postexigenciaatividade", ensureUserAuth, dadosCadastroExigenciaAtividade.post);
+    router.get("/cadastro/getallexigenciaatividade", ensureUserAuth, dadosCadastroExigenciaAtividade.getAll);
+    router.get("/:idexigenciaatividade/getexigenciaatividade", ensureUserAuth, dadosCadastroExigenciaAtividade.get);
+    router.put("/:idexigenciaatividade/editexigenciaatividade", ensureUserAuth, dadosCadastroExigenciaAtividade.put);
+    router.delete("/:idexigenciaatividade/deleteexigenciaatividade", ensureUserAuth, dadosCadastroExigenciaAtividade.delete);
     //Edificação
     router.post("/cadastro/postedificacao", ensureUserAuth, dadosCadastroEdificacao.post);
     router.get("/cadastro/getalledificacao", ensureUserAuth, dadosCadastroEdificacao.getAll);

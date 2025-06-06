@@ -2,32 +2,45 @@ import {
   CadastroFatoresRisco,
   CadastroFatoresRiscoCreationAttributes,
 } from "../../../models/FatoresRisco";
+import { ItemNr } from "../../../models/ItemNr";
+import { Transaction } from "sequelize";
 
-export const postDadosFatoresRiscoService = (
-  params: CadastroFatoresRiscoCreationAttributes
+export const postDadosFatoresRiscoService = async (
+  params: CadastroFatoresRiscoCreationAttributes,
+  options: { transaction?: Transaction } = {}
 ) => {
-  const data = CadastroFatoresRisco.create(params);
+  const data = await CadastroFatoresRisco.create(params, options);
   return data;
 };
 
-export const getDadosAllFatoresRiscoService = (empresaId: string) => {
-  const data = CadastroFatoresRisco.findAll({ where: { empresaId } });
-  return data;
-};
-
-export const getDadosFatoresRiscoService = (
+export const getDadosAllFatoresRiscoService = async (
   empresaId: string,
-  fatoresRiscoId: string
+  options: { transaction?: Transaction } = {}
 ) => {
-  const data = CadastroFatoresRisco.findOne({
-    where: { empresaId, id: Number(fatoresRiscoId) },
+  const data = await CadastroFatoresRisco.findAll({
+    where: { empresaId },
+    include: [{ model: ItemNr, as: "itensNormas" }],
+    ...options,
   });
   return data;
 };
 
-export const putDadosFatoresRiscoService = (
+export const getDadosFatoresRiscoService = async (
+  empresaId: string,
+  fatoresRiscoId: string,
+  options: { transaction?: Transaction } = {}
+) => {
+  const data = await CadastroFatoresRisco.findOne({
+    where: { empresaId, id: Number(fatoresRiscoId) },
+    include: [{ model: ItemNr, as: "itensNormas" }],
+    ...options,
+  });
+  return data;
+};
+
+export const putDadosFatoresRiscoService = async (
   empresaId: number,
-  trabaladorId: number,
+  fatoresRiscoId: number,
   tipo: string,
   parametro: string,
   ordem: number,
@@ -42,8 +55,9 @@ export const putDadosFatoresRiscoService = (
   pgr: boolean,
   pgrtr: boolean,
   laudo_periculosidade: boolean,
+  options: { transaction?: Transaction } = {}
 ) => {
-  const data = CadastroFatoresRisco.update(
+  const data = await CadastroFatoresRisco.update(
     {
       tipo,
       parametro,
@@ -60,17 +74,19 @@ export const putDadosFatoresRiscoService = (
       pgrtr,
       laudo_periculosidade,
     },
-    { where: { empresaId, id: trabaladorId } }
+    { where: { empresaId, id: fatoresRiscoId }, ...options }
   );
   return data;
 };
 
-export const deleteDadosFatoresRiscoService = (
+export const deleteDadosFatoresRiscoService = async (
   empresaId: number,
-  fatoresRiscoId: number
+  fatoresRiscoId: number,
+  options: { transaction?: Transaction } = {}
 ) => {
-  const data = CadastroFatoresRisco.destroy({
+  const data = await CadastroFatoresRisco.destroy({
     where: { empresaId, id: fatoresRiscoId },
+    ...options,
   });
   return data;
 };

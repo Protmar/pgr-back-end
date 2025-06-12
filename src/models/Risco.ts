@@ -124,12 +124,9 @@ export const Risco = sequelize.define<
     },
     intens_conc: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
-
     },
     lt_le: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     comentario: {
       type: DataTypes.TEXT,
@@ -137,7 +134,6 @@ export const Risco = sequelize.define<
     },
     nivel_acao: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     id_tecnica_utilizada: {
       type: DataTypes.INTEGER,
@@ -151,15 +147,12 @@ export const Risco = sequelize.define<
       references: { model: "estrategia_amostragens", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: true,
     },
     desvio_padrao: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
     },
     percentil: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
 
     },
     obs: {
@@ -197,6 +190,8 @@ export const Risco = sequelize.define<
   },
   { tableName: "riscos" }
 );
+
+
 
 Risco.hasMany(ImagensFichaCampo, {
   foreignKey: "risco_id",  

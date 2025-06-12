@@ -6,6 +6,7 @@ const { buildCapa } = require("./build-capa");
 const { buildGes } = require("./build-ges");
 const { buildIntroducao } = require("./build-introducao");
 const { buildInventarioRiscos } = require("./build-inventario-riscos");
+const { buildPlanoAcao } = require("./build-plano-acao");
 const { buildRequisitos } = require("./build-requisitos");
 
 module.exports = {
@@ -30,7 +31,7 @@ module.exports = {
     const logoEmpresa = empresa.dataValues.logoUrl ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
     if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
-    
+
     const docDefinitions = {
       defaultStyle: {
         font: "Calibri",
@@ -38,7 +39,7 @@ module.exports = {
         lineHeight: 2,
       },
       pageSize: "A4",
-      pageMargins: [50, 115, 50, 80],
+      pageMargins: [25, 115, 25, 80],
       content: [
         {
           stack: [
@@ -51,6 +52,8 @@ module.exports = {
             await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
             { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
             await buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds, cliente), // Página 6: Inventário de riscos
+            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
+            await buildPlanoAcao(reportConfig, empresa, servicoId, gesIds, cliente), // Página 7: Plano de Ação
           ]
         }
       ],

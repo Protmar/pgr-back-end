@@ -324,6 +324,8 @@ module.exports = {
 
         const generateLaudoAsOneTable = async () => {
             const body = [];
+            const allRiscos = [];
+            const quadroResumidoRiscos = [];
 
             for (let index = 0; index < validGesData.length; index++) {
                 const ges = validGesData[index];
@@ -367,7 +369,7 @@ module.exports = {
                         {}
                     ],
                     [
-                        { text: `${dataResponsavelAprovacao?.nome || "Não informado"} (${dataResponsavelAprovacao?.numero_crea || "Não informado"})`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
+                        { text: `${dataResponsavelAprovacao?.nome || "Não informado"} (CREA-${dataResponsavelAprovacao?.estado_crea || "Não informado"} ${dataResponsavelAprovacao?.numero_crea || "Não informado"})`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
                         {}, {},
                         { text: `${dataInicioFormatada} - ${dataFimFormatada}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 2 },
                         {}
@@ -465,8 +467,8 @@ module.exports = {
                                     ? ges.dataValues.ambientesTrabalhos
                                         ?.ambientesTrabalhos.map(a => a?.dataValues?.informacoes_adicionais)
                                         .filter(Boolean)
-                                        .join('\n\n') || "Não há observações registradas."
-                                    : "Não há observações registradas.",
+                                        .join('\n\n') || "Não há observações registradas"
+                                    : "Não há observações registradas",
                                 fontSize: 10,
                                 alignment: "justify",
                                 margin: [5, 0],
@@ -500,9 +502,14 @@ module.exports = {
                             { text: "3.  IDENTIFICAÇÃO DE AGENTE NOCIVO CAPAZ DE CAUSAR DANO À SAÚDE E INTEGRIDADE FÍSICA, ARROLADO NA LEGISLAÇÃO PREVIDENCIÁRIA", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
                             {}, {}, {}, {}
                         ],
-                    );
+                    );                          
 
                     ges?.dataValues?.riscos.riscos.map(async risco => {
+                        
+                        if(risco?.dataValues.fatorRisco.dataValues?.ltcat !== true) {
+                            return
+                        }
+
                         body.push(
                             [
                                 {
@@ -535,7 +542,7 @@ module.exports = {
                                                 {
                                                     text: risco?.dataValues.fatorRisco.dataValues.tipo,
                                                     fontSize: 10,
-                                                    alignment: 'justify',
+                                                    alignment: 'center',
                                                     margin: [5, 0],
                                                     bold: true,
                                                     lineHeight: 1,
@@ -545,7 +552,7 @@ module.exports = {
                                                 {
                                                     text: risco?.dataValues.fatorRisco.dataValues.descricao,
                                                     fontSize: 10,
-                                                    alignment: 'justify',
+                                                    alignment: 'center',
                                                     margin: [5, 0],
                                                     bold: true,
                                                     lineHeight: 1,
@@ -609,7 +616,7 @@ module.exports = {
                                                     lineHeight: 1
                                                 },
                                                 {
-                                                    text: `Exposição: ${risco.dataValues.exposicao.dataValues.descricao}; Meio de Propagação: ${risco.dataValues.trajetoria.dataValues.descricao}; Trajetória: ${risco.dataValues.meioPropagacao.dataValues.descricao}`,
+                                                    text: `Exposição: ${risco.dataValues.exposicao.dataValues.descricao}; Meio de Propagação: ${risco.dataValues.meioPropagacao.dataValues.descricao}; Trajetória: ${risco.dataValues.trajetoria.dataValues.descricao}`,
                                                     fontSize: 10,
                                                     alignment: 'justify',
                                                     margin: [5, 0],
@@ -838,8 +845,21 @@ module.exports = {
                                 { text: "Foi utlizada a projeção da avaliação: \na) pelo conhecimento das atvidades e do processo, e pelo acompanhamento feito durante a amostragem, que o período não amostrado é essencialmente igual ao amostrado do ponto de vista da exposição ao agente.\n b) pelas mesmas razões supracitadas, que a exposição ocupacional no período não amostrado, foi nula (exposição zero). Anexo a este laudo encontra-se o histograma ou relatório de ensaio.", fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 4 },
                                 {}, {}, {}
                             ],
-
+                            [
+                                { text: "ANÁLISE FINAL DO GES", fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
+                                {}, {}, {}, {}
+                            ],
+                            [
+                                { text: "CONCLUSÃO PARA O AGENTE NOCIVO", fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
+                                {}, {}, {}, {}
+                            ],
+                            [
+                                { text: risco?.conclusao_ltcat, fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
+                                {}, {}, {}, {}
+                            ],
                         );
+
+                        allRiscos.push(risco?.conclusao_ltcat);
 
                         risco.dataValues?.imagensFichaCampo?.forEach(e => {
                             if (e.dataValues.file_type === 'image/png') {
@@ -873,6 +893,18 @@ module.exports = {
                             }
                         });
 
+                        quadroResumidoRiscos.push(
+                            {
+                                transmitirESocial: risco?.dataValues.transmitir_esocial,
+                                tipo: risco?.dataValues.fatorRisco.dataValues.tipo,
+                                fatorRisco: risco?.dataValues.fatorRisco.dataValues.descricao,
+                                intConc: risco?.dataValues.intens_conc,
+                                limTolerancia: risco?.dataValues.lt_le,
+                                tecnicaUtilizada: risco?.dataValues.tecnicaUtilizada.dataValues.descricao,
+                                exposicao: risco?.exposicao.dataValues.descricao,
+
+                            }
+                        )
 
 
                     },
@@ -881,48 +913,90 @@ module.exports = {
 
                 }
 
+                console.log(quadroResumidoRiscos)
+                const interiorQuadroResumido = [
+                    [
+                        { text: "Risco", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
+                        { text: "Fator de Risco", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
+                        { text: "Intensidade / Concentração", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
+                        { text: "Limite de Tolerância", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
+                        { text: "Técnica Utlizada", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
+                        { text: "Exposição", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
+                    ],
+
+                ];
 
 
-                // body.push(
-                //     [
-                //         { text: "4. QUADRO RESUMIDO COM OS RISCOS PARA LANÇAMENTO NO PPP", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
-                //         {}, {}, {}, {}
-                //     ],
-                //     [
-                //         { text: "CONFIRMAR COM O CADU", fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
-                //         {}, {}, {}, {}
-                //     ],
-                //     [
-                //         { text: "5. CONCLUSÃO FINAL", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
-                //         {}, {}, {}, {}
-                //     ],
-                //     [
-                //         { text: "CONFIRMAR COM O CADU", fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
-                //         {}, {}, {}, {}
-                //     ],
-                //     [
-                //         { text: "ASSINATURA DO ENGENHEIRO RESPONSÁVEL", fontSize: 10, alignment: "center", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
-                //         {}, {}, {}, {}
-                //     ],
-                //     [
-                //         { text: "CONFIRMAR COM O CADU", fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
-                //         {}, {}, {}, {}
-                //     ],
-                //     [
-                //         { text: `${dataResponsavelAprovacao?.nome || "Não informado"} (CREA-${dataResponsavelAprovacao?.estado_crea || "Não informado" } ${dataResponsavelAprovacao?.numero_crea || "Não informado"})`, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
-                //         {}, {}, {}, {}
-                //     ],
 
-                //     [{ text: '', colSpan: 5, pageBreak: 'before' }, {}, {}, {}, {}],
+                body.push(
+                    [
+                        { text: "4. QUADRO RESUMIDO COM OS RISCOS PARA LANÇAMENTO NO PPP", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
+                        {}, {}, {}, {}
+                    ],
+                )
 
-                // )
+                quadroResumidoRiscos.map(risco => {
+                    if (risco.transmitirESocial === "Sim") {
+                        interiorQuadroResumido.push(
+                            [
+                                { text: risco?.tipo, fontSize: 10, alignment: "center", lineHeight: 1 },
+                                { text: risco?.fatorRisco, fontSize: 10, alignment: "center", lineHeight: 1 },
+                                { text: risco?.intConc, fontSize: 10, alignment: "center", lineHeight: 1 },
+                                { text: risco?.limTolerancia, fontSize: 10, alignment: "center", lineHeight: 1 },
+                                { text: risco?.tecnicaUtilizada, fontSize: 10, alignment: "center", lineHeight: 1 },
+                                { text: risco?.exposicao, fontSize: 10, alignment: "center", lineHeight: 1 },
+                            ])
+                    }
+                })
+
+                if (quadroResumidoRiscos.filter((risco) => risco.transmitirESocial === "Sim").length === 0) {
+                    body.push(
+                        [
+                            { text: "N/A", fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
+                            {}, {}, {}, {}
+                        ],
+                    )
+                } else {
+                    body.push(
+                        [
+                            {
+                                table: {
+                                    widths: ["16.66%", "16.66%", "16.66%", "16.66%", "16.66%", "16.66%"],
+                                    body: interiorQuadroResumido
+                                },
+                                colSpan: 5,
+                                margin: [-5, -3, -5, -3],
+                                layout: "centerPGR3"
+                            }
+                        ]
+                    )
+                }
+
+                body.push(
+                    [
+                        { text: "5. CONCLUSÃO FINAL", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
+                        {}, {}, {}, {}
+                    ],
+                    [
+                        { text: allRiscos.map(risco => risco != null ? risco + "; " : ""), fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
+                        {}, {}, {}, {}
+                    ],
+                    [
+                        { text: "ASSINATURA DO ENGENHEIRO RESPONSÁVEL", fontSize: 10, alignment: "center", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
+                        {}, {}, {}, {}
+                    ],
+                    [
+                        { text: `${dataInicioFormatada} - ${dataFimFormatada}`, fontSize: 10, alignment: "left", margin: [5, 0, 5, 0], bold: false, lineHeight: 5, colSpan: 5 },
+                        {}, {}, {}, {}
+                    ],
+                    [
+                        { text: `${dataResponsavelAprovacao?.nome || "Não informado"} (CREA-${dataResponsavelAprovacao?.estado_crea || "Não informado"} ${dataResponsavelAprovacao?.numero_crea || "Não informado"})`, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
+                        {}, {}, {}, {}
+                    ],
+                )
 
             }
 
-            await Promise.all(todosPDFS.map(async (e) => {
-                const dataUrl = await getFileToS3(e.url);
-                e.url = dataUrl.url;
-            }));
 
             await Promise.all(todasImagens.map(async (e) => {
                 const dataUrl = await getFileToS3(e.url);
@@ -1014,11 +1088,14 @@ module.exports = {
 
         return {
             table: {
-                widths: ['20%', '20%', '20%', '20%', '20%'],
-                body: await generateLaudoAsOneTable(),
+                table: {
+                    widths: ['20%', '20%', '20%', '20%', '20%'],
+                    body: await generateLaudoAsOneTable(),
+                },
+                layout: "centerLTCATVertically",
+                margin: [-25, 0, -25, 0],
             },
-            layout: "centerLTCATVertically",
-            margin: [-25, 0, -25, 0],
-        };
+            pdfs: todosPDFS
+        }
     }
 };

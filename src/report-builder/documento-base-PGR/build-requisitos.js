@@ -47,7 +47,7 @@ module.exports = {
                 fontSize: 18,
                 bold: true,
                 alignment: "center",
-                margin: [0, 30, 0, 10]
+                margin: [0, 10, 0, 10]
             });
 
             const getCursosObrigatorios = async (cursos) => {

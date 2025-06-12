@@ -25,6 +25,7 @@ export interface GesAttributes {
   nome_fluxograma?: string;
   texto_caracterizacao_processos?: string;
   tipo_pgr?: string;
+  riscos?: any;
   created_at?: Date;
   updated_at?: Date;
 }

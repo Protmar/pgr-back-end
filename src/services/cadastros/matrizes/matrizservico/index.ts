@@ -489,6 +489,5 @@ export const matrizServicoGetPadrao = async (servicoId: string, tipo: string, pa
       { model: ClassificacaoRiscoServico, as: "classificacaoRisco" },
     ],
   });
-  console.log("Matriz encontrada:", data);
   return data;
 };

@@ -28,6 +28,8 @@ module.exports = {
     let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
     if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
 
+    const resultadoLTCAT = await buildLTCAT(empresa, servicoId, gesIds, cliente)
+
     const docDefinitions = {
       defaultStyle: {
         font: "Calibri",
@@ -41,7 +43,7 @@ module.exports = {
           stack: [
             buildCapa(cliente), // Página 1: Capa
             { text: '', pageBreak: 'before' }, 
-            await buildLTCAT(empresa, servicoId, gesIds, cliente), 
+            resultadoLTCAT.table
             
           ]
         }
@@ -148,6 +150,6 @@ module.exports = {
       },
     };
 
-    return docDefinitions;
+    return {docDefinitions, resultadoLTCAT};
   },
 };

@@ -108,7 +108,7 @@ export const gesController = {
             console.error("❌ Erro no postges:", err);
             return res.status(400).json({
                 message: err instanceof Error ? err.message : "Erro desconhecido.",
-            });     
+            });
         }
     },
 
@@ -220,6 +220,19 @@ export const gesController = {
         }
     },
 
+    getOneColor: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+
+            const { empresaId } = req.user!;
+            const { tipo, param, classe, grau } = req.params;
+
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
     deleteGes: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { idges } = req.params;
@@ -297,7 +310,7 @@ export const gesController = {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message });
             }
-        }  
+        }
     },
 
     getAllByServico: async (req: AuthenticatedUserRequest, res: Response) => {

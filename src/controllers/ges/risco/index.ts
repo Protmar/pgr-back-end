@@ -56,12 +56,6 @@ export const dadosRisco = {
     } = req.body;
 
     try {
-      // // Log do payload recebido
-      // console.log("Payload recebido:", JSON.stringify(req.body, null, 2));
-      // console.log("empresaId do req.user:", empresaId);
-      console.log("GES ID", ges_id)
-
-      // Criar o risco
       const risco = await Risco.create({
         empresa_id: empresaId,
         id_fator_risco,

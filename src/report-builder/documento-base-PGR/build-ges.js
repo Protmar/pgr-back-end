@@ -55,7 +55,7 @@ module.exports = {
                 fontSize: 18,
                 bold: true,
                 alignment: "center",
-                margin: [0, 30, 0, 10]
+                margin: [0, 10, 0, 10]
             });
 
             const getGesData = async (trabalhadores) => {
@@ -189,20 +189,22 @@ module.exports = {
                         //     }
                         // ]);
 
-                        tableBody.push([
-                            {
-                                text: [
-                                    { text: '• Caracterização das Atividades: ', bold: true },
-                                    ges.descricaoServico || ''
-                                ],
-                                fontSize: 12,
-                                alignment: "justify",
-                                lineHeight: 1,
-                                colSpan: 7,
-                                margin: [5, 5]
-                            }
-
-                        ])
+                        if(ges.descricaoServico) {
+                            tableBody.push([
+                                {
+                                    text: [
+                                        { text: '• Caracterização das Atividades: ', bold: true },
+                                        ges.descricaoServico || ''
+                                    ],
+                                    fontSize: 12,
+                                    alignment: "justify",
+                                    lineHeight: 1,
+                                    colSpan: 7,
+                                    margin: [5, 5]
+                                }
+    
+                            ])
+                        }
 
                         tableBody.push([{
                             text: "", fontSize: 12, bold: true, alignment: "center", color: "white",
@@ -218,7 +220,13 @@ module.exports = {
 
             if (tableBody.length === 1) {
                 tableBody.push([
-                    { text: "Nenhum dado disponível", colSpan: 7, alignment: "center", fontSize: 8 }
+                    {
+                        text: 'Nenhum dado disponível.',
+                        fontSize: 10,
+                        alignment: 'center',
+                        colSpan: 7,
+                        margin: [0, 10, 0, 10],
+                    }
                 ]);
             }
 

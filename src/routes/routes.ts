@@ -330,6 +330,7 @@ router.post("/postges", ensureUserAuth, upload.fields([{ name: 'file' }, { name:
 router.put("/updateges/:id", ensureUserAuth, gesController.putges);
 router.get("/gesgetall", ensureUserAuth, gesController.getAll);
 router.get("/gesgetone/:idges", ensureUserAuth, gesController.getOne);
+router.get("/gesgetone/:tipo/:param/:classe/:grau", ensureUserAuth, gesController.getOneColor);
 router.delete("/:idges/deleteges", ensureUserAuth, gesController.deleteGes);
 router.delete("/deletefluxograma/:idges", ensureUserAuth, gesController.deleteFluxograma);
 router.put("/updatenamefluxograma/:idges", ensureUserAuth, gesController.updateNameFluxograma);

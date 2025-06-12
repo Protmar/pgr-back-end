@@ -193,9 +193,9 @@ export const putDadosRiscoService = async (
   medidasColetivas?: number[],
   medidasAdministrativas?: number[],
   medidasIndividuais?: number[],
-  conclusaoLtcat?: string,
+  conclusaoInsalubridade?: string,
   conclusaoPericulosidade?: string,
-  conclusaoInsalubridade?: string
+  conclusaoLtcat?: string,
 ) => {
   const empresaIdNumber = Number(empresa_id);
   const riscoIdNumber = Number(id_risco);
@@ -398,11 +398,6 @@ export const medidaIndividualService = {
 
 export const postImagePerigoService = async (tiporisco: string, risco_id: number, url: string, file_type?: string) => {
 
-  console.log({
-    tiporisco,
-    risco_id,
-    url
-  })
   if (tiporisco === "fichaCampo") {
     const data = await ImagensFichaCampo.create({
       risco_id,

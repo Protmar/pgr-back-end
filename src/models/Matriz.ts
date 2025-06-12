@@ -20,9 +20,9 @@ export interface MatrizAttributes {
 }
 
 export interface MatrizCreationAttributes
-    extends Optional<MatrizAttributes, "id"> {}
+    extends Optional<MatrizAttributes, "id"> { }
 
-    export const Matriz = sequelize.define<
+export const Matriz = sequelize.define<
     Model<MatrizAttributes, MatrizCreationAttributes>
 >("matrizes", {
     id: {
@@ -36,7 +36,7 @@ export interface MatrizCreationAttributes
         references: { model: "servicos", key: "id" },
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
-        allowNull: false, 
+        allowNull: false,
     },
     size: {
         type: DataTypes.INTEGER,
@@ -50,33 +50,33 @@ export interface MatrizCreationAttributes
             isIn: [enumTipo]
         }
     },
-        parametro: {
-            allowNull: false,
-            type: DataTypes.ENUM,
-            values: enumParametro,
-            validate: {
-                isIn: [enumParametro]
-            }
-        },
-        is_padrao:{
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
+    parametro: {
+        allowNull: false,
+        type: DataTypes.ENUM,
+        values: enumParametro,
+        validate: {
+            isIn: [enumParametro]
         }
     },
-{tableName: "matrizes"},
+    is_padrao: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+    }
+},
+    { tableName: "matrizes" },
 );
 Matriz.belongsTo(Servicos, {
     foreignKey: "servico_id",
 })
 Matriz.hasMany(ProbabilidadeServico, {
-  foreignKey: "matriz_id",
-  as: "probabilidades",
+    foreignKey: "matriz_id",
+    as: "probabilidades",
 });
 Matriz.hasMany(SeveridadeConsequenciaServico, {
-  foreignKey: "matriz_id",
-  as: "severidades",
+    foreignKey: "matriz_id",
+    as: "severidades",
 });
 Matriz.hasMany(ClassificacaoRiscoServico, {
-  foreignKey: "matriz_id",
-  as: "classificacaoRisco",
+    foreignKey: "matriz_id",
+    as: "classificacaoRisco",
 });

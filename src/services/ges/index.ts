@@ -51,6 +51,9 @@ import { ImagensFichaCampo } from "../../models/imagensRiscos/ImagensFichaCampo"
 import { ImagensFotoAvaliacao } from "../../models/imagensRiscos/ImagensFotoAvaliação";
 import { ImagensHistogramas } from "../../models/imagensRiscos/ImagensHistogramas";
 import { ImagensMemorialCalculo } from "../../models/imagensRiscos/ImagensMemorialCalculo";
+import { Matriz } from "../../models/Matriz";
+import { ClassificacaoRisco } from "../../models/ClassificacaoRisco";
+import { ClassificacaoRiscoServico } from "../../models/ClassificacaoRiscoServico";
 
 export const gesPostService = async (
     empresa_id: number,
@@ -270,7 +273,8 @@ export const getOneGesRiscoService = async (empresa_id: number, idges: number, c
 
 // services/ges/getRiscos.ts
 export const getRiscos = async (empresa_id: number, idges: number) => {
-    return Ges.findOne({
+
+    const riscos = await Ges.findOne({
         where: { empresa_id, id: idges },
         include: [
             {
@@ -370,7 +374,7 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                                     {
                                         model: CadastroMedidaControleAdministrativaNecessaria,
                                         as: "medidas_administrativas_necessarias",
-                                        attributes: ["descricao"] 
+                                        attributes: ["descricao"]
                                     }
                                 ]
                             },
@@ -403,6 +407,22 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
             },
         ],
     });
+
+    const corFinal = await Promise.all(
+        riscos?.dataValues.riscos.map(async (risco: any) => {
+            const cor = await getOneCor(
+                risco.fatorRisco.dataValues.tipo,
+                risco.fatorRisco.dataValues.parametro,
+                risco.classe_risco,
+                risco.grau_risco
+            );
+
+
+            risco.cor = cor;
+        }) || []
+    );
+
+    return riscos;
 };
 
 // services/ges/getCursos.ts
@@ -514,11 +534,7 @@ export const getAmbientesTrabalho = async (empresa_id: number, idges: number) =>
 };
 
 // services/ges/getOneGesService.ts
-export const getOneGesService = async (empresa_id: number, idges: number, clienteId?: number) => {
-    const whereClause: any = { empresa_id, id: idges };
-    if (clienteId !== undefined) {
-        whereClause.cliente_id = Number(clienteId);
-    }
+export const getOneGesService = async (empresa_id: number, idges: number) => {
 
     const [riscos, cursos, imagens, racs, tiposPgr, trabalhadores, ambientesTrabalho] = await Promise.all([
         getRiscos(empresa_id, idges),
@@ -542,6 +558,49 @@ export const getOneGesService = async (empresa_id: number, idges: number, client
             ambientesTrabalhos: ambientesTrabalho?.dataValues || [],
         },
     };
+};
+
+export const getOneCor = async (
+    tipo: any,
+    parametro: any,
+    classeRisco: any,
+    grauRisco: any
+) => {
+    try {
+        const servicoId = globalThis.servico_id || 0;
+
+        const matriz = await Matriz.findOne({
+            where: {
+                servico_id: servicoId,
+                tipo,
+                parametro,
+                is_padrao: true,
+            },
+        });
+
+        if (!matriz) {
+            console.warn("Nenhuma matriz encontrada para os parâmetros fornecidos.");
+            return null;
+        }
+
+
+        const classificacaoRisco = await ClassificacaoRiscoServico.findOne({
+            where: {
+                matriz_id: matriz.dataValues.id,
+                classe_risco: classeRisco,
+                grau_risco: grauRisco,
+            },
+        });
+
+        if (!classificacaoRisco) {
+            console.warn("Nenhuma classificação de risco encontrada para a matriz e parâmetros fornecidos.");
+        }
+
+        return classificacaoRisco;
+    } catch (error) {
+        console.error("Erro ao buscar cor/classificação de risco:", error);
+        throw new Error("Erro ao buscar classificação de risco.");
+    }
 };
 
 

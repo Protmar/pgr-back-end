@@ -135,10 +135,18 @@ export const getDadosServicosService = async (
 };
 
 // Mantém as outras funções do serviço intactas
-export const getDadosServicosByEmpresaCliente = async (idempresa: number) => {
+export const getDadosServicosByEmpresaCliente = async (idempresa: number, cliente_id?: number) => {
   const idcliente = globalThis.cliente_id;
 
-  if (idcliente) {
+  if (cliente_id) {
+    const data = await Servicos.findAll({
+      where: {
+        empresa_id: idempresa,
+        cliente_id: cliente_id,
+      },
+    });
+    return data;
+  } else if (idcliente) {
     const data = await Servicos.findAll({
       where: {
         empresa_id: idempresa,

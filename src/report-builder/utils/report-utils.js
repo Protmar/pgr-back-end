@@ -156,7 +156,6 @@ const tableLayouts = {
   },
 
   centerPGR: {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     paddingTop: (index, node) => {
       centerLTCATVertically(node, index);
       return 2;
@@ -166,8 +165,51 @@ const tableLayouts = {
     vLineWidth: () => 0.5,
     paddingLeft: () => 0,
     paddingRight: () => 0,
-    hLineColor: () => "#D3D3D3",
+
+    hLineColor: () => '#D3D3D3', // cor para linhas horizontais
+
+    vLineColor: (i, node) => {
+      // Apenas extremidades verticais pretas
+      const isFirst = i === 0;
+      const isLast = i === node.table.widths.length;
+      return isFirst || isLast ? '#000000' : '#D3D3D3'; // internas cinza claro
+    }
+  },
+
+  centerPGR2: {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    paddingTop: (index, node) => {
+      centerLTCATVertically(node, index);
+      return 2;
+    },
+
+    hLineWidth: () => 0,
+    vLineWidth: () => 0,
+    paddingLeft: () => 0,
+    paddingRight: () => 0,
+    hLineColor: () => "black",
     vLineColor: () => "#D3D3D3"
+  },
+
+  centerPGR3: {
+    paddingTop: (index, node) => {
+      centerLTCATVertically(node, index);
+      return 2;
+    },
+
+    hLineWidth: () => 0.5,
+    vLineWidth: () => 0.5,
+    paddingLeft: () => 0,
+    paddingRight: () => 0,
+
+    hLineColor: () => '#000000', // cor para linhas horizontais
+
+    vLineColor: (i, node) => {
+      // Apenas extremidades verticais pretas
+      const isFirst = i === 0;
+      const isLast = i === node.table.widths.length;
+      return isFirst || isLast ? '#000000' : '#000000'; // internas cinza claro
+    }
   },
 
   centerPGRTR: {

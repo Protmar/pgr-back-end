@@ -21,15 +21,15 @@ module.exports = {
         allowNull: true,
       },
       eliminar_risco_coletivo: {
-        type: Sequelize.DataTypes.BOOLEAN,
+        type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
       eliminar_risco_individual: {
-        type: Sequelize.DataTypes.BOOLEAN,
+        type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
       eliminar_risco_administrativo: {
-        type: Sequelize.DataTypes.BOOLEAN,
+        type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
       data_prevista: {

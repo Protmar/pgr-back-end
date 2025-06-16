@@ -16,8 +16,14 @@ export const dadosPlanoAcao = {
     const { riscoId } = req.params;
     const {
       responsavel,
+      eliminar_risco_administrativo,
+      eliminar_risco_coletivo,
+      eliminar_risco_individual,
       data_prevista,
       data_realizada,
+      data_inspecao,
+      data_monitoramento,
+      resultado_realizacacao,
       medidaColetivaNecessarias,
       medidaAdministrativaNecessarias,
       medidaIndividualNecessarias,
@@ -29,9 +35,15 @@ export const dadosPlanoAcao = {
 
       const planoAcao = await postDadosPlanoAcaoService({
         id_risco: riscoId,
+        eliminar_risco_administrativo,
+        eliminar_risco_coletivo,
+        eliminar_risco_individual,
         responsavel,
         data_prevista,
         data_realizada,
+        data_inspecao,
+        data_monitoramento,
+        resultado_realizacacao,
         medidasColetivasNecessarias: medidaColetivaNecessarias || [],
         medidasAdministrativasNecessarias: medidaAdministrativaNecessarias || [],
         medidasIndividualNecessarias: medidaIndividualNecessarias || [],
@@ -93,18 +105,30 @@ export const dadosPlanoAcao = {
       const { riscoId, planoAcaoId } = req.params;
       const {
         responsavel,
+        eliminar_risco_administrativo,
+        eliminar_risco_coletivo,
+        eliminar_risco_individual,
         data_prevista,
         data_realizada,
+        data_inspecao,
+        data_monitoramento,
+        resultado_realizacacao,
         medidaColetivaNecessarias,
         medidaAdministrativaNecessarias,
         medidaIndividualNecessarias,
       } = req.body;
 
       const data = await putDadosPlanoAcaoService(riscoId, planoAcaoId, {
-        id_risco: Number(riscoId), // Adiciona o id_risco ao objeto
+        id_risco: Number(riscoId),
         responsavel,
+        eliminar_risco_administrativo,
+        eliminar_risco_coletivo,
+        eliminar_risco_individual,
         data_prevista,
         data_realizada,
+        data_inspecao,
+        data_monitoramento,
+        resultado_realizacacao,
         medidasColetivasNecessarias: medidaColetivaNecessarias || [],
         medidasAdministrativasNecessarias: medidaAdministrativaNecessarias || [],
         medidasIndividualNecessarias: medidaIndividualNecessarias || [],

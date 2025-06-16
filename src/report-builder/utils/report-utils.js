@@ -212,6 +212,23 @@ const tableLayouts = {
     }
   },
 
+  centerPGR4: {
+
+    hLineWidth: () => 0.5,
+    vLineWidth: () => 0.5,
+    paddingLeft: () => 0,
+    paddingRight: () => 0,
+
+    hLineColor: () => '#D3D3D3', // cor para linhas horizontais
+
+    vLineColor: (i, node) => {
+      // Apenas extremidades verticais pretas
+      const isFirst = i === 0;
+      const isLast = i === node.table.widths.length;
+      return isFirst || isLast ? '#000000' : '#D3D3D3'; // internas cinza claro
+    }
+  },
+
   centerPGRTR: {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     paddingTop: (index, node) => {

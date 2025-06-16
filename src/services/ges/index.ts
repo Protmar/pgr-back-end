@@ -365,7 +365,7 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                     {
                         model: PlanoAcaoRisco,
                         as: "planosAcao",
-                        attributes: ["responsavel", "data_prevista", "data_realizada"],
+                    attributes: ["responsavel", "data_prevista", "data_realizada", "eliminar_risco_administrativo", "eliminar_risco_individual", "eliminar_risco_coletivo", "resultado_realizacacao", "data_monitoramento", "data_inspecao",],
                         include: [
                             {
                                 model: RiscoAdministrativoNecessaria,

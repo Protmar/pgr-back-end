@@ -1,9 +1,17 @@
 import { ProbabilidadeServico, ProbabilidadeServicoCreationAttributes } from "../../../../models/ProbabildadesServicos";
 
+const formatarNome = (nome: string) => {
+  if (!nome) return "";
+  const palavras = nome.toLowerCase().split(" ");
+  palavras[0] = palavras[0].charAt(0).toUpperCase() + palavras[0].slice(1);
+  return palavras.join(" ");
+};
+
 export const probabilidadeServicoPostService = async (
   params: ProbabilidadeServicoCreationAttributes
 ) => {
-  const data = await ProbabilidadeServico.create(params);
+  const descricaoFormatada = {...params, description: formatarNome(params.description)};
+  const data = await ProbabilidadeServico.create(descricaoFormatada);
   return data;
 };
 

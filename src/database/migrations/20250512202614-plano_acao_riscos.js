@@ -20,12 +20,36 @@ module.exports = {
         type: Sequelize.DataTypes.STRING,
         allowNull: true,
       },
+      eliminar_risco_coletivo: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      eliminar_risco_individual: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      eliminar_risco_administrativo: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: true,
+      },
       data_prevista: {
         type: Sequelize.DataTypes.DATE,
         allowNull: true,
       },
       data_realizada: {
         type: Sequelize.DataTypes.DATE,
+        allowNull: true,
+      },
+      data_inspecao: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: true,
+      },
+      data_monitoramento: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: true,
+      },
+      resultado_realizacacao:{
+        type: Sequelize.DataTypes.TEXT,
         allowNull: true,
       },
       created_at: {

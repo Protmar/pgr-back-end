@@ -12,9 +12,15 @@ import { CadastroMedidaControleIndividualNecessaria } from "../../MedidaControle
 export interface CadastroPlanoAcaoRiscoAttributes {
     id: number;
     id_risco: number;
+    eliminar_risco_coletivo?: boolean;
+    eliminar_risco_individual?: boolean;
+    eliminar_risco_administrativo?: boolean;
     responsavel: string;
     data_prevista: Date;
     data_realizada: Date;
+    data_inspecao: Date;
+    data_monitoramento: Date;
+    resultado_realizacacao: Text;
     created_at?: Date;
     updated_at?: Date;
 }
@@ -38,6 +44,18 @@ export const PlanoAcaoRisco = sequelize.define<Model<CadastroPlanoAcaoRiscoAttri
             onDelete: "RESTRICT",
             allowNull: false,
         },
+        eliminar_risco_coletivo: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+        },
+        eliminar_risco_individual: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+        },
+        eliminar_risco_administrativo: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+        },
         responsavel: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -48,6 +66,18 @@ export const PlanoAcaoRisco = sequelize.define<Model<CadastroPlanoAcaoRiscoAttri
         },
         data_realizada: {
             type: DataTypes.DATE,
+            allowNull: true,
+        },
+        data_inspecao: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        data_monitoramento: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        resultado_realizacacao: {
+            type: DataTypes.TEXT,
             allowNull: true,
         },
         created_at: {

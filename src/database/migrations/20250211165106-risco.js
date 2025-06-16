@@ -28,6 +28,12 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT"
       },
+      id_exigencia_atividade: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: { model: "exigencia_atividade", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "RESTRICT"
+      },
       id_trajetoria: {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "trajetorias", key: "id" },

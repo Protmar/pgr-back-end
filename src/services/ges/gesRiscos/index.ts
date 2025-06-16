@@ -173,6 +173,7 @@ export const putDadosRiscoService = async (
   id_risco: string,
   id_fator_risco: string,
   id_fonte_geradora: string,
+  id_exigencia_atividade: string,
   id_trajetoria: string,
   id_exposicao: string,
   id_meio_propagacao: string,
@@ -193,9 +194,9 @@ export const putDadosRiscoService = async (
   medidasColetivas?: number[],
   medidasAdministrativas?: number[],
   medidasIndividuais?: number[],
-  conclusaoInsalubridade?: string,
-  conclusaoPericulosidade?: string,
-  conclusaoLtcat?: string,
+  conclusao_insalubridade?: string,
+  conclusao_periculosidade?: string,
+  conclusao_ltcat?: string
 ) => {
   const empresaIdNumber = Number(empresa_id);
   const riscoIdNumber = Number(id_risco);
@@ -205,13 +206,26 @@ export const putDadosRiscoService = async (
   }
 
   const transaction = await sequelize.transaction();
+  let isCommitted = false; // Variável para rastrear o estado da transação
+
   try {
+    // Verificar se o risco existe
+    const risco = await Risco.findOne({
+      where: { id: riscoIdNumber, empresa_id: empresaIdNumber },
+      transaction,
+    });
+    if (!risco) {
+      await transaction.rollback();
+      throw new Error("Risco não encontrado");
+    }
+
     // Atualiza o risco
-    await Risco.update(
+    const [updatedRows] = await Risco.update(
       {
         empresa_id: empresaIdNumber,
         id_fator_risco,
         id_fonte_geradora,
+        id_exigencia_atividade,
         id_trajetoria,
         id_exposicao,
         id_meio_propagacao,
@@ -224,17 +238,22 @@ export const putDadosRiscoService = async (
         id_estrategia_amostragem,
         desvio_padrao,
         percentil,
+        obs,
         probab_freq,
         conseq_severidade,
         grau_risco,
         classe_risco,
-        obs,
-        conclusao_ltcat: conclusaoLtcat,
-        conclusao_insalubridade: conclusaoPericulosidade,
-        conclusao_periculosidade: conclusaoInsalubridade,
+        conclusao_insalubridade,
+        conclusao_periculosidade,
+        conclusao_ltcat,
       },
       { where: { empresa_id: empresaIdNumber, id: riscoIdNumber }, transaction }
     );
+
+    if (updatedRows === 0) {
+      await transaction.rollback();
+      throw new Error("Nenhum risco atualizado");
+    }
 
     // Remove associações existentes
     await RiscoColetivoExistente.destroy({
@@ -281,7 +300,8 @@ export const putDadosRiscoService = async (
       );
     }
 
-    const riscoComMedidas = await Risco.findOne({
+    // Busca o risco atualizado antes do commit
+    const riscoAtualizado = await Risco.findOne({
       where: { id: riscoIdNumber, empresa_id: empresaIdNumber },
       include: [
         {
@@ -300,20 +320,19 @@ export const putDadosRiscoService = async (
       transaction,
     });
 
-    if (!riscoComMedidas) {
-      throw new Error(
-        "Risco atualizado, mas não encontrado ao buscar associações"
-      );
-    }
-
+    // Commit da transação
     await transaction.commit();
-    return riscoComMedidas;
+    isCommitted = true; // Marca a transação como commitada
+
+    return riscoAtualizado;
   } catch (error) {
-    await transaction.rollback();
+    // Só tenta rollback se a transação não foi commitada
+    if (!isCommitted) {
+      await transaction.rollback();
+    }
     throw error;
   }
 };
-
 export const deleteDadosRiscoService = async (
   empresaId: string,
   riscoId: string

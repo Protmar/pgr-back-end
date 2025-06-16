@@ -29,6 +29,7 @@ export const dadosRisco = {
     const {
       id_fator_risco,
       id_fonte_geradora,
+      id_exigencia_atividade,
       id_trajetoria,
       id_exposicao,
       id_meio_propagacao,
@@ -60,6 +61,7 @@ export const dadosRisco = {
         empresa_id: empresaId,
         id_fator_risco,
         id_fonte_geradora,
+        id_exigencia_atividade,
         id_trajetoria,
         id_exposicao,
         id_meio_propagacao,
@@ -165,25 +167,26 @@ export const dadosRisco = {
       const { empresaId } = req.user!
       const { idrisco } = req.params
       const {
-        fatoresRiscoId,
-        fonteGeradoraId,
-        trajetoriaId,
-        exposicaoId,
-        meioPropagacaoId,
-        transmitirESocial,
-        intensConc,
-        ltLe,
+        id_fator_risco,
+        id_fonte_geradora,
+        id_exigencia_atividade,
+        id_trajetoria,
+        id_exposicao,
+        id_meio_propagacao,
+        transmitir_esocial,
+        intens_conc,
+        lt_le,
         comentario,
-        nivelAcao,
-        tecnicaUtilizadaId,
-        estrategiaAmostragem,
-        desvioPadrao,
+        nivel_acao,
+        id_tecnica_utilizada,
+        id_estrategia_amostragem,
+        desvio_padrao,
         percentil,
-        observacao,
-        probabFreq,
-        conseqSeveridade,
-        grauRisco,
-        classeRisco,
+        obs,
+        probab_freq,
+        conseq_severidade,
+        grau_risco,
+        classe_risco,
         medidasColetivas,
         medidasAdministrativas,
         medidasIndividuais,
@@ -191,37 +194,38 @@ export const dadosRisco = {
         conclusao_periculosidade,
         conclusao_ltcat,
       } = req.body;
-
+  
       const data = await putDadosRiscoService(
         empresaId.toString(),
         idrisco,
-        fatoresRiscoId,
-        fonteGeradoraId,
-        trajetoriaId,
-        exposicaoId,
-        meioPropagacaoId,
-        transmitirESocial,
-        intensConc,
-        ltLe,
+        id_fator_risco?.toString(),
+        id_fonte_geradora?.toString(),
+        id_exigencia_atividade?.toString(),
+        id_trajetoria?.toString(),
+        id_exposicao?.toString(),
+        id_meio_propagacao?.toString(),
+        transmitir_esocial?.toString(),
+        intens_conc,
+        lt_le?.toString(),
         comentario,
-        nivelAcao,
-        tecnicaUtilizadaId,
-        estrategiaAmostragem,
-        desvioPadrao,
+        nivel_acao?.toString(),
+        id_tecnica_utilizada?.toString(),
+        id_estrategia_amostragem?.toString(),
+        desvio_padrao,
         percentil,
-        observacao,
-        probabFreq,
-        conseqSeveridade,
-        grauRisco,
-        classeRisco,
-        medidasColetivas || [], // Garante que seja um array
-        medidasAdministrativas || [], // Garante que seja um array
-        medidasIndividuais || [], // Garante que seja um array
-        conclusao_insalubridade,
-        conclusao_periculosidade,
-        conclusao_ltcat,
+        obs,
+        probab_freq?.toString(),
+        conseq_severidade?.toString(),
+        grau_risco?.toString(),
+        classe_risco,
+        medidasColetivas || [],
+        medidasAdministrativas || [],
+        medidasIndividuais || [],
+        conclusao_insalubridade?.toString(),
+        conclusao_periculosidade?.toString(),
+        conclusao_ltcat?.toString()
       );
-
+  
       res.status(200).json(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -230,9 +234,6 @@ export const dadosRisco = {
       return res.status(500).json({ message: "Erro desconhecido" });
     }
   },
-
-
-
 
   getRiscoByGes: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
@@ -250,8 +251,6 @@ export const dadosRisco = {
       }
     }
   },
-
-
 
   delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {

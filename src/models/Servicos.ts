@@ -15,18 +15,34 @@ export interface ServicoAttributes {
   data_inicio?: Date;
   data_fim?: Date;
   art_url?: string;
+  base_document_url_pgr?: string;
+  base_document_url_pgrtr?: string;
+  base_document_url_ltcat?: string;
+  base_document_url_lp?: string;
+  base_document_url_li?: string;
+  base_document_url_pca?: string;
+  base_document_url_pcmso?: string;
+  base_document_url_ppr?: string;
+  memorial_descritivo_processo_pgr?: string;
+  memorial_descritivo_processo_pgrtr?: string;
+  memorial_descritivo_processo_ltcat?: string;
+  memorial_descritivo_processo_lp?: string;
+  memorial_descritivo_processo_li?: string;
+  memorial_descritivo_processo_pca?: string;
+  memorial_descritivo_processo_pcmso?: string;
+  memorial_descritivo_processo_ppr?: string;
   created_at: Date;
   updated_at: Date;
 }
 
 // Atributos para a criação de um novo Servico
 export interface ServicoCreationAttributes
-  extends Optional<ServicoAttributes, "id" | "created_at" | "updated_at"> {}
+  extends Optional<ServicoAttributes, "id" | "created_at" | "updated_at"> { }
 
 // Definindo o tipo da instância do modelo Servico
 export interface ServicoInstance
   extends Model<ServicoAttributes, ServicoCreationAttributes>,
-    ServicoAttributes {}
+  ServicoAttributes { }
 
 // Definindo o modelo Servico
 export const Servicos = sequelize.define<ServicoInstance>("servicos", {
@@ -51,7 +67,7 @@ export const Servicos = sequelize.define<ServicoInstance>("servicos", {
   },
   in_use: {
     type: DataTypes.BOOLEAN
-},
+  },
   descricao: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -79,6 +95,54 @@ export const Servicos = sequelize.define<ServicoInstance>("servicos", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  base_document_url_pgr: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_pgrtr: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_ltcat: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_lp: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_li: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_pca: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_pcmso: {
+    type: DataTypes.TEXT,
+  },
+  base_document_url_ppr: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_pgr: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_pgrtr: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_ltcat: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_lp: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_li: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_pca: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_pcmso: {
+    type: DataTypes.TEXT,
+  },
+  memorial_descritivo_processo_ppr: {
+    type: DataTypes.TEXT,
+  },
   created_at: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -90,6 +154,6 @@ export const Servicos = sequelize.define<ServicoInstance>("servicos", {
     defaultValue: Sequelize.fn("NOW"),
   },
 },
-{ tableName: "servicos" });
+  { tableName: "servicos" });
 
 export default Servicos;

@@ -365,7 +365,7 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                     {
                         model: PlanoAcaoRisco,
                         as: "planosAcao",
-                    attributes: ["responsavel", "data_prevista", "data_realizada", "eliminar_risco_administrativo", "eliminar_risco_individual", "eliminar_risco_coletivo", "resultado_realizacacao", "data_monitoramento", "data_inspecao",],
+                    attributes: ["responsavel", "data_prevista", "data_realizada", "eliminar_risco_administrativo", "eliminar_risco_individual", "eliminar_risco_coletivo", "resultado_realizacacao", "data_monitoramento", "data_inspecao", "eliminar_risco_coletivo", "eliminar_risco_administrativo", "eliminar_risco_individual"],
                         include: [
                             {
                                 model: RiscoAdministrativoNecessaria,
@@ -606,28 +606,35 @@ export const getOneCor = async (
 
 
 export const gesPutService = async (
-    newValuesMultiInput: any,
-    empresa_id: number,
-    id_ges: number,
-    listTrabalhadores: any[],
-    params: any,
-    paramsAT: any,
+  newValuesMultiInput: any,
+  empresa_id: number,
+  id_ges: number,
+  listTrabalhadores: any[],
+  params: any,
+  paramsAT: any
 ) => {
+  const ges = await Ges.findByPk(id_ges);
+  if (!ges) {
+    throw new Error("Registro GES não encontrado.");
+  }
 
-    const ges = await Ges.findByPk(id_ges);
-    if (!ges) {
-        throw new Error("Registro GES não encontrado.");
-    }
+  // Atualização de trabalhadores e do GES em paralelo
+  await Promise.all([
+    GesTrabalhadoresPut(empresa_id, id_ges, listTrabalhadores),
+    ges.update({ ...params, empresa_id }),
+  ]);
 
-    await ges.update({ ...params, empresa_id });
-    const at = await ATPutService(empresa_id, newValuesMultiInput, paramsAT, id_ges);
-    await GesTrabalhadoresPut(empresa_id, id_ges, listTrabalhadores);
-    await gesCursoPut(newValuesMultiInput.cursos, id_ges);
-    await GesTipoPgrPut(newValuesMultiInput.tipoPgr, id_ges);
-    await gesRacsPut(newValuesMultiInput.rac, id_ges);
+  // Atualizações relacionadas ao GES em paralelo
+  await Promise.all([
+    ATPutService(empresa_id, newValuesMultiInput, paramsAT, id_ges),
+    gesCursoPut(newValuesMultiInput.cursos, id_ges),
+    GesTipoPgrPut(newValuesMultiInput.tipoPgr, id_ges),
+    gesRacsPut(newValuesMultiInput.rac, id_ges),
+  ]);
 
-    return ges;
+  return ges;
 };
+
 
 export const gesCursoPut = async (
     cursos: any,
@@ -696,9 +703,10 @@ export const GesTrabalhadoresPut = async (
     id_ges: number,
     listTrabalhadores: any[]
 ) => {
-    await GesTrabalhador.destroy({ where: { id_ges } });
 
-    if (listTrabalhadores && listTrabalhadores.length > 0) {
+    
+    if (listTrabalhadores) {
+        await GesTrabalhador.destroy({ where: { id_ges } });
         await Promise.all(
             listTrabalhadores.map((trabalhador) =>
                 GesTrabalhador.create({

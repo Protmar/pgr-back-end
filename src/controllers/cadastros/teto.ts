@@ -71,7 +71,7 @@ export const dadosCadastroTeto = {
       const { empresaId } = req.user!;
       const { idteto } = req.params;
       const data = await tetoDeleteService(empresaId.toString(), idteto);
-      res.send(data);
+      res.status(204).json(data)
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

@@ -67,7 +67,7 @@ export const dadosCadastroEpi = {
       const { empresaId } = req.user!;
       const { idepi } = req.params;
       const data = await epiDeleteService(empresaId.toString(), idepi);
-      res.send(data);
+      res.status(204).json(data);
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

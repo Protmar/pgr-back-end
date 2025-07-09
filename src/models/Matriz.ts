@@ -71,12 +71,18 @@ Matriz.belongsTo(Servicos, {
 Matriz.hasMany(ProbabilidadeServico, {
     foreignKey: "matriz_id",
     as: "probabilidades",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });
 Matriz.hasMany(SeveridadeConsequenciaServico, {
     foreignKey: "matriz_id",
     as: "severidades",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });
 Matriz.hasMany(ClassificacaoRiscoServico, {
     foreignKey: "matriz_id",
     as: "classificacaoRisco",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });

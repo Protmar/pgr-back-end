@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "matriz_padroes", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+        onDelete: "CASCADE"
       },
       position:{
         type: Sequelize.DataTypes.INTEGER,

@@ -122,14 +122,34 @@ export const dadosMatrizServico = {
     }
   },
 
-  get: async (req: AuthenticatedUserRequest, res: Response) => {
+  getMatrizByServico: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const servicoId = globalThis.servico_id;
+      const servicoId = req.params.servicoid;
+      const servicoIdSelecionado = globalThis.servico_id;
       if (!servicoId) {
         return res.status(401).json({ message: "Serviço ID não fornecido" });
       }
+      const data = await matrizServicoGetAll(servicoId.toString(), servicoIdSelecionado.toString());
+      if (!data) {
+        return res.status(404).json({ message: "Matriz não encontrada" });
+      }
+      return res.status(200).json(data);
+    } catch (err) {
+      return res.status(500).json({
+        message:
+          err instanceof Error ? err.message : "Erro interno no servidor",
+      });
+    }
+  },
+
+  get: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const servicoid = req.params.servicoid;
+      if (!servicoid) {
+        return res.status(401).json({ message: "Serviço ID não fornecido" });
+      }
       const { matrizId } = req.params;
-      const data = await matrizServicoGet(servicoId.toString(), matrizId);
+      const data = await matrizServicoGet(servicoid.toString(), matrizId);
       if (!data) {
         return res.status(404).json({ message: "Matriz não encontrada" });
       }
@@ -144,10 +164,7 @@ export const dadosMatrizServico = {
 
   put: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const servicoId = globalThis.servico_id;
-      if (!servicoId) {
-        return res.status(401).json({ message: "Serviço ID não fornecido" });
-      }
+      
       const { matrizId } = req.params;
       const {
         tipo,
@@ -162,6 +179,7 @@ export const dadosMatrizServico = {
         riskColors,
         riskDesc,
         formaAtuacao,
+        servicoId
       } = req.body;
 
       if (!tipo || !parametro || !size) {
@@ -231,7 +249,7 @@ export const dadosMatrizServico = {
 
   delete: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const servicoId = globalThis.servico_id;
+      const servicoId = req.params.servicoid;
       if (!servicoId) {
         return res.status(401).json({ message: "Serviço ID não fornecido" });
       }

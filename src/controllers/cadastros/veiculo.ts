@@ -61,7 +61,7 @@ export const dadosCadastroVeiculo = {
             const { empresaId } = req.user!;
             const { idveiculo } = req.params;
             const data = await veiculoDeleteService(empresaId.toString(), idveiculo);
-            res.send(data)
+            res.status(204).json(data)
         } catch (err) {
             if (err instanceof Error) {
               return res.status(400).json({ message: err.message });

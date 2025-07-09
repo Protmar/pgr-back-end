@@ -1,23 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { getFileToS3 } = require("../../services/aws/s3");
-const { buildDocBase } = require("../documento-base-general-pgr/build-doc-base-pgr");
-const { convertToPng } = require("../utils/image-utils");
 const { getImageData } = require("../utils/report-utils");
-const { buildCapa } = require("./build-capa");
-const { buildGes } = require("./build-ges");
-const { buildIntroducao } = require("./build-introducao");
-const { buildInventarioRiscos } = require("./build-inventario-riscos");
-const { buildPlanoAcao } = require("./build-plano-acao");
-const { buildRequisitos } = require("./build-requisitos");
+const { buildDocBasePgr } = require("./build-doc-base-pgr");
+const { buildDocBasePgrtr } = require("./build-doc-base-pgrtr");
 
 module.exports = {
-  buildDocumentoBase: async ({
+  buildDocumentoBaseGeneralPDF: async ({
     cliente,
     empresa,
     reportConfig,
     s3url,
     servicoId,
-    gesIds
+    typeDocBase
   }) => {
     try {
       const nomeLogo = cliente.dataValues.logo_url || null;
@@ -36,51 +30,35 @@ module.exports = {
       let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
       if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
 
-      // Executa todas as seções em paralelo
-      const [
-        introducao,
-        requisitos,
-        ges,
-        inventarioRiscos,
-        planoAcao
-      ] = await Promise.all([
-        buildIntroducao(empresa, reportConfig, servicoId, gesIds).catch(e => {
-          console.error("Erro em buildIntroducao:", e);
-          return null;
-        }),
-        buildRequisitos(empresa, reportConfig, servicoId, gesIds).catch(e => {
-          console.error("Erro em buildRequisitos:", e);
-          return null;
-        }),
-        buildGes(reportConfig, empresa, servicoId, gesIds).catch(e => {
-          console.error("Erro em buildGes:", e);
-          return null;
-        }),
-        buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds, cliente).catch(e => {
-          console.error("Erro em buildInventarioRiscos:", e);
-          return null;
-        }),
-        buildPlanoAcao(reportConfig, empresa, servicoId, gesIds, cliente).catch(e => {
-          console.error("Erro em buildPlanoAcao:", e);
-          return null;
-        }),
-      ]);
+      let docBase;
 
-      const content = [buildCapa(cliente)];
+      if (typeDocBase === "PGRTR") {
+        docBase = await Promise.all([
+          buildDocBasePgrtr(empresa, servicoId, cliente).catch(e => {
+            console.error("Erro em buildIntroducao:", e);
+            return null;
+          }),
+        ]);
+      } else if (typeDocBase === "PGR") {
+        docBase = await Promise.all([
+          buildDocBasePgr(empresa, servicoId, cliente).catch(e => {
+            console.error("Erro em buildIntroducao:", e);
+            return null;
+          }),
+        ]);
+      }
+
+
+      const content = [];
 
       const addSection = (section) => {
         if (section && (Array.isArray(section) ? section.length > 0 : true)) {
-          content.push({ text: '', pageBreak: 'before', pageOrientation: 'landscape' });
           content.push(section);
         }
       };
 
       // Mantém a ordem desejada
-      addSection(introducao);
-      addSection(requisitos);
-      addSection(ges);
-      addSection(inventarioRiscos);
-      addSection(planoAcao);
+      addSection(docBase);
 
       const docDefinitions = {
         defaultStyle: {
@@ -90,7 +68,7 @@ module.exports = {
         },
         pageSize: "A4",
         pageMargins: [25, 115, 25, 80],
-        content: [{ stack: content }],
+        content: [{ stack: content, margin: [20, 0, 20, 0] }],
         background: (currentPage, pageSize) => {
           const margin = 25;
           const endWidth = pageSize.width - 25;
@@ -129,7 +107,7 @@ module.exports = {
               {
                 margin: [5, 15, 5, 0],
                 border: [true, false, true, true],
-                text: "PROGRAMA DE GERENCIAMENTO DE RISCOS",
+                text: typeDocBase === "PGRTR" ? `PROGRAMA DE GERENCIAMENTO DE RISCOS NO TRABALHO RURAL` : `PROGRAMA DE GERENCIAMENTO DE RISCOS`,
                 bold: true,
                 alignment: "center",
                 fontSize: 12,

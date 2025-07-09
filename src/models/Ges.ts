@@ -67,10 +67,10 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
       type: DataTypes.STRING,
     },
     descricao_ges: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     observacao: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     responsavel: {
       type: DataTypes.STRING,

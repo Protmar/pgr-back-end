@@ -61,7 +61,7 @@ export const dadosCadastroTecnicaUtilizada = {
             const { empresaId } = req.user!;
             const { idtecnicautilizada } = req.params;
             const data = await tecnicaUtilizadaDeleteService(empresaId.toString(), idtecnicautilizada);
-            res.send(data)
+            res.status(204).json(data)
         } catch (err) {
             if (err instanceof Error) {
               return res.status(400).json({ message: err.message });

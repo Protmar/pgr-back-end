@@ -71,12 +71,18 @@ MatrizPadrao.belongsTo(Empresa, {
 MatrizPadrao.hasMany(Probabilidade, {
   foreignKey: "matriz_id",
   as: "probabilidades",
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
 });
 MatrizPadrao.hasMany(SeveridadeConsequencia, {
   foreignKey: "matriz_id",
   as: "severidades",
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
 });
 MatrizPadrao.hasMany(ClassificacaoRisco, {
   foreignKey: "matriz_id",
   as: "classificacaoRisco",
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
 });

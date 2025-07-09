@@ -61,7 +61,7 @@ export const dadosCadastroVentilacao = {
             const { empresaId } = req.user!;
             const { idventilacao } = req.params;
             const data = await ventilacaoDeleteService(empresaId.toString(), idventilacao);
-            res.send(data)
+            res.status(204).json(data)
         } catch (err) {
             if (err instanceof Error) {
               return res.status(400).json({ message: err.message });

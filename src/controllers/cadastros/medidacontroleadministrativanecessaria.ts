@@ -82,7 +82,7 @@ export const dadosCadastroAdministrativaNecessaria = {
         empresaId.toString(),
         idadministrativanecessaria
       );
-      res.send(data);
+      res.status(204).json(data);
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

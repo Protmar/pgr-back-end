@@ -260,7 +260,7 @@ export const dadosRisco = {
       if (data === 0) {
         return res.status(404).json({ message: "Risco não encontrado" });
       }
-      res.status(204).send();
+      res.status(204).json(data)
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

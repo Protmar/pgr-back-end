@@ -2,12 +2,12 @@ import { ItemNr, ItemNrAttributes, ItemNrCreationAttributes } from "../../../../
 import { Transaction } from "sequelize";
 
 export const itemNrPostService = async (
-    params: ItemNrCreationAttributes, // Use ItemNrCreationAttributes em vez de ItemNrAttributes
-    options: { transaction?: Transaction } = {}
-  ) => {
-    const data = await ItemNr.create(params, options);
-    return data;
-  };
+  params: ItemNrCreationAttributes, // Use ItemNrCreationAttributes em vez de ItemNrAttributes
+  options: { transaction?: Transaction } = {}
+) => {
+  const data = await ItemNr.create(params, options);
+  return data;
+};
 
 export const itemNrGetAll = async (
   fatorRiscoId: string,
@@ -16,6 +16,15 @@ export const itemNrGetAll = async (
   const data = await ItemNr.findAll({
     where: { fator_risco_id: Number(fatorRiscoId) },
     ...options,
+  });
+  return data;
+};
+
+export const itemNrGetAll2 = async (
+  fatorRiscoId: string,
+) => {
+  const data = await ItemNr.findAll({
+    where: { fator_risco_id: Number(fatorRiscoId) },
   });
   return data;
 };

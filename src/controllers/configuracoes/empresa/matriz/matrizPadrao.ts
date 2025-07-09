@@ -102,6 +102,7 @@ export const dadosMatrizPadrao = {
   getAll: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
+      
       const data = await matrizPadraoGetAll(empresaId.toString());
       res.send(data);
     } catch (err) {
@@ -217,7 +218,7 @@ export const dadosMatrizPadrao = {
       const { empresaId } = req.user!;
       const { matrizId } = req.params;
       const data = await matrizPadraoDelete(empresaId.toString(), matrizId);
-      return res.status(201).json(data);
+      return res.status(204).json(data)
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

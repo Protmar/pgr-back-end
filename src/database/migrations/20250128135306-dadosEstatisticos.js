@@ -3,10 +3,10 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("ges", {
+    await queryInterface.createTable("dados_estatisticos", {
       id: {
         allowNull: false,
-        autoIncrement: true,
+        autoIncrement: true, // Corrigido
         primaryKey: true,
         type: Sequelize.DataTypes.INTEGER,
       },
@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "empresas", key: "id" },
         onUpdate: "CASCADE",
-        onDelete: "RESTRICT"
+        onDelete: "RESTRICT",
       },
       cliente_id: {
         type: Sequelize.DataTypes.INTEGER,
@@ -28,47 +28,29 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
       },
-      codigo: {
-        allowNull: false,
-        type: Sequelize.DataTypes.STRING,
-      },
-      descricao_ges: {
-        allowNull: false,
+      url_imagem: {
         type: Sequelize.DataTypes.TEXT,
       },
-      observacao: {
-        allowNull: false,
+      descricao: {
         type: Sequelize.DataTypes.TEXT,
       },
-      responsavel: {
-        allowNull: false,
-        type: Sequelize.DataTypes.STRING,
-      },
-      cargo: {
-        allowNull: false,
-        type: Sequelize.DataTypes.STRING,
-      },
-      nome_fluxograma: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      texto_caracterizacao_processos: {
-        type: Sequelize.DataTypes.STRING,
-      },
-      tipo_pgr: {
+      tipo_laudo: {
         type: Sequelize.DataTypes.STRING,
       },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
+        defaultValue: Sequelize.fn('NOW'), // Define o valor padrão
       },
       updated_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
+        defaultValue: Sequelize.fn('NOW'), // Define o valor padrão
       },
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("ges");
+    await queryInterface.dropTable("dados_estatisticos");
   }
 };

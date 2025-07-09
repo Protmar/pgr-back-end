@@ -43,8 +43,8 @@ export const authController = {
     }
   },
 
-   //POST /auth/forgotPassword
-   forgotPassword: async(req: Request, res: Response) => {
+  //POST /auth/forgotPassword
+  forgotPassword: async (req: Request, res: Response) => {
     const { email } = req.body;
 
     try {
@@ -79,9 +79,9 @@ export const authController = {
         return res.status(400).json({ message: err.message });
       }
     }
-   },
+  },
   //POST /auth/resetPassword/:token
-   resetPassword: async(req: Request, res: Response) => {
+  resetPassword: async (req: Request, res: Response) => {
     const { email, senha } = req.body;
     const { token } = req.params;
 
@@ -96,7 +96,7 @@ export const authController = {
         return res.status(400).json({ message: "Código inválido" });
       }
 
-      if(new Date() > user.recoverExpires!) {
+      if (new Date() > user.recoverExpires!) {
         return res.status(400).json({ message: "Código expirado, solicite um novo" });
       }
 
@@ -112,5 +112,5 @@ export const authController = {
         return res.status(400).json({ message: err.message });
       }
     }
-   },
+  },
 };

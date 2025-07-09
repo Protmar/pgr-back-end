@@ -37,7 +37,7 @@ export const Probabilidade = sequelize.define<
       type: DataTypes.INTEGER,
       references: { model: "matriz_padroes", key: "id" },
       onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
+      onDelete: "CASCADE",
       allowNull: true,
     },
     position: {

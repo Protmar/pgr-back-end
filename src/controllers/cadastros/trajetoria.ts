@@ -61,7 +61,7 @@ export const dadosCadastroTrajetoria = {
             const { empresaId } = req.user!;
             const { idtrajetoria } = req.params;
             const data = await trajetoriaDeleteService(empresaId.toString(), idtrajetoria);
-            res.send(data)
+            res.status(204).json(data)
         } catch (err) {
             if (err instanceof Error) {
               return res.status(400).json({ message: err.message });

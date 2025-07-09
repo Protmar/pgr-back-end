@@ -62,9 +62,9 @@ export const dadosServicos = {
         try {
             const { idservico } = req.params;
             const { empresaId } = req.user!;
-            const { descricao, responsavel_aprovacao,id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
+            const { descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim, base_document_url_pgr, base_document_url_pgrtr, base_document_url_ltcat, memorial_descritivo_processo_pgr, memorial_descritivo_processo_pgrtr, memorial_descritivo_processo_ltcat } = req.body;
             
-            const servicos = await putDadosServicosService(empresaId, Number(idservico), {descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim});
+            const servicos = await putDadosServicosService(empresaId, Number(idservico), {descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim, base_document_url_pgr, base_document_url_pgrtr, base_document_url_ltcat, memorial_descritivo_processo_pgr, memorial_descritivo_processo_pgrtr, memorial_descritivo_processo_ltcat});  
         
             res.json(servicos);
         } catch (err) {

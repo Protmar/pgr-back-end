@@ -52,6 +52,8 @@ import { dadosMatrizServico } from "../controllers/cadastros/matriz";
 import { dadosCadastroEstrategiaAmostragem } from "../controllers/cadastros/estrategiaamostragem";
 import { dadosPlanoAcao, medidaAdministrativaPlanoAcaoController, medidaColetivaPlanoAcaoController, medidaIndividualPlanoAcaoController } from "../controllers/ges/risco/planoacao";
 import { dadosCadastroExigenciaAtividade } from "../controllers/cadastros/exigenciaatividade";
+import { docBasePgrReportController } from "../controllers/pdfs/docBasePGR";
+import { dadosEstatisticos } from "../controllers/servicos/dadosEstatisticos";
 
 
 
@@ -81,6 +83,10 @@ router.delete("/:idservico/deleteservico", ensureUserAuth, dadosServicos.delete)
 router.post("/selecionarservico", ensureUserAuth, dadosServicos.selecionarServico);
 router.get("/getservicosbycliente/:idcliente", ensureUserAuth, dadosServicos.getServicosByClienteId);
 
+//Dados Estatisticos
+router.post("/postdadoestatistico", ensureUserAuth, dadosEstatisticos.post);
+router.get("/:servicoid/getdadoestatisticos", ensureUserAuth, dadosEstatisticos.getAll);
+router.delete("/:dadoestatisticoid/deletedadoestatistico", ensureUserAuth, dadosEstatisticos.delete);
 
 //empresa
 router.post("/postcadastroempresa", empresaController.createNoAuth);
@@ -390,9 +396,10 @@ router.post("/matrizes/set-padrao", ensureUserAuth, dadosMatrizPadrao.setPadrao)
 //MATRIZ SERVIÇO
 router.post("/servico/matriz/postmatriz", ensureUserAuth, dadosMatrizServico.post);
 router.get("/servico/matriz/getallmatriz", ensureUserAuth, dadosMatrizServico.getAll);
-router.get("/servico/matriz/:matrizId/getmatriz", ensureUserAuth, dadosMatrizServico.get);
+router.get("/servico/matriz/:servicoid/getallmatriz", ensureUserAuth, dadosMatrizServico.getMatrizByServico);
+router.get("/servico/matriz/:matrizId/:servicoid/getmatriz", ensureUserAuth, dadosMatrizServico.get);
 router.put("/servico/matriz/:matrizId/editmatriz", ensureUserAuth, dadosMatrizServico.put);
-router.delete("/servico/matriz/:matrizId/deletematriz", ensureUserAuth, dadosMatrizServico.delete);
+router.delete("/servico/matriz/:matrizId/:servicoid/deletematriz", ensureUserAuth, dadosMatrizServico.delete);
 router.post("/servico/matriz/set-padrao", ensureUserAuth, dadosMatrizServico.setPadrao);
 router.get("/servico/matriz/padrao", dadosMatrizServico.getPadrao);
 
@@ -412,6 +419,7 @@ router.delete("/:id/deleteresponsaveltecnico", ensureUserAuth, responsavelTecnic
 router.post("/generatebasepdfpgrtr", ensureUserAuth, pgrtrReportController.getPGRTRReport);
 router.post("/generatebasepdfpgr", ensureUserAuth, pgrReportController.getPGRReport);
 router.post("/generatebasepdfltcat", ensureUserAuth, ltcatReportController.getLTCATReport);
+router.post("/generatedocbasepgr", ensureUserAuth, docBasePgrReportController.getDocBasePGRReport);
 
 //SALVAR IMAGENS RISCOS
 router.post("/postimagerisco", ensureUserAuth, dadosRisco.postImagePerigo);

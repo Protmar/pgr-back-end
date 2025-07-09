@@ -46,6 +46,7 @@ export const getDadosServicosService = async (
       cliente_id: idcliente,
       descricao: descricao,
       responsavel_aprovacao: responsavel_aprovacao,
+      id_responsavel_aprovacao: id_responsavel_aprovacao,
       cargo_responsavel_aprovacao: cargo_responsavel_aprovacao,
       data_inicio: data_inicio,
       data_fim: data_fim,
@@ -208,3 +209,36 @@ export const getDadosServicosByEmpresaClienteId = async (
   });
   return data;
 };
+
+export const getNameDocBaseByServicoPGR = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    attributes: ["base_document_url_pgr"],
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+  });
+  return data;
+};
+
+export const getNameDocBaseByServicoLTCAT = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    attributes: ["base_document_url_ltcat"],
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+  });
+  return data;
+};
+
+export const getResponsavelByServico = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    attributes: ["responsavel_aprovacao"],
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+  });
+  return data;
+}

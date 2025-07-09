@@ -196,7 +196,6 @@ export const gesController = {
             const { empresaId } = req.user!;
 
             const response = await getAllGesService(empresaId);
-
             res.status(200).json(response);
         } catch (err) {
             if (err instanceof Error) {

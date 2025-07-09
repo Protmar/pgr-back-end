@@ -20,11 +20,11 @@ export interface EmpresaAttributes {
 }
 
 export interface EmpresaCreationAttributes
-  extends Optional<EmpresaAttributes, "id"> {}
+  extends Optional<EmpresaAttributes, "id"> { }
 
 export interface EmpresaInstance
   extends Model<EmpresaAttributes, EmpresaCreationAttributes>,
-    EmpresaAttributes {}
+  EmpresaAttributes { }
 
 export const Empresa = sequelize.define<EmpresaInstance>(
   "Empresa",

@@ -21,7 +21,7 @@ module.exports = {
 
     const urlImageLogoCliente = await getFileToS3(nomeLogo);
     const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
-    
+
 
     const logoCliente = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoCliente.url)) : (await getImageData(reportConfig.noImageUrl));
     let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;

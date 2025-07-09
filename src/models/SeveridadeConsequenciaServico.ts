@@ -27,7 +27,7 @@ export const SeveridadeConsequenciaServico = sequelize.define<
       type: DataTypes.INTEGER,
       references: { model: "matrizes", key: "id" },
       onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
+      onDelete: "CASCADE",
       allowNull: false,
     },
     position: {

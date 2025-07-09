@@ -62,7 +62,7 @@ export const dadosCadastroExigenciaAtividade = {
       const { empresaId } = req.user!;
       const { idexigenciaatividade } = req.params;
       const data = await exigenciaAtividadeDeleteService(empresaId.toString(), idexigenciaatividade);
-      res.send(data);
+      res.status(204).json(data);
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

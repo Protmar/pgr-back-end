@@ -3,6 +3,7 @@ const { getFileToS3 } = require("../../services/aws/s3/index");
 const { getImageData } = require("../utils/report-utils");
 const { convertToPng } = require("../utils/image-utils");
 const { table } = require("console");
+const {itemNrGetAll2} = require("../../services/cadastros/fatoresrisco/itemNr/index");
 
 module.exports = {
     buildInventarioRiscos: async (reportConfig, empresa, servicoId, gesIds, cliente) => {
@@ -150,6 +151,8 @@ module.exports = {
                         ],
                     )
 
+                    const itemNr = await itemNrGetAll2(risco.fatorRisco.dataValues.id)
+
                     if (risco.fatorRisco.dataValues) {
                         tableBody2.push(
                             [
@@ -196,7 +199,7 @@ module.exports = {
                                                 {
                                                     text: [
                                                         { text: '• Item NR: ', bold: true },
-                                                        '???'
+                                                        itemNr.map(item => item.dataValues.item_norma).join("; ") + "; "
                                                     ],
                                                     fontSize: 8,
                                                     alignment: 'justify',
@@ -309,15 +312,8 @@ module.exports = {
             })
 
             if (tableBody2.length === 0) {
-                tableBody2.push([
-                    {
-                        text: 'Nenhum risco ocupacional com PGR encontrado para os GES selecionados.',
-                        fontSize: 10,
-                        alignment: 'center',
-                        colSpan: 15,
-                        margin: [0, 10, 0, 10],
-                    }
-                ]);
+                console.warn("Nenhum risco encontrado. Nada será retornado.");
+                return null;
             }
 
 

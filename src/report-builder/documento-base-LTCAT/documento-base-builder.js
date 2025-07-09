@@ -42,9 +42,9 @@ module.exports = {
         {
           stack: [
             buildCapa(cliente), // Página 1: Capa
-            { text: '', pageBreak: 'before' }, 
+            { text: '', pageBreak: 'before' },
             resultadoLTCAT.table
-            
+
           ]
         }
       ],
@@ -150,6 +150,6 @@ module.exports = {
       },
     };
 
-    return {docDefinitions, resultadoLTCAT};
+    return { docDefinitions, resultadoLTCAT };
   },
 };

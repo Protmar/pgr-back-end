@@ -77,7 +77,7 @@ export const dadosCadastroEdificacao = {
         empresaId.toString(),
         idedificacao
       );
-      res.send(data);
+      res.status(204).json(data);
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

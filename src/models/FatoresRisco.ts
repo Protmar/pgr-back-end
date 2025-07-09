@@ -65,7 +65,7 @@ export const CadastroFatoresRisco = sequelize.define<Model<CadastroFatoresRiscoA
     },
     ordem: {
       allowNull: false,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     codigo_esocial: {
       allowNull: false,

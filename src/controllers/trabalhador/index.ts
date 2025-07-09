@@ -206,7 +206,7 @@ export const dadosTrabalhador = {
         empresaId.toString(),
         idtrabalhador
       );
-      res.send(data);
+      res.status(201).json(data);
     } catch (err) {
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });

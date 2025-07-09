@@ -61,7 +61,7 @@ export const dadosCadastroPiso = {
             const { empresaId } = req.user!;
             const { idpiso } = req.params;
             const data = await pisoDeleteService(empresaId.toString(), idpiso);
-            res.send(data)
+            res.status(204).json(data)
         } catch (err) {
             if (err instanceof Error) {
               return res.status(400).json({ message: err.message });

@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable("servicos", {
       id: {
         allowNull: false,
@@ -18,7 +18,7 @@ module.exports = {
       },
       in_use: {
         type: Sequelize.DataTypes.BOOLEAN
-    },
+      },
       cliente_id: {
         type: Sequelize.DataTypes.INTEGER,
         references: { model: "clientes", key: "id" },
@@ -46,6 +46,54 @@ module.exports = {
       art_url: {
         type: Sequelize.DataTypes.STRING,
       },
+      base_document_url_pgr: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_pgrtr: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_ltcat: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_lp: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_li: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_pca: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_pcmso: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      base_document_url_ppr: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_pgr: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_pgrtr: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_ltcat: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_lp: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_li: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_pca: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_pcmso: {
+        type: Sequelize.DataTypes.TEXT,
+      },
+      memorial_descritivo_processo_ppr: {
+        type: Sequelize.DataTypes.TEXT,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,
@@ -59,7 +107,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("servicos");
   }
 };

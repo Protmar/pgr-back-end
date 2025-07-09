@@ -153,12 +153,14 @@ export const matrizesServicoPostService = async (params: any) => {
   }
 };
 
-export const matrizServicoGetAll = async (servicoId: string) => {
+export const matrizServicoGetAll = async (servicoId?: string, servicoIdSelecionado?: string) => {
   if (!servicoId || isNaN(Number(servicoId))) {
     return []; // Retorna array vazio se servicoId for inválido
   }
   const data = await Matriz.findAll({
-    where: { servico_id: Number(servicoId) },
+    where: { 
+      servico_id: Number(servicoId) 
+    },
   });
   return data || []; // Sempre retorna array
 };

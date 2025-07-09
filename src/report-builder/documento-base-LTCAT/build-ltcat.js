@@ -190,17 +190,17 @@ module.exports = {
         const getDataResponsavel = async (empresa, servicoId) => {
             const servicoResponse = await getDadosServicoByEmpresaServico(empresa.id, servicoId);
             if (!servicoResponse?.dataValues?.id_responsavel_aprovacao) {
-                throw new Error("Serviço ou responsável de aprovação não encontrado");
+                console.log("Serviço ou responsável de aprovação não encontrado");
             }
             const id_responsavel_aprovacao = servicoResponse.dataValues.id_responsavel_aprovacao;
             const response = await getOneResponsavelTecnicoService(empresa.id, id_responsavel_aprovacao, cliente.dataValues.id);
             if (!response?.dataValues) {
-                throw new Error("Responsável técnico não encontrado");
+                console.log("Responsável técnico não encontrado");
             }
             return response.dataValues;
         };
 
-        const dataResponsavelAprovacao = await getDataResponsavel(empresa, servicoId);
+        const dataResponsavelAprovacao = await getDataResponsavel(empresa, servicoId) || {};
         const dataServico = await getDadosServicoByEmpresaServico(empresa.id, servicoId);
         if (!dataServico?.dataValues) {
             throw new Error("Dados do serviço não encontrados");
@@ -369,7 +369,7 @@ module.exports = {
                         {}
                     ],
                     [
-                        { text: `${dataResponsavelAprovacao?.nome || "Não informado"} (CREA-${dataResponsavelAprovacao?.estado_crea || "Não informado"} ${dataResponsavelAprovacao?.numero_crea || "Não informado"})`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
+                        { text: `${dataResponsavelAprovacao ? dataResponsavelAprovacao.nome : "Não informado"} (CREA-${dataResponsavelAprovacao ? dataResponsavelAprovacao.estado_crea : "Não informado"} ${dataResponsavelAprovacao ? dataResponsavelAprovacao.numero_crea : "Não informado"})`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
                         {}, {},
                         { text: `${dataInicioFormatada} - ${dataFimFormatada}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 2 },
                         {}
@@ -990,7 +990,7 @@ module.exports = {
                         {}, {}, {}, {}
                     ],
                     [
-                        { text: `${dataResponsavelAprovacao?.nome || "Não informado"} (CREA-${dataResponsavelAprovacao?.estado_crea || "Não informado"} ${dataResponsavelAprovacao?.numero_crea || "Não informado"})`, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
+                        { text: `${dataResponsavelAprovacao ? dataResponsavelAprovacao.nome : "Não informado"} (CREA-${dataResponsavelAprovacao ? dataResponsavelAprovacao.estado_crea : "Não informado"} ${dataResponsavelAprovacao ? dataResponsavelAprovacao.numero_crea : "Não informado"})`, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
                         {}, {}, {}, {}
                     ],
                 )

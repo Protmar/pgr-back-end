@@ -1,0 +1,72 @@
+name: Deploy PGR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Login Docker Hub
+        env:
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+      - name: Build the Docker image
+        run: docker build -t pgrsoftware/pgr .
+      - name: Push to Dockerhub
+        run: docker push pgrsoftware/pgr:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull Docker image
+        run: sudo docker pull pgrsoftware/pgr:latest
+      - name: Delete Old docker container
+        run: sudo docker rm -f api || true
+      - name: Run Docker Container
+        env:
+          TZ: "America/Sao_Paulo"
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          WEB_URL: ${{ secrets.WEB_URL }}
+          MAILER_EMAIL: ${{ secrets.MAILER_EMAIL }}
+          MAILER_PASSWORD: ${{ secrets.MAILER_PASSWORD }}
+          MAILER_HOST: ${{ secrets.MAILER_HOST }}
+          MAILER_PORT: ${{ secrets.MAILER_PORT }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_S3_URL: ${{ secrets.MAILER_PORT }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          sudo docker run -d --restart unless-stopped -p 3000:3000 --name api \
+          -e TZ: "America/Sao_Paulo"
+          -e JWT_SECRET: "${ secrets.JWT_SECRET }" \
+          -e WEB_URL: "${ secrets.WEB_URL }" \
+          -e MAILER_EMAIL: "${ secrets.MAILER_EMAIL }" \
+          -e MAILER_PASSWORD: "${ secrets.MAILER_PASSWORD }" \
+          -e MAILER_HOST: "${ secrets.MAILER_HOST }" \
+          -e MAILER_PORT: "${ secrets.MAILER_PORT }" \
+          -e AWS_REGION: "${ secrets.AWS_REGION }" \
+          -e AWS_ACCESS_KEY_ID: "${ secrets.AWS_ACCESS_KEY_ID }" \
+          -e AWS_SECRET_ACCESS_KEY: "${ secrets.AWS_SECRET_ACCESS_KEY }" \
+          -e AWS_S3_BUCKET_NAME: "${ secrets.AWS_S3_BUCKET_NAME }" \
+          -e AWS_S3_URL: "${ secrets.MAILER_PORT }" \
+          -e DB_HOST: "${ secrets.DB_HOST }" \
+          -e DB_NAME: "${ secrets.DB_NAME }" \
+          -e DB_USER: "${ secrets.DB_USER }" \
+          -e DB_PASSWORD: "${ secrets.DB_PASSWORD }" \
+          -e DOCKER_USERNAME: "${ secrets.DOCKER_USERNAME }" \
+          -e DOCKER_PASSWORD: "${ secrets.DOCKER_PASSWORD }" \
+          pgrsoftware/pgr:latest
+      - name: Clean up unused Docker images
+        run: sudo docker system prune -f

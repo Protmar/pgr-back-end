@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { getFileToS3 } = require("../../services/aws/s3");
+const { buildDocBase } = require("../documento-base-general-pgr/build-doc-base-pgr");
 const { convertToPng } = require("../utils/image-utils");
 const { getImageData } = require("../utils/report-utils");
 const { buildCapa } = require("./build-capa");
 const { buildGes } = require("./build-ges");
 const { buildIntroducao } = require("./build-introducao");
+const { buildInventarioRiscos } = require("./build-inventario-riscos");
+const { buildPlanoAcao } = require("./build-plano-acao");
 const { buildRequisitos } = require("./build-requisitos");
 
 module.exports = {
@@ -16,84 +19,89 @@ module.exports = {
     servicoId,
     gesIds
   }) => {
+    try {
+      const nomeLogo = cliente.dataValues.logo_url || null;
+      const urlImageLogoCliente = await getFileToS3(nomeLogo);
+      const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
 
-    const nomeLogo = cliente.dataValues.logo_url || null;
+      const logoCliente = await getImageData(
+        cliente.dataValues.logo_url ? urlImageLogoCliente.url : reportConfig.noImageUrl
+      );
+      let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
+      if (logoClienteWidth > 100) logoClienteWidth = 100;
 
-    const urlImageLogoCliente = await getFileToS3(nomeLogo);
-    const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
+      const logoEmpresa = await getImageData(
+        empresa.dataValues.logoUrl ? urlImageLogoEmpresa.url : reportConfig.noImageUrl
+      );
+      let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
+      if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
 
+      // Executa todas as seções em paralelo
+      const [
+        introducao,
+        requisitos,
+        ges,
+        inventarioRiscos,
+        planoAcao
+      ] = await Promise.all([
+        buildIntroducao(empresa, reportConfig, servicoId, gesIds).catch(e => {
+          console.error("Erro em buildIntroducao:", e);
+          return null;
+        }),
+        buildRequisitos(empresa, reportConfig, servicoId, gesIds).catch(e => {
+          console.error("Erro em buildRequisitos:", e);
+          return null;
+        }),
+        buildGes(reportConfig, empresa, servicoId, gesIds).catch(e => {
+          console.error("Erro em buildGes:", e);
+          return null;
+        }),
+        buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds, cliente).catch(e => {
+          console.error("Erro em buildInventarioRiscos:", e);
+          return null;
+        }),
+        buildPlanoAcao(reportConfig, empresa, servicoId, gesIds, cliente).catch(e => {
+          console.error("Erro em buildPlanoAcao:", e);
+          return null;
+        }),
+      ]);
 
-    const logoCliente = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoCliente.url)) : (await getImageData(reportConfig.noImageUrl));
-    let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
-    if (logoClienteWidth > 100) logoClienteWidth = 100;
+      const content = [buildCapa(cliente)];
 
-    const logoEmpresa = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
-    let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
-    if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
-
-    const docDefinitions = {
-      defaultStyle: {
-        font: "Calibri",
-        fontSize: 12,
-        lineHeight: 2,
-      },
-      pageSize: "A4",
-      pageMargins: [50, 115, 50, 80],
-      content: [
-        {
-          stack: [
-            buildCapa(cliente), // Página 1: Capa
-            { text: '', pageBreak: 'before', pageOrientation: 'landscape' }, // Causa página em branco (página 2)
-            await buildIntroducao(empresa, reportConfig, servicoId, gesIds), // Página 3: Introdução
-            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            await buildRequisitos(empresa, reportConfig, servicoId, gesIds), // Página 4: Requisitos
-            { text: '', pageBreak: 'before', pageOrientation: 'landscape' },
-            await buildGes(reportConfig, empresa, servicoId, gesIds), // Página 5: Ges
-          ]
+      const addSection = (section) => {
+        if (section && (Array.isArray(section) ? section.length > 0 : true)) {
+          content.push({ text: '', pageBreak: 'before', pageOrientation: 'landscape' });
+          content.push(section);
         }
-      ],
+      };
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      background: (currentPage, pageSize) => {
-        const margin = 25;
-        const endWidth = pageSize.width - 25;
-        const endHeight = pageSize.height - 25;
+      // Mantém a ordem desejada
+      addSection(introducao);
+      addSection(requisitos);
+      addSection(ges);
+      addSection(inventarioRiscos);
+      addSection(planoAcao);
 
-        return [
-          {
+      const docDefinitions = {
+        defaultStyle: {
+          font: "Calibri",
+          fontSize: 12,
+          lineHeight: 2,
+        },
+        pageSize: "A4",
+        pageMargins: [25, 115, 25, 80],
+        content: [{ stack: content }],
+        background: (currentPage, pageSize) => {
+          const margin = 25;
+          const endWidth = pageSize.width - 25;
+          const endHeight = pageSize.height - 25;
+
+          return [{
             canvas: [
-              {
-                type: "line",
-                x1: margin,
-                y1: margin,
-                x2: endWidth,
-                y2: margin,
-                lineWidth: 0.5,
-              },
-              {
-                type: "line",
-                x1: margin,
-                y1: margin,
-                x2: margin,
-                y2: endHeight,
-                lineWidth: 0.5,
-              },
-              {
-                type: "line",
-                x1: margin,
-                y1: endHeight,
-                x2: endWidth,
-                y2: endHeight,
-                lineWidth: 0.5,
-              },
-              {
-                type: "line",
-                x1: endWidth,
-                y1: margin,
-                x2: endWidth,
-                y2: endHeight,
-                lineWidth: 0.5,
-              },
+              { type: "line", x1: margin, y1: margin, x2: endWidth, y2: margin, lineWidth: 0.5 },
+              { type: "line", x1: margin, y1: margin, x2: margin, y2: endHeight, lineWidth: 0.5 },
+              { type: "line", x1: margin, y1: endHeight, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+              { type: "line", x1: endWidth, y1: margin, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
               {
                 type: "ellipse",
                 x: pageSize.width / 2,
@@ -103,17 +111,14 @@ module.exports = {
                 r1: 25,
                 r2: 25,
               },
-            ],
-          },
-        ];
-      },
-
-      header: {
-        margin: [50, 35, 50, 0],
-        table: {
-          widths: [100, "*", 100],
-          body: [
-            [
+            ]
+          }];
+        },
+        header: {
+          margin: [50, 35, 50, 0],
+          table: {
+            widths: [100, "*", 100],
+            body: [[
               {
                 border: [false, false, false, true],
                 image: logoCliente.data,
@@ -136,24 +141,23 @@ module.exports = {
                 alignment: "center",
                 margin: [0, 0, 0, 5],
               },
-            ],
-          ],
+            ]]
+          }
         },
-      },
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      footer: (currentPage, pageCount) => {
-        return {
+        footer: (currentPage, pageCount) => ({
           margin: [0, 30, 0, 0],
           text: currentPage,
           alignment: "center",
           fontSize: 18,
           bold: true,
           color: "#FFFFFF",
-        };
-      },
-    };
+        }),
+      };
 
-    return docDefinitions;
+      return docDefinitions;
+    } catch (error) {
+      console.error("Erro ao montar documento base:", error);
+      return null;
+    }
   },
 };

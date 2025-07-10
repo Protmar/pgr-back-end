@@ -114,7 +114,6 @@ const getImages = async (images) => {
 
 
 
-
 module.exports = {
     buildIntroducao: async (empresa, reportConfig, servicoId, gesIds) => {
         try {
@@ -130,7 +129,7 @@ module.exports = {
                     lineHeight: 1,
                 },
                 {
-                    text: "Item 31.3.3.2.1\na) Caracterização dos Processos",
+                    text: "Item  31.3.3.2.1\na) Caracterização dos Processos",
                     fontSize: 12,
                     bold: true,
                     alignment: "center",
@@ -140,7 +139,7 @@ module.exports = {
                     lineHeight: 1,
                 },
                 {
-                    text: "Item 31.3.3.2.1\na) Caracterização dos Ambientes de Trabalho",
+                    text: "Item  31.3.3.2.1\na) Caracterização dos Ambientes de Trabalho",
                     fontSize: 12,
                     bold: true,
                     alignment: "center",
@@ -229,12 +228,11 @@ module.exports = {
                         }
                     };
 
-                    const ambiente = ges.ambientesTrabalhos?.[0] || {};
+                    const ambiente = ges.ambientesTrabalhos?.ambientesTrabalhos[0].dataValues || {};
                     const episText = await getEpisObrigatorios(ambiente.EquipamentoAmbienteTrabalho);
 
                     const createAmbienteInfo = (ambiente, episText) => {
                         const info = [];
-
                         if (ambiente.area) info.push({ text: `• Área: ${ambiente.area}\n` });
                         if (ambiente.pe_direito) info.push({ text: `• Pé Direito: ${ambiente.pe_direito}\n` });
                         if (ambiente.qnt_janelas) info.push({ text: `• Qtd. Janelas: ${ambiente.qnt_janelas}\n` });
@@ -275,7 +273,7 @@ module.exports = {
                             {
                                 text: createAmbienteInfo(ambiente, episText),
                                 fontSize: 10,
-                                alignment: "center",
+                                alignment: "justfy",
                                 margin: [5, 0, 5, 0],
                                 lineHeight: 1,
                             },

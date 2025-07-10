@@ -55,7 +55,7 @@ module.exports = {
                 fontSize: 18,
                 bold: true,
                 alignment: "center",
-                margin: [0, 30, 0, 10]
+                margin: [0, 10, 0, 10]
             });
 
             const getGesData = async (trabalhadores) => {
@@ -72,6 +72,7 @@ module.exports = {
                         return null;
                     })
                 );
+
 
                 const workersData = (await Promise.all(workerPromises)).filter(Boolean);
                 const groupedWorkers = {};
@@ -105,7 +106,7 @@ module.exports = {
             const tableBody = [];
 
             for (const item of filteredData) {
-                const ambiente = item.ambientesTrabalhos?.[0] || {};
+                // const ambiente = item.ambientesTrabalhos?.[0] || {};
                 const gesData = await getGesData(item.trabalhadores);
                 // console.log(item.trabalhadores[0].dataValues.trabalhador.dataValues.funcao.dataValues.descricao);
 
@@ -156,7 +157,7 @@ module.exports = {
                                 text: "Jornada (min)", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
                                 lineHeight: 1
                             },
-            
+
                         ]);
                         tableBody.push([
                             {
@@ -188,20 +189,22 @@ module.exports = {
                         //     }
                         // ]);
 
-                        tableBody.push([
-                            {
-                                text: [
-                                    { text: '• Caracterização das Atividades: ', bold: true },
-                                    ges.descricaoServico || ''
-                                ],
-                                fontSize: 12,
-                                alignment: "justify",
-                                lineHeight: 1,
-                                colSpan: 7,
-                                margin: [5, 5]
-                            }
+                        if (ges.descricaoServico) {
+                            tableBody.push([
+                                {
+                                    text: [
+                                        { text: '• Item 31.3.3.2.1 b) Caracterização das Atividades: ', bold: true },
+                                        ges.descricaoServico || ''
+                                    ],
+                                    fontSize: 12,
+                                    alignment: "justify",
+                                    lineHeight: 1,
+                                    colSpan: 7,
+                                    margin: [5, 5]
+                                }
 
-                        ])
+                            ])
+                        }
 
                         tableBody.push([{
                             text: "", fontSize: 12, bold: true, alignment: "center", color: "white",
@@ -214,13 +217,6 @@ module.exports = {
                 }
             }
 
-
-            if (tableBody.length === 1) {
-                tableBody.push([
-                    { text: "Nenhum dado disponível", colSpan: 7, alignment: "center", fontSize: 8 }
-                ]);
-            }
-
             const tableDefinition = {
                 table: {
                     widths: ['14.28%', '14.28%', '14.28%', '14.28%', '14.28%', '14.28%', '14.28%'],
@@ -228,6 +224,11 @@ module.exports = {
                 },
                 layout: "centerPGR",
             };
+
+            if (tableBody.length === 1) {
+                console.warn("Nenhum plano de ação encontrado. Nada será retornado.");
+                return null;
+            }
 
             return {
                 stack: [

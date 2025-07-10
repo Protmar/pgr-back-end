@@ -49,24 +49,24 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           sudo docker run -d --restart unless-stopped -p 3000:3000 --name api \
-          -e TZ: "America/Sao_Paulo"
-          -e JWT_SECRET: "${ secrets.JWT_SECRET }" \
-          -e WEB_URL: "${ secrets.WEB_URL }" \
-          -e MAILER_EMAIL: "${ secrets.MAILER_EMAIL }" \
-          -e MAILER_PASSWORD: "${ secrets.MAILER_PASSWORD }" \
-          -e MAILER_HOST: "${ secrets.MAILER_HOST }" \
-          -e MAILER_PORT: "${ secrets.MAILER_PORT }" \
-          -e AWS_REGION: "${ secrets.AWS_REGION }" \
-          -e AWS_ACCESS_KEY_ID: "${ secrets.AWS_ACCESS_KEY_ID }" \
-          -e AWS_SECRET_ACCESS_KEY: "${ secrets.AWS_SECRET_ACCESS_KEY }" \
-          -e AWS_S3_BUCKET_NAME: "${ secrets.AWS_S3_BUCKET_NAME }" \
-          -e AWS_S3_URL: "${ secrets.MAILER_PORT }" \
-          -e DB_HOST: "${ secrets.DB_HOST }" \
-          -e DB_NAME: "${ secrets.DB_NAME }" \
-          -e DB_USER: "${ secrets.DB_USER }" \
-          -e DB_PASSWORD: "${ secrets.DB_PASSWORD }" \
-          -e DOCKER_USERNAME: "${ secrets.DOCKER_USERNAME }" \
-          -e DOCKER_PASSWORD: "${ secrets.DOCKER_PASSWORD }" \
+          -e TZ: "${TZ}" \
+          -e JWT_SECRET: "${JWT_SECRET}" \
+          -e WEB_URL: "${WEB_URL}" \
+          -e MAILER_EMAIL: "${MAILER_EMAIL}" \
+          -e MAILER_PASSWORD: "${MAILER_PASSWORD}" \
+          -e MAILER_HOST: "${MAILER_HOST}" \
+          -e MAILER_PORT: "${MAILER_PORT}" \
+          -e AWS_REGION: "${AWS_REGION}" \
+          -e AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}" \
+          -e AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}" \
+          -e AWS_S3_BUCKET_NAME: "${AWS_S3_BUCKET_NAME}" \
+          -e AWS_S3_URL: "${MAILER_PORT}" \
+          -e DB_HOST: "${DB_HOST}" \
+          -e DB_NAME: "${DB_NAME}" \
+          -e DB_USER: "${DB_USER}" \
+          -e DB_PASSWORD: "${DB_PASSWORD}" \
+          -e DOCKER_USERNAME: "${DOCKER_USERNAME}" \
+          -e DOCKER_PASSWORD: "${DOCKER_PASSWORD}" \
           pgrsoftware/pgr:latest
       - name: Clean up unused Docker images
         run: sudo docker system prune -f

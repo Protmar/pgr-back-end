@@ -12,16 +12,7 @@ const app = express();
 
 // ✅ CORS permissivo para todas as origens e headers
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Permite qualquer origem
-      callback(null, true);
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["*"], // permite todos os headers
-    exposedHeaders: ["Content-Disposition", "Content-Length", "ETag"], // se for necessário
-  })
+  cors()
 );
 
 // Servir arquivos estáticos

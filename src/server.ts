@@ -10,13 +10,17 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS restrito aos domínios da aplicação
+// ✅ CORS permissivo para todas as origens e headers
 app.use(
   cors({
-    origin: ["https://pgrsoftware.com.br", "https://www.pgrsoftware.com.br", "https://pgr-front-end.vercel.app/login"],
+    origin: (origin, callback) => {
+      // Permite qualquer origem
+      callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["*"], // permite todos os headers
+    exposedHeaders: ["Content-Disposition", "Content-Length", "ETag"], // se for necessário
   })
 );
 
@@ -34,7 +38,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true, // ✅ Ative em produção (HTTPS)
+      secure: true, // ✅ Ative em produção com HTTPS
       sameSite: "lax",
     },
   })

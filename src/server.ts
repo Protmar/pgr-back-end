@@ -4,36 +4,46 @@ import dotenv from "dotenv";
 import { router } from "./routes/routes";
 import { sequelize } from "./database/index";
 import session from "express-session";
-import bodyParser from 'body-parser';
-
+import bodyParser from "body-parser";
 
 dotenv.config();
 
 const app = express();
 
-// 🔥 Configuração CORS com suporte a cookies
-app.use(cors({
-  origin: "http://localhost:3000", // Substitua pelo domínio do frontend
-  credentials: true
-}));
-
-app.use(express.static("public"));
-// app.use(express.json());
-
-app.use(bodyParser.json({ limit: '900mb' }));
-app.use(bodyParser.urlencoded({ limit: '900mb', extended: true }));
-
+// ✅ CORS restrito aos domínios da aplicação
 app.use(
-  session({
-    secret: process.env.JWT_SECRET || "minha_chave_super_secreta", // Substitua por uma chave segura
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }, // Use `true` se estiver em HTTPS
+  cors({
+    origin: ["https://pgrsoftware.com.br", "https://www.pgrsoftware.com.br", "https://pgr-front-end.vercel.app/login"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Servir arquivos estáticos
+app.use(express.static("public"));
+
+// Parsing
+app.use(bodyParser.json({ limit: "900mb" }));
+app.use(bodyParser.urlencoded({ limit: "900mb", extended: true }));
+
+// Sessão
+app.use(
+  session({
+    secret: process.env.JWT_SECRET || "minha_chave_super_secreta",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // ✅ Ative em produção (HTTPS)
+      sameSite: "lax",
+    },
+  })
+);
+
+// Rotas
 app.use(router);
 
+// Porta e inicialização
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {

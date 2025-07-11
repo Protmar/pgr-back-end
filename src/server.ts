@@ -11,9 +11,8 @@ dotenv.config();
 const app = express();
 
 // ✅ CORS permissivo para todas as origens e headers
-app.use(
-  cors()
-);
+app.use(cors());
+
 
 // Servir arquivos estáticos
 app.use(express.static("public"));
@@ -29,7 +28,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true, // ✅ Ative em produção com HTTPS
+      secure: false, // ✅ Ative em produção com HTTPS
       sameSite: "lax",
     },
   })

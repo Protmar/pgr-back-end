@@ -59,7 +59,7 @@ export const s3Controller = {
 
             // Configura os cabeçalhos da resposta
             res.set('Content-Type', ContentType || 'application/octet-stream');
-            res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+            res.set('Access-Control-Allow-Origin', '*');
             res.set('Access-Control-Allow-Methods', 'GET');
             res.set('Access-Control-Allow-Headers', '*');
 

@@ -27,7 +27,7 @@ module.exports = {
       try {
         const nomeLogo = cliente?.dataValues?.logo_url;
         const logoClienteS3 = nomeLogo ? await getFileToS3(nomeLogo) : null;
-        logoCliente = await getImageData(logoClienteS3?.url || reportConfig.noImageUrl);
+        logoCliente = await getImageData(logoClienteS3?.url);
 
         logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
         if (logoClienteWidth > 100) logoClienteWidth = 100;
@@ -47,7 +47,7 @@ module.exports = {
       try {
         const nomeLogoEmpresa = empresa?.dataValues?.logoUrl;
         const logoEmpresaS3 = nomeLogoEmpresa ? await getFileToS3(nomeLogoEmpresa) : null;
-        logoEmpresa = await getImageData(logoEmpresaS3?.url || reportConfig.noImageUrl);
+        logoEmpresa = await getImageData(logoEmpresaS3?.url);
 
         logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
         if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;

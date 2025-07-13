@@ -72,11 +72,19 @@ module.exports = {
           const ges = gesResponse?.dataValues;
           if (!ges) throw new Error(`Dados de GES não encontrados para ID: ${gesIds[index]}`);
 
-          // Imagem base (placeholder)
-          const imagemBase = await getImageData(reportConfig.noImageUrl);
-          let imagem = null;
+          // Tentar carregar a imagem base, tratando erros localmente
+          let imagemBase = null;
+          let erroImagemBase = null;
+          try {
+            imagemBase = await getImageData(reportConfig.noImageUrl);
+          } catch (e) {
+            console.error("Erro ao carregar imagem base: " + e.message);
+            erroImagemBase = "Erro ao carregar imagem base: " + e.message;
+          }
 
-          // Tentativa de carregar fluxograma
+          // Tentar carregar o fluxograma
+          let imagem = null;
+          let erroFluxograma = null;
           const nomeFluxograma = ges.nome_fluxograma || null;
 
           if (nomeFluxograma) {
@@ -94,23 +102,52 @@ module.exports = {
               }
             } catch (err) {
               console.error(`Erro ao carregar imagem de fluxograma (GES ${ges.id}): ${err.message}`);
+              erroFluxograma = `[Fluxograma] Erro ao carregar imagem: ${err.message}`;
               imagem = null;
             }
           }
 
-          const imageData = imagem?.data
-            ? [
-                {
-                  image: imagem.data,
-                  width: 250,
-                  alignment: "center",
-                  colSpan: 4,
-                },
-                {}, {}, {}
-              ]
-            : [];
+          // Monta o conteúdo que será mostrado na área da imagem
+          const imageData = [];
 
-          // EPIs obrigatórios
+          if (nomeFluxograma && imagem?.data) {
+            imageData.push(
+              {
+                image: imagem.data,
+                width: 250,
+                alignment: "center",
+                colSpan: 4,
+              },
+              {}, {}, {}
+            );
+          } else if (erroFluxograma) {
+            imageData.push(
+              {
+                text: erroFluxograma,
+                fontSize: 10,
+                color: "red",
+                alignment: "center",
+                colSpan: 4,
+                margin: [0, 10, 0, 10],
+              },
+              {}, {}, {}
+            );
+          } else if (erroImagemBase) {
+            imageData.push(
+              {
+                text: erroImagemBase,
+                fontSize: 10,
+                color: "red",
+                alignment: "center",
+                colSpan: 4,
+                margin: [0, 10, 0, 10],
+              },
+              {}, {}, {}
+            );
+          }
+          // Se não existir imagem nem erro, imageData fica vazio
+
+          // Função para carregar EPIs obrigatórios
           const getEpisObrigatorios = async (epis) => {
             if (!Array.isArray(epis) || epis.length === 0) return "";
             try {
@@ -179,7 +216,8 @@ module.exports = {
             ],
           ];
 
-          if (imagem?.data) {
+          // Só inclui título e imagem se houver conteúdo para mostrar
+          if (imageData.length > 0) {
             tableBody.push([
               {
                 text: "Fluxograma",

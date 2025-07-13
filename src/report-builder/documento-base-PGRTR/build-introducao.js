@@ -3,117 +3,6 @@ const { getFileToS3 } = require("../../services/aws/s3/index");
 const { getImageData } = require("../utils/report-utils");
 const { convertToPng } = require("../utils/image-utils");
 
-const getImages = async (images) => {
-    if (!Array.isArray(images) || images.length === 0) return [];
-
-    const imagePairs = [];
-    for (let i = 0; i < images.length; i += 2) {
-        const image1 = images[i];
-        const image2 = images[i + 1] || null;
-        imagePairs.push([image1, image2]);
-    }
-
-    const getDimensions = (originalWidth, originalHeight) => {
-        const maxWidth = 230;
-        const maxHeight = 150;
-
-        if (originalWidth <= maxWidth && originalHeight <= maxHeight) {
-            return { width: originalWidth, height: originalHeight };
-        }
-
-        const widthRatio = maxWidth / originalWidth;
-        const heightRatio = maxHeight / originalHeight;
-        const scale = Math.min(widthRatio, heightRatio);
-
-        return {
-            width: Math.round(originalWidth * scale),
-            height: Math.round(originalHeight * scale),
-        };
-    };
-
-    const rows = await Promise.all(
-        imagePairs.map(async ([img1, img2]) => {
-            try {
-                if (!img1?.dataValues?.name) throw new Error("Invalid image 1");
-
-                const [file1, file2] = await Promise.all([
-                    getFileToS3(img1.dataValues.name),
-                    img2?.dataValues?.name ? getFileToS3(img2.dataValues.name) : null,
-                ]);
-
-                const [data1, data2] = await Promise.all([
-                    getImageData(file1.url),
-                    file2 ? getImageData(file2.url) : null,
-                ]);
-
-                const dimensions1 = getDimensions(data1.width, data1.height);
-                const dimensions2 = data2 ? getDimensions(data2.width, data2.height) : null;
-
-                if (!data2) {
-                    // imagem única, centralizada
-                    return [
-                        {
-                            colSpan: 4,
-                            stack: [
-                                {
-                                    image: data1.data,
-                                    width: dimensions1.width,
-                                    height: dimensions1.height,
-                                    alignment: 'center',
-                                    margin: [0, 0, 0, 0],
-                                },
-                            ],
-                            margin: [0, 0, 0, 0],
-                        }
-                    ];
-                }
-
-                // duas imagens centralizadas em colunas
-                return [
-                    {
-                        colSpan: 4,
-                        columns: [
-                            {
-                                width: '50%',
-                                stack: [
-                                    {
-                                        image: data1.data,
-                                        width: dimensions1.width,
-                                        height: dimensions1.height,
-                                        alignment: 'center',
-                                        margin: [0, 0, 0, 0],
-                                    },
-                                ],
-                            },
-                            {
-                                width: '50%',
-                                stack: [
-                                    {
-                                        image: data2.data,
-                                        width: dimensions2.width,
-                                        height: dimensions2.height,
-                                        alignment: 'center',
-                                        margin: [0, 0, 0, 0],
-                                    },
-                                ],
-                            },
-                        ],
-                        margin: [0, 0, 0, 0],
-                    }
-                ];
-            } catch (err) {
-                console.error("Erro ao processar imagens adicionais:", err.message);
-                return [];
-            }
-        })
-    );
-
-    return rows;
-};
-
-
-
-
 module.exports = {
     buildIntroducao: async (empresa, reportConfig, servicoId, gesIds) => {
         try {
@@ -168,9 +57,8 @@ module.exports = {
                 margin: [0, 10, 0, 10],
             });
 
-            // Validate inputs
             if (!empresa?.dataValues?.id || !Array.isArray(gesIds) || !reportConfig?.noImageUrl) {
-                throw new Error("Invalid input parameters");
+                throw new Error("Parâmetros inválidos fornecidos para gerar a introdução.");
             }
 
             const gesDataArray = await Promise.all(
@@ -180,22 +68,37 @@ module.exports = {
             const tables = await Promise.all(
                 gesDataArray.map(async (gesResponse, index) => {
                     const ges = gesResponse?.dataValues;
-                    if (!ges) throw new Error(`GES data not found for ID: ${gesIds[index]}`);
+                    if (!ges) throw new Error(`Dados do GES não encontrados para o ID: ${gesIds[index]}`);
 
-                    const imagemBase = await getImageData(reportConfig.noImageUrl);
+                    let imagemBase;
+                    try {
+                        imagemBase = await getImageData(reportConfig.noImageUrl);
+                    } catch (e) {
+                        throw new Error("Erro ao carregar imagem base: " + e.message);
+                    }
+
                     let imagem = null;
                     const nomeFluxograma = ges.nome_fluxograma || null;
 
                     if (nomeFluxograma) {
                         try {
+                            if (typeof nomeFluxograma !== "string" || nomeFluxograma.trim() === "") {
+                                throw new Error("Nome do fluxograma inválido");
+                            }
+
                             const urlImage = await getFileToS3(nomeFluxograma);
+
+                            if (!urlImage?.url || typeof urlImage.url !== "string" || !urlImage.url.startsWith("http")) {
+                                throw new Error(`URL inválida do fluxograma: ${JSON.stringify(urlImage)}`);
+                            }
+
                             imagem = await getImageData(urlImage.url);
 
                             if (imagem?.type === "webp") {
                                 imagem.data = await convertToPng(imagem.data, 250);
                             }
                         } catch (err) {
-                            console.error(`Error processing image for GES ${ges.id}:`, err.message);
+                            console.error(`[Fluxograma] Erro ao carregar imagem do GES ${ges.id} (${nomeFluxograma}): ${err.message}`);
                             imagem = null;
                         }
                     }
@@ -223,12 +126,12 @@ module.exports = {
                             );
                             return `• Equipamentos: ${epiStrings.filter(Boolean).join("; ")}\n`;
                         } catch (err) {
-                            console.error("Error loading EPIs:", err.message);
-                            return "• Equipamentos: Error loading EPIs\n";
+                            console.error("Erro ao carregar EPIs:", err.message);
+                            return "• Equipamentos: Erro ao carregar EPIs\n";
                         }
                     };
 
-                    const ambiente = ges.ambientesTrabalhos?.ambientesTrabalhos[0].dataValues || {};
+                    const ambiente = ges.ambientesTrabalhos?.ambientesTrabalhos[0]?.dataValues || {};
                     const episText = await getEpisObrigatorios(ambiente.EquipamentoAmbienteTrabalho);
 
                     const createAmbienteInfo = (ambiente, episText) => {
@@ -241,20 +144,12 @@ module.exports = {
                         }
                         if (episText) info.push({ text: episText });
                         if (ambiente.teto?.descricao) info.push({ text: `• Teto: ${ambiente.teto.descricao}\n` });
-                        if (ambiente.edificacao?.descricao) {
-                            info.push({ text: `• Edificação: ${ambiente.edificacao.descricao}\n` });
-                        }
+                        if (ambiente.edificacao?.descricao) info.push({ text: `• Edificação: ${ambiente.edificacao.descricao}\n` });
                         if (ambiente.piso?.descricao) info.push({ text: `• Piso: ${ambiente.piso.descricao}\n` });
                         if (ambiente.parede?.descricao) info.push({ text: `• Parede: ${ambiente.parede.descricao}\n` });
-                        if (ambiente.ventilacao?.descricao) {
-                            info.push({ text: `• Ventilação: ${ambiente.ventilacao.descricao}\n` });
-                        }
-                        if (ambiente.iluminacao?.descricao) {
-                            info.push({ text: `• Iluminação: ${ambiente.iluminacao.descricao}\n` });
-                        }
-                        if (ambiente.informacoes_adicionais) {
-                            info.push({ text: `• Informações Adicionais: ${ambiente.informacoes_adicionais}\n` });
-                        }
+                        if (ambiente.ventilacao?.descricao) info.push({ text: `• Ventilação: ${ambiente.ventilacao.descricao}\n` });
+                        if (ambiente.iluminacao?.descricao) info.push({ text: `• Iluminação: ${ambiente.iluminacao.descricao}\n` });
+                        if (ambiente.informacoes_adicionais) info.push({ text: `• Informações Adicionais: ${ambiente.informacoes_adicionais}\n` });
 
                         return info;
                     };
@@ -273,7 +168,7 @@ module.exports = {
                             {
                                 text: createAmbienteInfo(ambiente, episText),
                                 fontSize: 10,
-                                alignment: "justfy",
+                                alignment: "justify",
                                 margin: [5, 0, 5, 0],
                                 lineHeight: 1,
                             },
@@ -287,7 +182,7 @@ module.exports = {
                         ],
                     ];
 
-                    if (nomeFluxograma) {
+                    if (nomeFluxograma && imagem) {
                         tableBody.push([
                             {
                                 text: "Fluxograma",
@@ -301,26 +196,6 @@ module.exports = {
                             {}, {}, {}
                         ]);
                         tableBody.push(imageData);
-                    }
-
-                    if (Array.isArray(ges.imagens) && ges.imagens.length) {
-                        tableBody.push([
-                            {
-                                text: "Imagens",
-                                fontSize: 12,
-                                alignment: "center",
-                                colSpan: 4,
-                                margin: [0, 10, 0, 0],
-                                fillColor: "#f0f0f0",
-                                pageBreak: "before",
-                            },
-                            {}, {}, {}
-                        ]);
-
-                        const imagensRows = await getImages(ges.imagens);
-                        if (imagensRows.length > 0) {
-                            tableBody.push(...imagensRows);
-                        }
                     }
 
                     const stack = [
@@ -343,14 +218,14 @@ module.exports = {
 
             return tables;
         } catch (error) {
-            console.error("Error building introduction:", error.message);
+            console.error("Erro ao montar introdução do relatório:", error.message);
             return [
                 {
                     table: {
                         body: [
                             [
                                 {
-                                    text: `Error loading data: ${error.message}`,
+                                    text: `Erro ao carregar os dados: ${error.message}`,
                                     fontSize: 12,
                                     color: "red",
                                     alignment: "center",

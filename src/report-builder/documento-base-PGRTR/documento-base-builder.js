@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { getFileToS3 } = require("../../services/aws/s3");
-const { buildDocBase } = require("../documento-base-general-pgr/build-doc-base-pgr");
-const { convertToPng } = require("../utils/image-utils");
 const { getImageData } = require("../utils/report-utils");
 const { buildCapa } = require("./build-capa");
 const { buildGes } = require("./build-ges");
@@ -17,65 +15,79 @@ module.exports = {
     reportConfig,
     s3url,
     servicoId,
-    gesIds
+    gesIds,
   }) => {
     try {
-      const nomeLogo = cliente.dataValues.logo_url || null;
-      const urlImageLogoCliente = await getFileToS3(nomeLogo);
-      const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
+      // ==== LOGO CLIENTE ====
+      let logoCliente = { data: "", width: 50, height: 50 };
+      let logoClienteWidth = 50;
+      try {
+        const logoClienteKey = cliente?.dataValues?.logo_url;
+        const logoClienteUrl = logoClienteKey ? (await getFileToS3(logoClienteKey))?.url : null;
+        logoCliente = await getImageData(logoClienteUrl || reportConfig.noImageUrl);
+        logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
+        if (logoClienteWidth > 100) logoClienteWidth = 100;
+      } catch (err) {
+        console.error("Erro ao carregar logo do cliente:", err);
+        try {
+          logoCliente = await getImageData(reportConfig.noImageUrl);
+        } catch (fallbackErr) {
+          console.error("Erro ao carregar imagem padrão para cliente:", fallbackErr);
+        }
+      }
 
-      const logoCliente = await getImageData(
-        cliente.dataValues.logo_url ? urlImageLogoCliente.url : reportConfig.noImageUrl
-      );
-      let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
-      if (logoClienteWidth > 100) logoClienteWidth = 100;
+      // ==== LOGO EMPRESA ====
+      let logoEmpresa = { data: "", width: 50, height: 50 };
+      let logoEmpresaWidth = 50;
+      try {
+        const logoEmpresaKey = empresa?.dataValues?.logoUrl;
+        const logoEmpresaUrl = logoEmpresaKey ? (await getFileToS3(logoEmpresaKey))?.url : null;
+        logoEmpresa = await getImageData(logoEmpresaUrl || reportConfig.noImageUrl);
+        logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
+        if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
+      } catch (err) {
+        console.error("Erro ao carregar logo da empresa:", err);
+        try {
+          logoEmpresa = await getImageData(reportConfig.noImageUrl);
+        } catch (fallbackErr) {
+          console.error("Erro ao carregar imagem padrão para empresa:", fallbackErr);
+        }
+      }
 
-      const logoEmpresa = await getImageData(
-        empresa.dataValues.logoUrl ? urlImageLogoEmpresa.url : reportConfig.noImageUrl
-      );
-      let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
-      if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
-
-      // Executa todas as seções em paralelo
-      const [
-        introducao,
-        requisitos,
-        ges,
-        inventarioRiscos,
-        planoAcao
-      ] = await Promise.all([
-        buildIntroducao(empresa, reportConfig, servicoId, gesIds).catch(e => {
+      // ==== CONSTRUÇÃO DAS SEÇÕES ====
+      const [introducao, requisitos, ges, inventarioRiscos, planoAcao] = await Promise.all([
+        buildIntroducao(empresa, reportConfig, servicoId, gesIds).catch((e) => {
           console.error("Erro em buildIntroducao:", e);
           return null;
         }),
-        buildRequisitos(empresa, reportConfig, servicoId, gesIds).catch(e => {
+        buildRequisitos(empresa, reportConfig, servicoId, gesIds).catch((e) => {
           console.error("Erro em buildRequisitos:", e);
           return null;
         }),
-        buildGes(reportConfig, empresa, servicoId, gesIds).catch(e => {
+        buildGes(reportConfig, empresa, servicoId, gesIds).catch((e) => {
           console.error("Erro em buildGes:", e);
           return null;
         }),
-        buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds, cliente).catch(e => {
+        buildInventarioRiscos(reportConfig, empresa, servicoId, gesIds, cliente).catch((e) => {
           console.error("Erro em buildInventarioRiscos:", e);
           return null;
         }),
-        buildPlanoAcao(reportConfig, empresa, servicoId, gesIds, cliente).catch(e => {
+        buildPlanoAcao(reportConfig, empresa, servicoId, gesIds, cliente).catch((e) => {
           console.error("Erro em buildPlanoAcao:", e);
           return null;
         }),
       ]);
 
+      // ==== CONTEÚDO FINAL ====
       const content = [buildCapa(cliente)];
 
       const addSection = (section) => {
         if (section && (Array.isArray(section) ? section.length > 0 : true)) {
-          content.push({ text: '', pageBreak: 'before', pageOrientation: 'landscape' });
+          content.push({ text: "", pageBreak: "before", pageOrientation: "landscape" });
           content.push(section);
         }
       };
 
-      // Mantém a ordem desejada
       addSection(introducao);
       addSection(requisitos);
       addSection(ges);
@@ -96,55 +108,59 @@ module.exports = {
           const endWidth = pageSize.width - 25;
           const endHeight = pageSize.height - 25;
 
-          return [{
-            canvas: [
-              { type: "line", x1: margin, y1: margin, x2: endWidth, y2: margin, lineWidth: 0.5 },
-              { type: "line", x1: margin, y1: margin, x2: margin, y2: endHeight, lineWidth: 0.5 },
-              { type: "line", x1: margin, y1: endHeight, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
-              { type: "line", x1: endWidth, y1: margin, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
-              {
-                type: "ellipse",
-                x: pageSize.width / 2,
-                y: endHeight - 10,
-                color: "#40618b",
-                fillOpacity: 0.75,
-                r1: 25,
-                r2: 25,
-              },
-            ]
-          }];
+          return [
+            {
+              canvas: [
+                { type: "line", x1: margin, y1: margin, x2: endWidth, y2: margin, lineWidth: 0.5 },
+                { type: "line", x1: margin, y1: margin, x2: margin, y2: endHeight, lineWidth: 0.5 },
+                { type: "line", x1: margin, y1: endHeight, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+                { type: "line", x1: endWidth, y1: margin, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+                {
+                  type: "ellipse",
+                  x: pageSize.width / 2,
+                  y: endHeight - 10,
+                  color: "#40618b",
+                  fillOpacity: 0.75,
+                  r1: 25,
+                  r2: 25,
+                },
+              ],
+            },
+          ];
         },
         header: {
           margin: [50, 35, 50, 0],
           table: {
             widths: [100, "*", 100],
-            body: [[
-              {
-                border: [false, false, false, true],
-                image: logoCliente.data,
-                width: logoClienteWidth,
-                alignment: "center",
-                margin: [0, 0, 0, 5],
-              },
-              {
-                margin: [5, 15, 5, 0],
-                border: [true, false, true, true],
-                text: "PROGRAMA DE GERENCIAMENTO DE RISCOS NO TRABALHO RURAL",
-                bold: true,
-                alignment: "center",
-                fontSize: 12,
-              },
-              {
-                border: [false, false, false, true],
-                image: logoEmpresa.data,
-                width: logoEmpresaWidth,
-                alignment: "center",
-                margin: [0, 0, 0, 5],
-              },
-            ]]
-          }
+            body: [
+              [
+                {
+                  border: [false, false, false, true],
+                  image: logoCliente.data,
+                  width: logoClienteWidth,
+                  alignment: "center",
+                  margin: [0, 0, 0, 5],
+                },
+                {
+                  margin: [5, 15, 5, 0],
+                  border: [true, false, true, true],
+                  text: "PROGRAMA DE GERENCIAMENTO DE RISCOS NO TRABALHO RURAL",
+                  bold: true,
+                  alignment: "center",
+                  fontSize: 12,
+                },
+                {
+                  border: [false, false, false, true],
+                  image: logoEmpresa.data,
+                  width: logoEmpresaWidth,
+                  alignment: "center",
+                  margin: [0, 0, 0, 5],
+                },
+              ],
+            ],
+          },
         },
-        footer: (currentPage, pageCount) => ({
+        footer: (currentPage) => ({
           margin: [0, 30, 0, 0],
           text: currentPage,
           alignment: "center",

@@ -303,25 +303,25 @@ module.exports = {
                         tableBody.push(imageData);
                     }
 
-                    if (Array.isArray(ges.imagens) && ges.imagens.length) {
-                        tableBody.push([
-                            {
-                                text: "Imagens",
-                                fontSize: 12,
-                                alignment: "center",
-                                colSpan: 4,
-                                margin: [0, 10, 0, 0],
-                                fillColor: "#f0f0f0",
-                                pageBreak: "before",
-                            },
-                            {}, {}, {}
-                        ]);
+                    // if (Array.isArray(ges.imagens) && ges.imagens.length) {
+                    //     tableBody.push([
+                    //         {
+                    //             text: "Imagens",
+                    //             fontSize: 12,
+                    //             alignment: "center",
+                    //             colSpan: 4,
+                    //             margin: [0, 10, 0, 0],
+                    //             fillColor: "#f0f0f0",
+                    //             pageBreak: "before",
+                    //         },
+                    //         {}, {}, {}
+                    //     ]);
 
-                        const imagensRows = await getImages(ges.imagens);
-                        if (imagensRows.length > 0) {
-                            tableBody.push(...imagensRows);
-                        }
-                    }
+                    //     const imagensRows = await getImages(ges.imagens);
+                    //     if (imagensRows.length > 0) {
+                    //         tableBody.push(...imagensRows);
+                    //     }
+                    // }
 
                     const stack = [
                         createTitle(),

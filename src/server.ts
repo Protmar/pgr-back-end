@@ -10,34 +10,28 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS permissivo para todas as origens e headers
 app.use(cors());
 
 
-// Servir arquivos estáticos
 app.use(express.static("public"));
 
-// Parsing
 app.use(bodyParser.json({ limit: "900mb" }));
 app.use(bodyParser.urlencoded({ limit: "900mb", extended: true }));
 
-// Sessão
 app.use(
   session({
     secret: process.env.JWT_SECRET || "minha_chave_super_secreta",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // ✅ Ative em produção com HTTPS
+      secure: false, // Ative em produção com HTTPS
       sameSite: "lax",
     },
   })
 );
 
-// Rotas
 app.use(router);
 
-// Porta e inicialização
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {

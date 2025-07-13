@@ -22,45 +22,41 @@ module.exports = {
       // === Logo Cliente ===
       let logoCliente = null;
       let logoClienteWidth = 50;
+      let logoClienteHeight = 50; // Altura fixa para manter espaço
 
       try {
         const nomeLogo = cliente?.dataValues?.logo_url;
         const logoClienteS3 = nomeLogo ? await getFileToS3(nomeLogo) : null;
-        logoCliente = await getImageData(
-          logoClienteS3?.url || reportConfig.noImageUrl
-        );
+        logoCliente = await getImageData(logoClienteS3?.url || reportConfig.noImageUrl);
+
         logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
         if (logoClienteWidth > 100) logoClienteWidth = 100;
+        logoClienteHeight = 50;
       } catch (err) {
-        console.error("Erro ao carregar logo do cliente. Usando fallback:", err);
-        try {
-          logoCliente = await getImageData(reportConfig.noImageUrl);
-        } catch (fallbackErr) {
-          console.error("Erro ao carregar imagem padrão do cliente:", fallbackErr);
-          logoCliente = { data: "", width: 50, height: 50 };
-        }
+        console.error("Erro ao carregar logo do cliente. Usando espaço vazio:", err);
+        logoCliente = { data: "", width: 50, height: 50 };
+        logoClienteWidth = 50;
+        logoClienteHeight = 50;
       }
 
       // === Logo Empresa ===
       let logoEmpresa = null;
       let logoEmpresaWidth = 50;
+      let logoEmpresaHeight = 50;
 
       try {
         const nomeLogoEmpresa = empresa?.dataValues?.logoUrl;
         const logoEmpresaS3 = nomeLogoEmpresa ? await getFileToS3(nomeLogoEmpresa) : null;
-        logoEmpresa = await getImageData(
-          logoEmpresaS3?.url || reportConfig.noImageUrl
-        );
+        logoEmpresa = await getImageData(logoEmpresaS3?.url || reportConfig.noImageUrl);
+
         logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
         if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
+        logoEmpresaHeight = 50;
       } catch (err) {
-        console.error("Erro ao carregar logo da empresa. Usando fallback:", err);
-        try {
-          logoEmpresa = await getImageData(reportConfig.noImageUrl);
-        } catch (fallbackErr) {
-          console.error("Erro ao carregar imagem padrão da empresa:", fallbackErr);
-          logoEmpresa = { data: "", width: 50, height: 50 };
-        }
+        console.error("Erro ao carregar logo da empresa. Usando espaço vazio:", err);
+        logoEmpresa = { data: "", width: 50, height: 50 };
+        logoEmpresaWidth = 50;
+        logoEmpresaHeight = 50;
       }
 
       // === Seções do Documento ===
@@ -146,6 +142,7 @@ module.exports = {
                   border: [false, false, false, true],
                   image: logoCliente.data || "",
                   width: logoClienteWidth,
+                  height: logoClienteHeight,
                   alignment: "center",
                   margin: [0, 0, 0, 5],
                 },
@@ -161,6 +158,7 @@ module.exports = {
                   border: [false, false, false, true],
                   image: logoEmpresa.data || "",
                   width: logoEmpresaWidth,
+                  height: logoEmpresaHeight,
                   alignment: "center",
                   margin: [0, 0, 0, 5],
                 },

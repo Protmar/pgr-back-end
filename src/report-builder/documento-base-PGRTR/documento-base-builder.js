@@ -21,37 +21,41 @@ module.exports = {
       // ==== LOGO CLIENTE ====
       let logoCliente = { data: "", width: 50, height: 50 };
       let logoClienteWidth = 50;
+      let logoClienteHeight = 50; // Altura fixa para reservar espaço
+
       try {
         const logoClienteKey = cliente?.dataValues?.logo_url;
         const logoClienteUrl = logoClienteKey ? (await getFileToS3(logoClienteKey))?.url : null;
         logoCliente = await getImageData(logoClienteUrl || reportConfig.noImageUrl);
+
         logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
         if (logoClienteWidth > 100) logoClienteWidth = 100;
+        logoClienteHeight = 50;
       } catch (err) {
         console.error("Erro ao carregar logo do cliente:", err);
-        try {
-          logoCliente = await getImageData(reportConfig.noImageUrl);
-        } catch (fallbackErr) {
-          console.error("Erro ao carregar imagem padrão para cliente:", fallbackErr);
-        }
+        logoCliente = { data: "", width: 50, height: 50 };
+        logoClienteWidth = 50;
+        logoClienteHeight = 50;
       }
 
       // ==== LOGO EMPRESA ====
       let logoEmpresa = { data: "", width: 50, height: 50 };
       let logoEmpresaWidth = 50;
+      let logoEmpresaHeight = 50;
+
       try {
         const logoEmpresaKey = empresa?.dataValues?.logoUrl;
         const logoEmpresaUrl = logoEmpresaKey ? (await getFileToS3(logoEmpresaKey))?.url : null;
         logoEmpresa = await getImageData(logoEmpresaUrl || reportConfig.noImageUrl);
+
         logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
         if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
+        logoEmpresaHeight = 50;
       } catch (err) {
         console.error("Erro ao carregar logo da empresa:", err);
-        try {
-          logoEmpresa = await getImageData(reportConfig.noImageUrl);
-        } catch (fallbackErr) {
-          console.error("Erro ao carregar imagem padrão para empresa:", fallbackErr);
-        }
+        logoEmpresa = { data: "", width: 50, height: 50 };
+        logoEmpresaWidth = 50;
+        logoEmpresaHeight = 50;
       }
 
       // ==== CONSTRUÇÃO DAS SEÇÕES ====
@@ -138,6 +142,7 @@ module.exports = {
                   border: [false, false, false, true],
                   image: logoCliente.data,
                   width: logoClienteWidth,
+                  height: logoClienteHeight,
                   alignment: "center",
                   margin: [0, 0, 0, 5],
                 },
@@ -153,6 +158,7 @@ module.exports = {
                   border: [false, false, false, true],
                   image: logoEmpresa.data,
                   width: logoEmpresaWidth,
+                  height: logoEmpresaHeight,
                   alignment: "center",
                   margin: [0, 0, 0, 5],
                 },

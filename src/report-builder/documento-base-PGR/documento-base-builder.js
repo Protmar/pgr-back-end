@@ -138,14 +138,30 @@ module.exports = {
             widths: [100, "*", 100],
             body: [
               [
-                {
-                  border: [false, false, false, true],
-                  image: logoCliente.data || "",
-                  width: logoClienteWidth,
-                  height: logoClienteHeight,
-                  alignment: "center",
-                  margin: [0, 0, 0, 5],
-                },
+                logoCliente?.data
+                  ? {
+                    border: [false, false, false, true],
+                    image: logoCliente.data,
+                    width: logoClienteWidth,
+                    height: logoClienteHeight,
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  }
+                  : {
+                    border: [false, false, false, true],
+                    canvas: [
+                      {
+                        type: "rect",
+                        x: 0,
+                        y: 0,
+                        w: 50,
+                        h: 50,
+                        color: "#ffffff", // cor branca para deixar invisível
+                      },
+                    ],
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  },
                 {
                   margin: [5, 15, 5, 0],
                   border: [true, false, true, true],
@@ -154,14 +170,30 @@ module.exports = {
                   alignment: "center",
                   fontSize: 12,
                 },
-                {
-                  border: [false, false, false, true],
-                  image: logoEmpresa.data || "",
-                  width: logoEmpresaWidth,
-                  height: logoEmpresaHeight,
-                  alignment: "center",
-                  margin: [0, 0, 0, 5],
-                },
+                logoEmpresa?.data
+                  ? {
+                    border: [false, false, false, true],
+                    image: logoEmpresa.data,
+                    width: logoEmpresaWidth,
+                    height: logoEmpresaHeight,
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  }
+                  : {
+                    border: [false, false, false, true],
+                    canvas: [
+                      {
+                        type: "rect",
+                        x: 0,
+                        y: 0,
+                        w: 50,
+                        h: 50,
+                        color: "#ffffff",
+                      },
+                    ],
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  },
               ],
             ],
           },

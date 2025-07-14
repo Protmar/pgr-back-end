@@ -40,25 +40,25 @@ export const postDadosTrabalhadorExcelService = async (
         throw new Error(`Campos obrigatórios ausentes no item ${index + 1}: ${camposFaltando.join(', ')}`);
       }
 
-      if (!empresaId || isNaN(Number(empresaId))) {
-        throw new Error('O parâmetro empresaId não é válido.');
-      }
+      // if (!empresaId || isNaN(Number(empresaId))) {
+      //   throw new Error('O parâmetro empresaId não é válido.');
+      // }
 
-      if (!item.cpf || item.cpf.length < 11) {
-        throw new Error(`CPF inválido no item ${index + 1}: ${item.cpf}`);
-      }
+      // if (!item.cpf || item.cpf.length < 11) {
+      //   throw new Error(`CPF inválido no item ${index + 1}: ${item.cpf}`);
+      // }
 
-      if (!item.rg || item.rg.length < 9) {
-        throw new Error(`RG inválido no item ${index + 1}: ${item.rg}`);
-      }
+      // if (!item.rg || item.rg.length < 9) {
+      //   throw new Error(`RG inválido no item ${index + 1}: ${item.rg}`);
+      // }
 
-      if (!item.pis) {
-        throw new Error(`PIS inválido no item ${index + 1}: ${item.pis}`);
-      }
+      // if (!item.pis) {
+      //   throw new Error(`PIS inválido no item ${index + 1}: ${item.pis}`);
+      // }
 
-      if (!item.jornada || isNaN(item.jornada) || item.jornada <= 0) {
-        throw new Error(`Jornada inválida no item ${index + 1}: ${item.jornada}`);
-      }
+      // if (!item.jornada || isNaN(item.jornada) || item.jornada <= 0) {
+      //   throw new Error(`Jornada inválida no item ${index + 1}: ${item.jornada}`);
+      // }
 
       let cliente = await Cliente.findOne({ where: { nome_fantasia: item.cliente, empresa_id: empresaId } });
       let clienteId = cliente ? cliente.dataValues.id : null;
@@ -70,9 +70,9 @@ export const postDadosTrabalhadorExcelService = async (
         clienteId = novoCliente.dataValues.id;
       }
 
-      if (!clienteId) {
-        throw new Error(`Cliente não encontrado ou criado para o item ${index + 1}`);
-      }
+      // if (!clienteId) {
+      //   throw new Error(`Cliente não encontrado ou criado para o item ${index + 1}`);
+      // }
 
       let servico = await Servicos.findOne({ where: { descricao: item.servico, empresa_id: empresaId } });
       let servicoId = servico ? servico.dataValues.id : null;
@@ -136,9 +136,9 @@ export const postDadosTrabalhadorExcelService = async (
       }
 
       const codigoGesSanitizado = (item.codigoGes || "");
-      if (!codigoGesSanitizado) {
-        throw new Error(`Código GES ausente ou inválido no item ${index + 1}`);
-      }
+      // if (!codigoGesSanitizado) {
+      //   throw new Error(`Código GES ausente ou inválido no item ${index + 1}`);
+      // }
 
       let ges = await Ges.findOne({
         where: {

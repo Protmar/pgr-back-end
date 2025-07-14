@@ -392,6 +392,7 @@ router.get("/:matrizId/getmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.get);
 router.put("/:matrizId/editmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.put);
 router.delete("/:matrizId/deletematrizpadrao", ensureUserAuth, dadosMatrizPadrao.delete);
 router.post("/matrizes/set-padrao", ensureUserAuth, dadosMatrizPadrao.setPadrao);
+router.get("/configuracoes/empresa/matrizpadrao/getmatrizpadrao/:tipo/:parametro", ensureUserAuth, dadosMatrizPadrao.getMatrizPadraoByTipoParametro);
 
 //MATRIZ SERVIÇO
 router.post("/servico/matriz/postmatriz", ensureUserAuth, dadosMatrizServico.post);

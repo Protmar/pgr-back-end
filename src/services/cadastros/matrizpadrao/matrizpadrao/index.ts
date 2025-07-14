@@ -202,6 +202,48 @@ export const matrizPadraoGet = async (empresaId: string, matrizId: string) => {
   return data;
 };
 
+export const matrizPadraoGetTipoParametro = async (empresaId: string, tipo: string, parametro: string) => {
+  const data = await MatrizPadrao.findOne({
+    where: {
+      empresa_id: Number(empresaId),
+      tipo,
+      parametro,
+      is_padrao: true,
+    },
+    include: [
+      {
+        model: Probabilidade,
+        as: "probabilidades",
+        attributes: [
+          "position",
+          "description",
+          "criterio",
+          "sinal",
+          "valor",
+          "sem_protecao",
+        ],
+      },
+      {
+        model: SeveridadeConsequencia,
+        as: "severidades",
+        attributes: ["position", "description", "criterio"],
+      },
+      {
+        model: ClassificacaoRisco,
+        as: "classificacaoRisco",
+        attributes: [
+          "grau_risco",
+          "classe_risco",
+          "cor",
+          "definicao",
+          "forma_atuacao",
+        ], // Adicionado forma_atuacao
+      },
+    ],
+  });
+  return data;
+};
+
 export const matrizPadraoDelete = (empresaId: string, matrizId: string) => {
   const data = MatrizPadrao.destroy({
     where: {

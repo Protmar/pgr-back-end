@@ -20,9 +20,9 @@ export interface MatrizPadraoAttributes {
 }
 
 export interface MatrizPadraoCreationAttributes
-    extends Optional<MatrizPadraoAttributes, "id"> {}
+    extends Optional<MatrizPadraoAttributes, "id"> { }
 
-    export const MatrizPadrao = sequelize.define<
+export const MatrizPadrao = sequelize.define<
     Model<MatrizPadraoAttributes, MatrizPadraoCreationAttributes>
 >("matriz_padrao", {
     id: {
@@ -36,7 +36,7 @@ export interface MatrizPadraoCreationAttributes
         references: { model: "empresas", key: "id" },
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
-        allowNull: false, 
+        allowNull: false,
     },
     size: {
         type: DataTypes.INTEGER,
@@ -50,39 +50,39 @@ export interface MatrizPadraoCreationAttributes
             isIn: [enumTipo]
         }
     },
-        parametro: {
-            allowNull: false,
-            type: DataTypes.ENUM,
-            values: enumParametro,
-            validate: {
-                isIn: [enumParametro]
-            }
-        },
-    is_padrao:{
+    parametro: {
+        allowNull: false,
+        type: DataTypes.ENUM,
+        values: enumParametro,
+        validate: {
+            isIn: [enumParametro]
+        }
+    },
+    is_padrao: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
     }
-    },
-{tableName: "matriz_padroes"},
+},
+    { tableName: "matriz_padroes" },
 );
 MatrizPadrao.belongsTo(Empresa, {
     foreignKey: "empresa_id",
 })
 MatrizPadrao.hasMany(Probabilidade, {
-  foreignKey: "matriz_id",
-  as: "probabilidades",
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+    foreignKey: "matriz_id",
+    as: "probabilidades",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });
 MatrizPadrao.hasMany(SeveridadeConsequencia, {
-  foreignKey: "matriz_id",
-  as: "severidades",
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+    foreignKey: "matriz_id",
+    as: "severidades",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });
 MatrizPadrao.hasMany(ClassificacaoRisco, {
-  foreignKey: "matriz_id",
-  as: "classificacaoRisco",
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
+    foreignKey: "matriz_id",
+    as: "classificacaoRisco",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
 });

@@ -18,11 +18,11 @@ module.exports = {
       },
       tipo: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       parametro: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       ordem: {
         allowNull: false,
@@ -30,27 +30,27 @@ module.exports = {
       },
       codigo_esocial: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       descricao: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       danos_saude: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       tecnica_utilizada: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       lt_le: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       nivel_acao: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       ltcat: {
         type: Sequelize.DataTypes.BOOLEAN,

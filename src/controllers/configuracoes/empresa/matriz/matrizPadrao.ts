@@ -4,6 +4,7 @@ import {
   matrizPadraoDelete,
   matrizPadraoGet,
   matrizPadraoGetAll,
+  matrizPadraoGetTipoParametro,
   matrizPadraoPostService,
   matrizPadraoPut,
   setMatrizPadraoService,
@@ -259,4 +260,33 @@ export const dadosMatrizPadrao = {
         .json({ message: "Erro interno ao definir matriz padrão" });
     }
   },
+
+  getMatrizPadraoByTipoParametro: async (
+    req: AuthenticatedUserRequest,
+    res: Response 
+  ) => {
+    try {
+      const { empresaId } = req.user!;
+      const { tipo, parametro } = req.params;
+
+      // Validação
+      if (!tipo || !parametro) {
+        return res
+          .status(400)
+          .json({ message: "tipo e parametro são obrigatórios" });
+      }
+
+      const data = await matrizPadraoGetTipoParametro(empresaId.toString(), tipo, parametro);
+      if (!data) {
+        return res.status(404).json({ message: "Matriz padrão não encontrada" });
+      }
+
+      res.status(200).json(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+      return res.status(500).json({ message: "Erro interno ao buscar matriz padrão" });
+    }
+  }
 };

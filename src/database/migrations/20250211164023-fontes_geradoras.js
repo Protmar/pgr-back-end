@@ -18,7 +18,7 @@ module.exports = {
       },
       descricao: {
         allowNull: false,
-        type: Sequelize.DataTypes.STRING,
+        type: Sequelize.DataTypes.TEXT,
       },
       created_at: {
         allowNull: false,

@@ -31,7 +31,7 @@ export const CadastroFonteGeradora = sequelize.define<Model<CadastroFonteGerador
             allowNull: false,
         },
         descricao: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false,
         }
     }

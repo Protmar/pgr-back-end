@@ -80,14 +80,14 @@ export const Risco = sequelize.define<
       references: { model: "fatores_riscos", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: false,
+      allowNull: true,
     },
     id_fonte_geradora: {
       type: DataTypes.INTEGER,
       references: { model: "fontes_geradoras", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: false,
+      allowNull: true,
     },
     id_exigencia_atividade:{
       type: DataTypes.INTEGER,
@@ -101,21 +101,21 @@ export const Risco = sequelize.define<
       references: { model: "trajetorias", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: false,
+      allowNull: true,
     },
     id_exposicao: {
       type: DataTypes.INTEGER,
       references: { model: "exposicoes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: false,
+      allowNull: true,
     },
     id_meio_propagacao: {
       type: DataTypes.INTEGER,
       references: { model: "meios_de_propagacoes", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: false,
+      allowNull: true,
     },
     ges_id: {
       type: DataTypes.INTEGER,
@@ -124,7 +124,7 @@ export const Risco = sequelize.define<
       onDelete: "RESTRICT"
     },
     transmitir_esocial: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.ENUM,
       values: enumTransmitirEsocial,
       validate: {
@@ -139,7 +139,7 @@ export const Risco = sequelize.define<
     },
     comentario: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     nivel_acao: {
       type: DataTypes.STRING,
@@ -149,7 +149,7 @@ export const Risco = sequelize.define<
       references: { model: "tecnicas_utilizadas", key: "id" },
       onUpdate: "CASCADE",
       onDelete: "RESTRICT",
-      allowNull: false,
+      allowNull: true,
     },
     id_estrategia_amostragem: {
       type: DataTypes.INTEGER,
@@ -166,23 +166,23 @@ export const Risco = sequelize.define<
     },
     obs: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     probab_freq: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     conseq_severidade: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     grau_risco: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     classe_risco: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     conclusao_ltcat: {
       type: DataTypes.STRING,

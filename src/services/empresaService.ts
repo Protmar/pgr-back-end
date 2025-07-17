@@ -5,6 +5,7 @@ import { SeveridadeConsequencia, SeveridadeConsequenciaAttributes } from "../mod
 import { ClassificacaoRisco, ClassificacaoRiscoAttributes } from "../models/ClassificacaoRisco";
 import { matrizPadraoPostService } from "./cadastros/matrizpadrao/matrizpadrao";
 import { Model } from "sequelize";
+import { User } from "../models";
 
 // Tipagem explícita para o retorno do findAll com associações (objetos simples)
 interface MatrizPadraoComAssociacoes extends MatrizPadraoAttributes {
@@ -125,5 +126,10 @@ export const empresaService = {
     } catch (error) {
       throw error instanceof Error ? error : new Error("Erro ao criar empresa e replicar matrizes");
     }
+  },
+
+  getUserByEmail: async (email: string) => {
+    const user = await User.findOne({ where: { email } });
+    return user;
   },
 };

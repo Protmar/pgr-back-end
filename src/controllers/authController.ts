@@ -5,6 +5,10 @@ import { jwtService } from "../services/jwtService";
 import { randomBytes } from "crypto";
 import { mailerService } from "../services/mailerService";
 import { Role } from "../models/enums/role.enum";
+import { AuthenticatedUserRequest } from "../middleware";
+import { empresaController } from "./empresaController";
+import { empresaService } from "../services/empresaService";
+import { User } from "../models";
 
 const roles = Object.keys(Role);
 const webUrl = process.env.WEB_URL;
@@ -113,4 +117,151 @@ export const authController = {
       }
     }
   },
+
+  getAllUsersByEmpresa: async (req: AuthenticatedUserRequest, res: Response) => {
+    const { empresaId } = req.user!;
+    console.log("Empresa ID:", empresaId);
+    try {
+      if (!empresaId) {
+        return res.status(400).json({ message: "Empresa ID é obrigatório" });
+      }
+
+      const users = await userService.getAllUsersByEmpresa(String(empresaId));
+
+      return res.json(users);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  registerUserByEmpresa: async (req: AuthenticatedUserRequest, res: Response) => {
+    const { empresaId } = req.user!;
+
+    try {
+      const { nome, email, senha, role, permissionCreateAndEditiButton } = req.body;
+      if (!empresaId) {
+        return res.status(400).json({ message: "Empresa ID é obrigatório" });
+      }
+
+      const user = await userService.findByEmail(email);
+
+      if (user) {
+        return res.status(400).json({ message: "E-mail ja cadastrado" });
+      }
+
+      try {
+        const alreadyExists = await userService.findByEmail(email);
+
+        if (alreadyExists) {
+          throw new Error("Este e-mail já está cadastrado.");
+        }
+
+        // Formata os nomes antes de salvar
+        const formattedNome = empresaController.capitalizeName(nome);
+
+        const user = await userService.create({
+          nome: formattedNome,
+          email,
+          senha,
+          role: role,
+          empresaId: empresaId,
+          visualizarLaudos: false,
+          editarLaudos: permissionCreateAndEditiButton,
+          visualizarConfigClientes: false,
+          editarConfigClientes: false,
+          realizarPagamentos: false,
+          recoverCode: null,
+          recoverExpires: null
+        });
+
+        return res.status(201).json({ user });
+      } catch (err) {
+        if (err instanceof Error) {
+          return res.status(400).json({ message: err.message });
+        }
+      }
+
+      return res.json(user);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  deleteUser: async (req: AuthenticatedUserRequest, res: Response) => {
+    const { id } = req.body;
+
+    try {
+      if (!id) {
+        return res.status(400).json({ message: "ID do usuário é obrigatório" });
+      }
+
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      await user.destroy();
+
+      return res.status(200).json({ message: "Usuário deletado com sucesso" });
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  getCompanyUser: async (req: AuthenticatedUserRequest, res: Response) => {
+    const { empresaId } = req.user!;
+
+    try {
+      if (!empresaId) {
+        return res.status(400).json({ message: "Empresa ID é obrigatório" });
+      }
+
+      const user = await User.findOne({
+        where: {
+          empresaId: empresaId,
+          role: "COMPANY"
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado para esta empresa" });
+      }
+
+      return res.json(user);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  getUserLogado: async (req: AuthenticatedUserRequest, res: Response) => {
+    const { empresaId, email } = req.user!;
+    try {
+
+      const userData = await User.findOne({
+        where: {
+          empresaId: empresaId,
+          email: email
+        }
+      });
+
+      if (!userData) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      return res.json(userData);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  }
 };

@@ -28,6 +28,7 @@ export const empresaController = {
             emailFinanceiro,
             endereco,
             telefone,
+            role
         } = req.body;
 
         try {
@@ -66,7 +67,7 @@ export const empresaController = {
                 realizarPagamentos: true,
                 recoverCode: null,
                 recoverExpires: null,
-                role: Role.USER,
+                role: role
             });
 
             return res.status(201).json({ empresa, user });

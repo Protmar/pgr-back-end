@@ -126,6 +126,10 @@ module.exports = {
         allowNull: true,
         type: Sequelize.DataTypes.TEXT,
       },
+      menor_limite_quantificacao: {
+        allowNull: true,
+        type: Sequelize.DataTypes.BOOLEAN,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

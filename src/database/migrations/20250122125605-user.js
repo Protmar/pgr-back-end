@@ -52,6 +52,14 @@ module.exports = {
           allowNull: false,
           type: Sequelize.DataTypes.STRING,
         },
+        clienteselecionado: {
+          type: Sequelize.DataTypes.INTEGER,
+          allowNull: true,
+        },
+        servicoselecionado: {
+          type: Sequelize.DataTypes.INTEGER,
+          allowNull: true,
+        },
         created_at: {
           allowNull: false,
           type: Sequelize.DataTypes.DATE,

@@ -35,6 +35,7 @@ import { CadastroMedidaControleAdministrativaNecessaria } from "../../models/Med
 import { CadastroMedidaControleColetivaNecessaria } from "../../models/MedidaControleColetivaNecessaria";
 import ResponsavelTecnico from "../../models/ResponsavelTecnico";
 import { Ges } from "../../models";
+import { getOneServico } from "../servicos";
 
 export const getDadosPesquisaCnpjNomeService = async (
   empresa_id: any,
@@ -63,11 +64,16 @@ export const getDadosPesquisaCnpjNomeService = async (
 
 export const getDadosPesquisaGESService = async(
   empresa_id: any,
-  pesquisa: any
+  pesquisa: any,
+  email: any
 ) => {
+
+  const servicoSelecionado = await getOneServico(empresa_id, email);
+
   const data = await Ges.findAll({
     where: {
-      empresa_id: empresa_id, // Busca exata pelo ID da empresa
+      servico_id: servicoSelecionado?.servicoselecionado ?? undefined,
+      empresa_id: empresa_id, 
       [Op.or]: [
         {
           codigo: {
@@ -661,11 +667,16 @@ export const getDadosPesquisaDescCursoObrigatorioService = async (
 
 export const getDadosPesquisaTrabalhadoresService = async (
   empresa_id: any,
-  pesquisa: any
+  pesquisa: any,
+  email: any
 ) => {
+
+  const servico = await getOneServico(empresa_id, email);
+
   const data = await Trabalhadores.findAll({
     where: {
-      empresa_id: empresa_id, // Busca exata pelo ID da empresa
+      servico_id: servico?.servicoselecionado ?? undefined,
+      empresa_id: empresa_id, 
       [Op.or]: [
         {
           codigo: {

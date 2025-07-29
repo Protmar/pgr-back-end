@@ -32,6 +32,9 @@ module.exports = {
         type: Sequelize.DataTypes.BOOLEAN,
         allowNull: false,
       },
+      lessChecked : {
+        type: Sequelize.DataTypes.BOOLEAN,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

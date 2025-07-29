@@ -72,7 +72,7 @@ router.post("/postcliente", ensureUserAuth, middlewareCanEditAndCreate, dadosCli
 router.delete("/:idcliente/deletecliente", ensureUserAuth, dadosCliente.delete);
 router.put("/:idcliente/editcliente", ensureUserAuth, dadosCliente.put);
 router.post("/selecionarcliente", ensureUserAuth, dadosCliente.selecionarCliente);
-
+router.get("/getonecliente", ensureUserAuth, dadosCliente.getOneCliente);
 router.post("/postclientelogo", ensureUserAuth, middlewareCanEditAndCreate, dadosCliente.uploadLogo);
 
 //Usuários
@@ -90,6 +90,7 @@ router.put("/:idservico/editservico", ensureUserAuth, dadosServicos.put);
 router.delete("/:idservico/deleteservico", ensureUserAuth, dadosServicos.delete);
 router.post("/selecionarservico", ensureUserAuth, dadosServicos.selecionarServico);
 router.get("/getservicosbycliente/:idcliente", ensureUserAuth, dadosServicos.getServicosByClienteId);
+router.get("/getoneservico", ensureUserAuth, dadosServicos.getOneServico);
 
 //Dados Estatisticos
 router.post("/postdadoestatistico", ensureUserAuth, middlewareCanEditAndCreate, dadosEstatisticos.post);
@@ -369,7 +370,7 @@ router.post("/duplicarfile/:key", ensureUserAuth, s3Controller.duplicateFile);
 router.get("/getimage/:key", ensureUserAuth, s3Controller.getOneAWS);
 
 //RISCOS
-router.post("/cadastros/riscos/novorisco/postrisco", middlewareCanEditAndCreate, ensureUserAuth, dadosRisco.post);
+router.post("/cadastros/riscos/novorisco/postrisco", ensureUserAuth, middlewareCanEditAndCreate, dadosRisco.post);
 router.get("/cadastro/getallrisco", ensureUserAuth, dadosRisco.getAll);
 router.get("/:idrisco/getrisco", ensureUserAuth, dadosRisco.get);
 router.put("/:idrisco/editrisco", ensureUserAuth, dadosRisco.put);
@@ -379,6 +380,7 @@ router.get("/getriscobyges/:idges", ensureUserAuth, dadosRisco.getRiscoByGes);
 router.get("/cadastros/medidascoletivas", ensureUserAuth, medidaColetivaController.getAll);
 router.get("/cadastros/medidasadministrativas", ensureUserAuth, medidaAdministrativaController.getAll);
 router.get("/cadastros/medidasindividuais", ensureUserAuth, medidaIndividualController.getAll);
+
 //PLANO DE AÇÃO
 router.post("/riscos/:riscoId/planoacao", ensureUserAuth, middlewareCanEditAndCreate, dadosPlanoAcao.post);
 router.get("/riscos/:riscoId/planoacao", ensureUserAuth, dadosPlanoAcao.getAll);
@@ -394,7 +396,7 @@ router.post("/copias/ges", ensureUserAuth, middlewareCanEditAndCreate, dadosCopi
 
 
 //MATRIZ PADRÃO
-router.post("/configuracoes/empresa/matrizpadrao/postmatrizpadrao", middlewareCanEditAndCreate, ensureUserAuth, dadosMatrizPadrao.post);
+router.post("/configuracoes/empresa/matrizpadrao/postmatrizpadrao",  ensureUserAuth, middlewareCanEditAndCreate, dadosMatrizPadrao.post);
 router.get("/configuracoes/empresa/matrizpadrao/getallmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.getAll);
 router.get("/:matrizId/getmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.get);
 router.put("/:matrizId/editmatrizpadrao", ensureUserAuth, dadosMatrizPadrao.put);
@@ -409,7 +411,7 @@ router.get("/servico/matriz/:servicoid/getallmatriz", ensureUserAuth, dadosMatri
 router.get("/servico/matriz/:matrizId/:servicoid/getmatriz", ensureUserAuth, dadosMatrizServico.get);
 router.put("/servico/matriz/:matrizId/editmatriz", ensureUserAuth, dadosMatrizServico.put);
 router.delete("/servico/matriz/:matrizId/:servicoid/deletematriz", ensureUserAuth, dadosMatrizServico.delete);
-router.post("/servico/matriz/set-padrao", middlewareCanEditAndCreate, ensureUserAuth, dadosMatrizServico.setPadrao);
+router.post("/servico/matriz/set-padrao",  ensureUserAuth, middlewareCanEditAndCreate, dadosMatrizServico.setPadrao);
 router.get("/servico/matriz/padrao", dadosMatrizServico.getPadrao);
 
 //Ambiente Trabalho

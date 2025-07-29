@@ -9,11 +9,13 @@ import { getCache } from "../cliente/cliente";
 export const gesController = {
     postges: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
+            
             // Verificando o arquivo enviado
             const file = req.files && req.files['file'] ? req.files['file'][0] : null;
 
             // Verificando se req.body.params existe
             if (!req.body.params) {
+                console.error("Parâmetros ausentes na requisição.");
                 return res.status(400).json({ message: "Parâmetros ausentes na requisição." });
             }
 
@@ -21,15 +23,20 @@ export const gesController = {
             try {
                 params = JSON.parse(req.body.params);
             } catch (error) {
+                console.error("Erro ao processar os parâmetros. JSON inválido.");
                 return res.status(400).json({ message: "Erro ao processar os parâmetros. JSON inválido." });
             }
 
             // Verifica autenticação do usuário
             if (!req.user) {
+                console.error("Usuário não autenticado.");
                 return res.status(401).json({ message: "Usuário não autenticado." });
             }
 
-            const { empresaId } = req.user;
+            const { empresaId, email } = req.user;
+            const userId = req.user.id;
+
+            
 
             // Extraindo os parâmetros
             const {
@@ -69,6 +76,7 @@ export const gesController = {
 
 
             const data = await gesPostService(
+                userId,
                 empresaId,
                 listCurso,
                 listRac,
@@ -99,7 +107,8 @@ export const gesController = {
                 } as AmbienteTrabalhoAttributes,
                 fileData?.path,
                 fileData?.filename,
-                fileData?.mimetype
+                fileData?.mimetype,
+                email
             );
 
 
@@ -194,8 +203,8 @@ export const gesController = {
     getAll: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { empresaId } = req.user!;
-
-            const response = await getAllGesService(empresaId);
+            const userId = req.user!.id;
+            const response = await getAllGesService(empresaId, userId);
             res.status(200).json(response);
         } catch (err) {
             if (err instanceof Error) {

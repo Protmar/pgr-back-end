@@ -10,6 +10,7 @@ import {
   matrizServicoPut,
   setMatrizService,
 } from "../../services/cadastros/matrizes/matrizservico";
+import { User } from "../../models";
 
 export const dadosMatrizServico = {
   post: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -30,6 +31,7 @@ export const dadosMatrizServico = {
         riskDesc,
         riskColors,
         formaAtuacao,
+        lessChecked
       } = req.body;
 
       let servicoId = servicoid;
@@ -95,6 +97,7 @@ export const dadosMatrizServico = {
         riskDesc,
         riskColors,
         formaAtuacao,
+        lessChecked
       });
 
       return res.status(201).json(data);
@@ -108,11 +111,17 @@ export const dadosMatrizServico = {
 
   getAll: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const servicoId = globalThis.servico_id;
+
+      const userId = req.user!.id;
+
+      const servicoId = await User.findOne({
+        where: { id: userId },
+        attributes: ["servicoselecionado"],
+      });
       if (!servicoId) {
         return res.status(401).json({ message: "Serviço ID não fornecido" });
       }
-      const data = await matrizServicoGetAll(servicoId.toString());
+      const data = await matrizServicoGetAll(servicoId?.dataValues.servicoselecionado?.toString());
       return res.status(200).json(data);
     } catch (err) {
       return res.status(500).json({
@@ -125,11 +134,17 @@ export const dadosMatrizServico = {
   getMatrizByServico: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const servicoId = req.params.servicoid;
-      const servicoIdSelecionado = globalThis.servico_id;
+
+      const userId = req.user!.id;
+
+      const servicoIdSelecionado = await User.findOne({
+        where: { id: userId },
+        attributes: ["servicoselecionado"],
+      });;
       if (!servicoId) {
         return res.status(401).json({ message: "Serviço ID não fornecido" });
       }
-      const data = await matrizServicoGetAll(servicoId.toString(), servicoIdSelecionado.toString());
+      const data = await matrizServicoGetAll(servicoId.toString(), servicoIdSelecionado?.dataValues?.servicoselecionado?.toString());
       if (!data) {
         return res.status(404).json({ message: "Matriz não encontrada" });
       }
@@ -179,7 +194,8 @@ export const dadosMatrizServico = {
         riskColors,
         riskDesc,
         formaAtuacao,
-        servicoId
+        servicoId,
+        lessChecked
       } = req.body;
 
       if (!tipo || !parametro || !size) {
@@ -233,7 +249,8 @@ export const dadosMatrizServico = {
         riskColors,
         riskDesc,
         formaAtuacao,
-        is_padrao
+        is_padrao,
+        lessChecked
       );
 
       return res
@@ -269,7 +286,13 @@ export const dadosMatrizServico = {
 
   setPadrao: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const servicoId = globalThis.servico_id;
+
+      const userId = req.user!.id;
+
+      const servicoId = await User.findOne({
+        where: { id: userId },
+        attributes: ["servicoselecionado"],
+      });
       const { idMatriz, tipo, parametro } = req.body;
 
       // Validação
@@ -280,7 +303,7 @@ export const dadosMatrizServico = {
       }
 
       const data = await setMatrizService(
-        servicoId.toString(),
+        servicoId?.dataValues.servicoselecionado?.toString() || "",
         idMatriz,
         tipo,
         parametro

@@ -148,7 +148,7 @@ export const getDadosAllRiscoService = async (empresaId: string) => {
     where: { empresa_id: empresaIdNumber },
     include: [
       {
-        model: CadastroFatoresRisco, as: 'fatores_risco', attributes: ["descricao"]
+        model: CadastroFatoresRisco, as: 'fatorRisco', attributes: ["descricao"]
       },
       {
         model: CadastroMedidaControleColetivaExistente,
@@ -196,7 +196,8 @@ export const putDadosRiscoService = async (
   medidasIndividuais?: number[],
   conclusao_insalubridade?: string,
   conclusao_periculosidade?: string,
-  conclusao_ltcat?: string
+  conclusao_ltcat?: string,
+  menor_limite_quantificacao?: boolean
 ) => {
   const empresaIdNumber = Number(empresa_id);
   const riscoIdNumber = Number(id_risco);
@@ -246,6 +247,7 @@ export const putDadosRiscoService = async (
         conclusao_insalubridade,
         conclusao_periculosidade,
         conclusao_ltcat,
+        menor_limite_quantificacao
       },
       { where: { empresa_id: empresaIdNumber, id: riscoIdNumber }, transaction }
     );

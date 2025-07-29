@@ -1,153 +1,98 @@
-const { getAllGesByServico, getOneGesService, getEpisInString } = require("../../services/ges");
-const { getFileToS3 } = require("../../services/aws/s3/index");
-const { getImageData } = require("../utils/report-utils");
-const { convertToPng } = require("../utils/image-utils");
+    const { getAllGesByServico, getOneGesService, getEpisInString } = require("../../services/ges");
+    const { getFileToS3 } = require("../../services/aws/s3/index");
+    const { getImageData } = require("../utils/report-utils");
+    const { convertToPng } = require("../utils/image-utils");
+    const { text } = require("body-parser");
 
-module.exports = {
-    buildIntroducao: async (empresa, reportConfig, servicoId, gesIds) => {
-        try {
-            const createHeaderRow = () => [
-                {
-                    text: "GES",
-                    fontSize: 12,
+    module.exports = {
+        buildIntroducao: async (empresa, reportConfig, servicoId, gesIds) => {
+            try {
+                const createHeaderRow = () => [
+                    {
+                        text: "GES",
+                        fontSize: 12,
+                        bold: true,
+                        alignment: "center",
+                        fillColor: "#2f945d",
+                        color: "white",
+                        margin: [0, 12, 0, 0],
+                        lineHeight: 1,
+                    },
+                    {
+                        text: "Item  31.3.3.2.1\na) Caracterização dos Processos",
+                        fontSize: 12,
+                        bold: true,
+                        alignment: "center",
+                        fillColor: "#2f945d",
+                        color: "white",
+                        margin: [0, 6, 0, 0],
+                        lineHeight: 1,
+                    },
+                    {
+                        text: "Item  31.3.3.2.1\na) Caracterização dos Ambientes de Trabalho",
+                        fontSize: 12,
+                        bold: true,
+                        alignment: "center",
+                        fillColor: "#2f945d",
+                        color: "white",
+                        margin: [0, 0, 0, 0],
+                        lineHeight: 1,
+                    },
+                    {
+                        text: "Responsável",
+                        fontSize: 12,
+                        bold: true,
+                        alignment: "center",
+                        fillColor: "#2f945d",
+                        color: "white",
+                        margin: [0, 12, 0, 0],
+                        lineHeight: 1,
+                    },
+                ];
+
+                const createTitle = () => ({
+                    text: "INTRODUÇÃO",
+                    fontSize: 18,
                     bold: true,
                     alignment: "center",
-                    fillColor: "#2f945d",
-                    color: "white",
-                    margin: [0, 12, 0, 0],
-                    lineHeight: 1,
-                },
-                {
-                    text: "Item  31.3.3.2.1\na) Caracterização dos Processos",
-                    fontSize: 12,
-                    bold: true,
-                    alignment: "center",
-                    fillColor: "#2f945d",
-                    color: "white",
-                    margin: [0, 6, 0, 0],
-                    lineHeight: 1,
-                },
-                {
-                    text: "Item  31.3.3.2.1\na) Caracterização dos Ambientes de Trabalho",
-                    fontSize: 12,
-                    bold: true,
-                    alignment: "center",
-                    fillColor: "#2f945d",
-                    color: "white",
-                    margin: [0, 0, 0, 0],
-                    lineHeight: 1,
-                },
-                {
-                    text: "Responsável",
-                    fontSize: 12,
-                    bold: true,
-                    alignment: "center",
-                    fillColor: "#2f945d",
-                    color: "white",
-                    margin: [0, 12, 0, 0],
-                    lineHeight: 1,
-                },
-            ];
+                    margin: [0, 10, 0, 10],
+                });
 
-            const createTitle = () => ({
-                text: "INTRODUÇÃO",
-                fontSize: 18,
-                bold: true,
-                alignment: "center",
-                margin: [0, 10, 0, 10],
-            });
+                if (!empresa?.dataValues?.id || !Array.isArray(gesIds) || !reportConfig?.noImageUrl) {
+                    throw new Error("Parâmetros inválidos fornecidos para gerar a introdução.");
+                }
 
-            if (!empresa?.dataValues?.id || !Array.isArray(gesIds) || !reportConfig?.noImageUrl) {
-                throw new Error("Parâmetros inválidos fornecidos para gerar a introdução.");
-            }
+                const gesDataArray = await Promise.all(
+                    gesIds.map((gesId) => getOneGesService(empresa.dataValues.id, gesId))
+                );
 
-            const gesDataArray = await Promise.all(
-                gesIds.map((gesId) => getOneGesService(empresa.dataValues.id, gesId))
-            );
+                const tableBody = [];
 
-            const tables = await Promise.all(
-                gesDataArray.map(async (gesResponse, index) => {
+                // Adiciona apenas uma vez o cabeçalho verde
+                tableBody.push(createHeaderRow());
+
+                for (const gesResponse of gesDataArray) {
                     const ges = gesResponse?.dataValues;
-                    if (!ges) throw new Error(`Dados do GES não encontrados para o ID: ${gesIds[index]}`);
-
-                    // Tentar carregar imagem base, mas tratar erro sem lançar exceção
-                    let imagemBase = null;
-                    let erroImagemBase = null;
-                    try {
-                        imagemBase = await getImageData(reportConfig.noImageUrl);
-                    } catch (e) {
-                        console.error("Erro ao carregar imagem base: " + e.message);
-                        erroImagemBase = "Erro ao carregar imagem base: " + e.message;
-                    }
+                    if (!ges) continue;
 
                     let imagem = null;
-                    const nomeFluxograma = ges.nome_fluxograma || null;
+                    let erroImagemBase = null;
                     let erroFluxograma = null;
 
+                    const nomeFluxograma = ges.nome_fluxograma || "";
                     if (nomeFluxograma) {
                         try {
-                            if (typeof nomeFluxograma !== "string" || nomeFluxograma.trim() === "") {
-                                throw new Error("Nome do fluxograma inválido");
-                            }
-
                             const urlImage = await getFileToS3(nomeFluxograma);
-
-                            if (!urlImage?.url || typeof urlImage.url !== "string" || !urlImage.url.startsWith("http")) {
-                                throw new Error(`URL inválida do fluxograma: ${JSON.stringify(urlImage)}`);
+                            const imageData = await getImageData(urlImage.url);
+                            if (imageData?.type === "webp") {
+                                imageData.data = await convertToPng(imageData.data, 250);
                             }
-
-                            imagem = await getImageData(urlImage.url);
-
-                            if (imagem?.type === "webp") {
-                                imagem.data = await convertToPng(imagem.data, 250);
-                            }
+                            imagem = imageData;
                         } catch (err) {
-                            console.error(`[Fluxograma] Erro ao carregar imagem do GES ${ges.id} (${nomeFluxograma}): ${err.message}`);
                             erroFluxograma = `[Fluxograma] Erro ao carregar imagem: ${err.message}`;
                             imagem = null;
                         }
                     }
-
-                    const imageData = [];
-
-                    if (nomeFluxograma && imagem) {
-                        imageData.push(
-                            {
-                                image: imagem.data,
-                                width: 250,
-                                alignment: "center",
-                                colSpan: 4,
-                            },
-                            {}, {}, {}
-                        );
-                    } else if (erroFluxograma) {
-                        // Caso erro no fluxograma, mostrar mensagem vermelha
-                        imageData.push(
-                            {
-                                text: erroFluxograma,
-                                fontSize: 10,
-                                color: "red",
-                                alignment: "center",
-                                colSpan: 4,
-                                margin: [0, 10, 0, 10],
-                            },
-                            {}, {}, {}
-                        );
-                    } else if (erroImagemBase) {
-                        // Caso erro na imagem base, mostrar mensagem vermelha
-                        imageData.push(
-                            {
-                                text: erroImagemBase,
-                                fontSize: 10,
-                                color: "red",
-                                alignment: "center",
-                                colSpan: 4,
-                                margin: [0, 10, 0, 10],
-                            },
-                            {}, {}, {}
-                        );
-                    }
-                    // Se não tiver imagem nem erro, imageData fica vazio (nenhuma imagem/texto)
 
                     const getEpisObrigatorios = async (epis) => {
                         if (!Array.isArray(epis) || epis.length === 0) return "";
@@ -160,7 +105,6 @@ module.exports = {
                             );
                             return `• Equipamentos: ${epiStrings.filter(Boolean).join("; ")}\n`;
                         } catch (err) {
-                            console.error("Erro ao carregar EPIs:", err.message);
                             return "• Equipamentos: Erro ao carregar EPIs\n";
                         }
                     };
@@ -188,51 +132,51 @@ module.exports = {
                         return info;
                     };
 
-                    const tableBody = [
-                        createHeaderRow(),
-                        [
-                            { text: `${ges.codigo} - ${ges.descricao_ges}` || "", fontSize: 10, alignment: "center", lineHeight: 1 },
-                            {
-                                text: ges.texto_caracterizacao_processos || "",
-                                fontSize: 10,
-                                alignment: "center",
-                                margin: [5, 0, 5, 0],
-                                lineHeight: 1,
-                            },
-                            {
-                                text: createAmbienteInfo(ambiente, episText),
-                                fontSize: 10,
-                                alignment: "justify",
-                                margin: [5, 0, 5, 0],
-                                lineHeight: 1,
-                            },
-                            {
-                                text: ges.responsavel || "",
-                                fontSize: 10,
-                                alignment: "center",
-                                margin: [5, 0, 5, 0],
-                                lineHeight: 1,
-                            },
-                        ],
-                    ];
+                    // Adiciona a linha de dados do GES
+                    tableBody.push([
+                        { text: `${ges.codigo} - ${ges.descricao_ges}` || "", fontSize: 10, alignment: "center", lineHeight: 1 },
+                        {
+                            text: ges.texto_caracterizacao_processos || "",
+                            fontSize: 10,
+                            alignment: "center",
+                            margin: [5, 0, 5, 0],
+                            lineHeight: 1,
+                        },
+                        {
+                            text: createAmbienteInfo(ambiente, episText),
+                            fontSize: 10,
+                            alignment: "justify",
+                            margin: [5, 0, 5, 0],
+                            lineHeight: 1,
+                        },
+                        {
+                            text: ges.responsavel || "",
+                            fontSize: 10,
+                            alignment: "center",
+                            margin: [5, 0, 5, 0],
+                            lineHeight: 1,
+                        },
+                    ]);
 
-                    if (imageData.length > 0) {
+                    // Adiciona imagem ou mensagem de erro, se houver
+                    if (imagem?.data) {
+                        
                         tableBody.push([
                             {
-                                text: "Fluxograma",
-                                fontSize: 12,
+                                image: imagem.data,
+                                width: 250,
                                 alignment: "center",
                                 colSpan: 4,
-                                margin: [0, 10, 0, 0],
-                                fillColor: "#f0f0f0",
-                                pageBreak: "before",
+                                margin: [0, 10, 0, 10],
                             },
                             {}, {}, {}
                         ]);
-                        tableBody.push(imageData);
-                    }
+                    } 
+                }
 
-                    const stack = [
+                // Retorna apenas UM stack com título + tabela + tudo
+                return [{
+                    stack: [
                         createTitle(),
                         {
                             table: {
@@ -241,36 +185,29 @@ module.exports = {
                             },
                             layout: "centerPGR",
                         },
-                    ];
+                    ]
+                }];
 
-                    return {
-                        stack,
-                        pageBreak: index < gesDataArray.length - 1 ? "after" : undefined,
-                    };
-                })
-            );
-
-            return tables;
-        } catch (error) {
-            console.error("Erro ao montar introdução do relatório:", error.message);
-            return [
-                {
-                    table: {
-                        body: [
-                            [
-                                {
-                                    text: `Erro ao carregar os dados: ${error.message}`,
-                                    fontSize: 12,
-                                    color: "red",
-                                    alignment: "center",
-                                    colSpan: 4,
-                                },
-                                {}, {}, {}
+            } catch (error) {
+                console.error("Erro ao montar introdução do relatório:", error.message);
+                return [
+                    {
+                        table: {
+                            body: [
+                                [
+                                    {
+                                        text: `Erro ao carregar os dados: ${error.message}`,
+                                        fontSize: 12,
+                                        color: "red",
+                                        alignment: "center",
+                                        colSpan: 4,
+                                    },
+                                    {}, {}, {}
+                                ],
                             ],
-                        ],
+                        },
                     },
-                },
-            ];
-        }
-    },
-};
+                ];
+            }
+        },
+    };

@@ -28,6 +28,7 @@ export const dadosMatrizPadrao = {
         riskDesc,
         riskColors,
         formaAtuacao,
+        lessChecked
       } = req.body;
 
       // Validação básica
@@ -75,6 +76,7 @@ export const dadosMatrizPadrao = {
         return res.status(400).json({ message: "Empresa não encontrada" });
       }
 
+      
       const data = await matrizPadraoPostService({
         empresa_id: empresaId,
         tipo,
@@ -88,7 +90,8 @@ export const dadosMatrizPadrao = {
         riskClasses,
         riskDesc,
         riskColors,
-        formaAtuacao, // Novo campo adicionado
+        formaAtuacao,
+        lessChecked
       });
 
       return res.status(201).json(data);
@@ -147,6 +150,7 @@ export const dadosMatrizPadrao = {
         riskColors,
         riskDesc,
         formaAtuacao, // Novo campo adicionado
+        lessChecked
       } = req.body;
 
       if (!tipo || !parametro || !size) {
@@ -202,7 +206,8 @@ export const dadosMatrizPadrao = {
         riskColors,
         riskDesc,
         formaAtuacao,
-        is_padrao // Novo campo adicionado
+        is_padrao,
+        lessChecked[0]
       );
 
       res.status(200).json({ message: "Matriz atualizada com sucesso", data });

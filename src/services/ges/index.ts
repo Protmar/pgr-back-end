@@ -54,8 +54,13 @@ import { ImagensMemorialCalculo } from "../../models/imagensRiscos/ImagensMemori
 import { Matriz } from "../../models/Matriz";
 import { ClassificacaoRisco } from "../../models/ClassificacaoRisco";
 import { ClassificacaoRiscoServico } from "../../models/ClassificacaoRiscoServico";
+import { User } from "../../models";
+import { dadosServicos } from "../../controllers/servicos";
+import { getOneServico } from "../servicos";
+import { getOneClienteService } from "../Cliente";
 
 export const gesPostService = async (
+    userId: number,
     empresa_id: number,
     listCurso: any[],
     listRac: any[],
@@ -67,10 +72,13 @@ export const gesPostService = async (
     paramsAT: any,
     pathFluxograma?: string,
     fileNameFluxograma?: any,
-    mimeTypeFluxograma?: string
+    mimeTypeFluxograma?: string,
+    email?: string
 ) => {
-    const cliente_id = globalThis.cliente_id;
-    const servico_id = globalThis.servico_id;
+    const clienteObj = await getOneClienteService(empresa_id, email || "");
+    const cliente_id = clienteObj?.clienteselecionado as number;
+    const servicoObj = await getOneServico(empresa_id, email || "");
+    const servico_id = servicoObj?.servicoselecionado;
     const ges = await Ges.create({ ...params, servico_id, empresa_id, nome_fluxograma: fileNameFluxograma, cliente_id });
     const id_ges = ges.get("id") as number;
 
@@ -154,13 +162,16 @@ export const GesTrabalhadoresPost = async (
 
 };
 
-export const getAllGesService = async (empresa_id: number) => {
-    const servico_id = globalThis.servico_id;;
+export const getAllGesService = async (empresa_id: number, userId: number) => {
+    const servico_id = await User.findOne({
+        where: { id: userId },
+        attributes: ["servicoselecionado"],
+    });
 
     const data = await Ges.findAll({
         where: {
             empresa_id,
-            servico_id: Number(servico_id)
+            servico_id: Number(servico_id?.dataValues.servicoselecionado)
         },
         include: [
             { model: GesCurso, as: "cursos" },
@@ -365,7 +376,7 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                     {
                         model: PlanoAcaoRisco,
                         as: "planosAcao",
-                    attributes: ["responsavel", "data_prevista", "data_realizada", "eliminar_risco_administrativo", "eliminar_risco_individual", "eliminar_risco_coletivo", "resultado_realizacacao", "data_monitoramento", "data_inspecao", "eliminar_risco_coletivo", "eliminar_risco_administrativo", "eliminar_risco_individual"],
+                        attributes: ["responsavel", "data_prevista", "data_realizada", "eliminar_risco_administrativo", "eliminar_risco_individual", "eliminar_risco_coletivo", "resultado_realizacacao", "data_monitoramento", "data_inspecao", "eliminar_risco_coletivo", "eliminar_risco_administrativo", "eliminar_risco_individual"],
                         include: [
                             {
                                 model: RiscoAdministrativoNecessaria,
@@ -407,20 +418,6 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
             },
         ],
     });
-
-    const corFinal = await Promise.all(
-        riscos?.dataValues.riscos.map(async (risco: any) => {
-            const cor = await getOneCor(
-                risco.fatorRisco.dataValues.tipo,
-                risco.fatorRisco.dataValues.parametro,
-                risco.classe_risco,
-                risco.grau_risco
-            );
-
-
-            risco.cor = cor;
-        }) || []
-    );
 
     return riscos;
 };
@@ -560,79 +557,83 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
     };
 };
 
-export const getOneCor = async (
-    tipo: any,
-    parametro: any,
-    classeRisco: any,
-    grauRisco: any
-) => {
-    try {
-        const servicoId = globalThis.servico_id || 0;
+// export const getOneCor = async (
+//     tipo: any,
+//     parametro: any,
+//     classeRisco: any,
+//     grauRisco: any
+//     userId: number
+// ) => {
+//     try {
+//         const servicoId = User.findOne({
+//         where: { id: userId },
+//         attributes: ["servico_id"],
+//       });
 
-        const matriz = await Matriz.findOne({
-            where: {
-                servico_id: servicoId,
-                tipo,
-                parametro,
-                is_padrao: true,
-            },
-        });
+//         const matriz = await Matriz.findOne({
+//             where: {
+//                 servico_id: servicoId,
+//                 tipo,
+//                 parametro,
+//                 is_padrao: true,
+//             },
+//         });
 
-        if (!matriz) {
-            console.warn("Nenhuma matriz encontrada para os parâmetros fornecidos.");
-            return null;
-        }
+//         if (!matriz) {
+//             console.warn("Nenhuma matriz encontrada para os parâmetros fornecidos.");
+//             return null;
+//         }
 
 
-        const classificacaoRisco = await ClassificacaoRiscoServico.findOne({
-            where: {
-                matriz_id: matriz.dataValues.id,
-                classe_risco: classeRisco,
-                grau_risco: grauRisco,
-            },
-        });
+//         const classificacaoRisco = await ClassificacaoRiscoServico.findOne({
+//             where: {
+//                 matriz_id: matriz.dataValues.id,
+//                 classe_risco: classeRisco,
+//                 grau_risco: grauRisco,
+//             },
+//         });
 
-        if (!classificacaoRisco) {
-            console.warn("Nenhuma classificação de risco encontrada para a matriz e parâmetros fornecidos.");
-        }
+//         if (!classificacaoRisco) {
+//             console.warn("Nenhuma classificação de risco encontrada para a matriz e parâmetros fornecidos.");
+//         }
 
-        return classificacaoRisco;
-    } catch (error) {
-        console.error("Erro ao buscar cor/classificação de risco:", error);
-        throw new Error("Erro ao buscar classificação de risco.");
-    }
-};
+//         return classificacaoRisco;
+//     } catch (error) {
+//         console.error("Erro ao buscar cor/classificação de risco:", error);
+//         throw new Error("Erro ao buscar classificação de risco.");
+//     }
+// };
 
 
 
 export const gesPutService = async (
-  newValuesMultiInput: any,
-  empresa_id: number,
-  id_ges: number,
-  listTrabalhadores: any[],
-  params: any,
-  paramsAT: any
+    newValuesMultiInput: any,
+    empresa_id: number,
+    id_ges: number,
+    listTrabalhadores: any[],
+    params: any,
+    paramsAT: any
 ) => {
-  const ges = await Ges.findByPk(id_ges);
-  if (!ges) {
-    throw new Error("Registro GES não encontrado.");
-  }
+    const ges = await Ges.findByPk(id_ges);
+    if (!ges) {
+        throw new Error("Registro GES não encontrado.");
+    }
 
-  // Atualização de trabalhadores e do GES em paralelo
-  await Promise.all([
-    GesTrabalhadoresPut(empresa_id, id_ges, listTrabalhadores),
-    ges.update({ ...params, empresa_id }),
-  ]);
+    // Atualização de trabalhadores e do GES em paralelo
+    await Promise.all([
+        GesTrabalhadoresPut(empresa_id, id_ges, listTrabalhadores),
+        ges.update({ ...params, empresa_id }),
+    ]);
 
-  // Atualizações relacionadas ao GES em paralelo
-  await Promise.all([
-    ATPutService(empresa_id, newValuesMultiInput, paramsAT, id_ges),
-    gesCursoPut(newValuesMultiInput.cursos, id_ges),
-    GesTipoPgrPut(newValuesMultiInput.tipoPgr, id_ges),
-    gesRacsPut(newValuesMultiInput.rac, id_ges),
-  ]);
+    // Atualizações relacionadas ao GES em paralelo
+    await Promise.all([
+        ATPutService(empresa_id, newValuesMultiInput, paramsAT, id_ges),
+        gesCursoPut(newValuesMultiInput.cursos, id_ges),
+        GesTipoPgrPut(newValuesMultiInput.tipoPgr, id_ges),
+        gesRacsPut(newValuesMultiInput.rac, id_ges),
+    ]);
 
-  return ges;
+    return ges;
 };
 
 
@@ -704,7 +705,7 @@ export const GesTrabalhadoresPut = async (
     listTrabalhadores: any[]
 ) => {
 
-    
+
     if (listTrabalhadores) {
         await GesTrabalhador.destroy({ where: { id_ges } });
         await Promise.all(

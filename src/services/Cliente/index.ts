@@ -1,3 +1,4 @@
+import { User } from "../../models";
 import { Cliente } from "../../models/Cliente";
 import { ClienteAttributes } from "../../models/Cliente"; // Certifique-se de importar a interface correta
 import Servicos from "../../models/Servicos";
@@ -178,6 +179,26 @@ export const postLogoClienteService = async (
       }
     }
   );
+
+  return data;
+}
+
+export const getOneClienteService = async (empresaId: number, email: string) => {
+  const data = await User.findOne({
+    where: {
+      empresaId: empresaId,
+      email: email
+    },
+    attributes: ["clienteselecionado"],
+    include: [{
+      model: Cliente,
+      as: "clientes",
+      where: {
+        empresa_id: empresaId,
+      },
+      attributes: ["nome_fantasia"],
+    }]
+  });
 
   return data;
 }

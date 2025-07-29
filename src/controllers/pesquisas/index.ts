@@ -23,9 +23,9 @@ export const pesquisaController = {
   getDadosPesquisaGES: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { pesquisa } = req.params;
-      const { empresaId } = req.user!;
+      const { empresaId, email } = req.user!;
 
-      const data = await getDadosPesquisaGESService(empresaId, pesquisa);
+      const data = await getDadosPesquisaGESService(empresaId, pesquisa, email);
       res.json(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -302,9 +302,9 @@ export const pesquisaController = {
   getDadosPesquisaTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { pesquisa } = req.params;
-      const { empresaId } = req.user!;
+      const { empresaId, email } = req.user!;
 
-      const data = await getDadosPesquisaTrabalhadoresService(empresaId, pesquisa);
+      const data = await getDadosPesquisaTrabalhadoresService(empresaId, pesquisa, email);
       res.json(data);
     } catch (err) {
       if (err instanceof Error) {

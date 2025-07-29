@@ -1,7 +1,8 @@
 import { Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { deleteDadosServicoByEmpresaServico, getDadosServicoByEmpresaServico, getDadosServicosByEmpresaCliente, getDadosServicosByEmpresaClienteId, getDadosServicosService, putDadosServicosService } from "../../services/servicos";
+import { deleteDadosServicoByEmpresaServico, getDadosServicoByEmpresaServico, getDadosServicosByEmpresaCliente, getDadosServicosByEmpresaClienteId, getDadosServicosService, getOneServico, putDadosServicosService } from "../../services/servicos";
 import NodeCache from "node-cache";
+import { User } from "../../models";
 
 const cache = new NodeCache({ stdTTL: 0 });
 function setCache(key: string, value: number) {
@@ -47,8 +48,9 @@ export const dadosServicos = {
 
     getServicosByCliente: async (req: AuthenticatedUserRequest,res: Response) => {
         try {
-            const { empresaId } = req.user!;            
-            const servicos = await getDadosServicosByEmpresaCliente(empresaId);
+            const { empresaId } = req.user!;
+            const userId = req.user!.id;            
+            const servicos = await getDadosServicosByEmpresaCliente(empresaId, userId);
         
             res.json(servicos);
         } catch (err) {
@@ -93,6 +95,12 @@ export const dadosServicos = {
         try {
             const { servico_id } = req.body;
             
+            User.update({
+              servicoselecionado: servico_id
+            }, {
+              where: { id: req.user!.id }
+            })
+
             globalThis.servico_id = servico_id;
             
             return res.status(200).json({
@@ -131,9 +139,9 @@ export const dadosServicos = {
         try {
             const { idcliente } = req.params;
             const { empresaId } = req.user!;
-
+            const userId = req.user!.id;
             
-            const servicos = await getDadosServicosByEmpresaClienteId(empresaId, Number(idcliente));
+            const servicos = await getDadosServicosByEmpresaClienteId(empresaId, Number(idcliente), userId);
         
             res.json(servicos);
         } catch (err) {
@@ -143,4 +151,17 @@ export const dadosServicos = {
           }
     },
     
+    getOneServico: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId, email } = req.user!;
+            
+            const servicos = await getOneServico(empresaId, email);
+        
+            res.json(servicos);
+        } catch (err) {
+            if (err instanceof Error) {
+              return res.status(400).json({ message: err.message });
+            }
+          }
+    }
 }

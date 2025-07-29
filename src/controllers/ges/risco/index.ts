@@ -54,6 +54,7 @@ export const dadosRisco = {
       conclusao_insalubridade,
       conclusao_periculosidade,
       conclusao_ltcat,
+      menor_limite_quantificacao
     } = req.body;
 
     try {
@@ -83,10 +84,8 @@ export const dadosRisco = {
         conclusao_insalubridade,
         conclusao_periculosidade,
         conclusao_ltcat,
+        menor_limite_quantificacao
       });
-
-      // Log do risco criado
-      console.log("Risco criado:", risco.toJSON());
 
       // Associa medidas de controle
       if (medidasColetivas && medidasColetivas.length > 0) {
@@ -193,6 +192,7 @@ export const dadosRisco = {
         conclusao_insalubridade,
         conclusao_periculosidade,
         conclusao_ltcat,
+        menor_limite_quantificacao
       } = req.body;
   
       const data = await putDadosRiscoService(
@@ -223,7 +223,8 @@ export const dadosRisco = {
         medidasIndividuais || [],
         conclusao_insalubridade?.toString(),
         conclusao_periculosidade?.toString(),
-        conclusao_ltcat?.toString()
+        conclusao_ltcat?.toString(),
+        menor_limite_quantificacao
       );
   
       res.status(200).json(data);

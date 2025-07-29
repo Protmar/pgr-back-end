@@ -10,6 +10,7 @@ import {
   putDadosTrabalhadorService,
 } from "../../services/trabalhadores";
 import { getCache } from "../cliente/cliente";
+import { User } from "../../models";
 
 export const dadosTrabalhador = {
   // Função para capitalizar a primeira letra de cada palavra
@@ -21,7 +22,7 @@ export const dadosTrabalhador = {
       .join(" ");
   },
 
-  postTrabalhador : async (req: AuthenticatedUserRequest, res: Response) => {
+  postTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
       const { empresaId } = req.user!;
       const {
@@ -43,37 +44,36 @@ export const dadosTrabalhador = {
         jornada_trabalho,
         dataCargo,
       } = req.body;
-  
-      // Debug: Exibir dados recebidos
-      console.log("Dados recebidos no body:", req.body);
-      console.log("Empresa ID do usuário autenticado:", empresaId);
-  
-      const cliente_id = globalThis.cliente_id;
-      const servico_id = globalThis.servico_id;
-  
-      // Debug: Verificar valores globais
-      console.log("cliente_id global:", cliente_id);
-      console.log("servico_id global:", servico_id);
-  
-      // Validação básica
+
+      const userId = req.user!.id;
+
+      const cliente_id = await User.findOne({
+        where: { id: userId },
+        attributes: ["clienteselecionado"],
+      });
+      const servico_id = await User.findOne({
+        where: { id: userId },
+        attributes: ["servicoselecionado"],
+      });;
+
       if (!nome) {
         return res.status(400).json({ message: "O campo 'nome' é obrigatório." });
       }
-  
+
       if (!cliente_id || !servico_id) {
         return res.status(500).json({ message: "IDs globais de cliente ou serviço não definidos." });
       }
-  
+
       const formattedNome = dadosTrabalhador.capitalizeName(nome);
-  
+
       const data = await postDadosTrabalhadorService({
         funcao_id: Number(funcao_id),
-        cliente_id: Number(cliente_id),
+        cliente_id: Number(cliente_id.clienteselecionado),
         empresa_id: empresaId,
         gerencia_id,
         cargo_id,
         setor_id,
-        servico_id,
+        servico_id: Number(servico_id.servicoselecionado),
         codigo,
         nome: formattedNome,
         genero,
@@ -88,15 +88,15 @@ export const dadosTrabalhador = {
         jornada_trabalho,
         cargo: dataCargo,
       });
-  
+
       res.status(201).json(data);
     } catch (err) {
       console.error("Erro em postTrabalhador:", err);
-  
+
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });
       }
-  
+
       return res.status(500).json({ message: "Erro desconhecido ao cadastrar trabalhador." });
     }
   },
@@ -116,8 +116,9 @@ export const dadosTrabalhador = {
 
   getAllTrabalhadores: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
+      const userId = req.user!.id;
       const { empresaId } = req.user!;
-      const data = await getDadosAllTrabalhadoresService(empresaId.toString());
+      const data = await getDadosAllTrabalhadoresService(empresaId.toString(), userId);
       res.send(data);
     } catch (err) {
       if (err instanceof Error) {

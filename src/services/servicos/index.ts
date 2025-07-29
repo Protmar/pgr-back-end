@@ -6,6 +6,7 @@ import { SeveridadeConsequencia, SeveridadeConsequenciaAttributes } from "../../
 import { ClassificacaoRisco, ClassificacaoRiscoAttributes } from "../../models/ClassificacaoRisco";
 import { Model } from "sequelize";
 import { matrizesServicoPostService } from "../cadastros/matrizes/matrizservico";
+import { User } from "../../models";
 
 // Vou assumir que existe um serviço pra criar a Matriz por serviço
 
@@ -18,9 +19,9 @@ interface MatrizPadraoComAssociacoes extends MatrizPadraoAttributes {
 }
 
 // Tipagem para os modelos Sequelize de MatrizPadrao
-interface ProbabilidadeModel extends Model<ProbabilidadeAttributes>, ProbabilidadeAttributes {}
-interface SeveridadeConsequenciaModel extends Model<SeveridadeConsequenciaAttributes>, SeveridadeConsequenciaAttributes {}
-interface ClassificacaoRiscoModel extends Model<ClassificacaoRiscoAttributes>, ClassificacaoRiscoAttributes {}
+interface ProbabilidadeModel extends Model<ProbabilidadeAttributes>, ProbabilidadeAttributes { }
+interface SeveridadeConsequenciaModel extends Model<SeveridadeConsequenciaAttributes>, SeveridadeConsequenciaAttributes { }
+interface ClassificacaoRiscoModel extends Model<ClassificacaoRiscoAttributes>, ClassificacaoRiscoAttributes { }
 
 interface MatrizPadraoModel extends Model<MatrizPadraoAttributes>, MatrizPadraoAttributes {
   probabilidades: ProbabilidadeModel[];
@@ -99,10 +100,10 @@ export const getDadosServicosService = async (
           colTexts: probabilidades.map((p: ProbabilidadeAttributes) => p.description || ""),
           paramDesc: parametro === "Quantitativo"
             ? probabilidades.map((p: ProbabilidadeAttributes) => ({
-                sinal: p.sinal || null,
-                valor: p.valor || null,
-                semMedidaProtecao: p.sem_protecao ?? null,
-              }))
+              sinal: p.sinal || null,
+              valor: p.valor || null,
+              semMedidaProtecao: p.sem_protecao ?? null,
+            }))
             : probabilidades.map((p: ProbabilidadeAttributes) => p.criterio || ""),
           riskClasses: classificacaoRisco.reduce(
             (acc: { [key: number]: string }, r: ClassificacaoRiscoAttributes) => {
@@ -136,27 +137,19 @@ export const getDadosServicosService = async (
 };
 
 // Mantém as outras funções do serviço intactas
-export const getDadosServicosByEmpresaCliente = async (idempresa: number, cliente_id?: number) => {
-  const idcliente = globalThis.cliente_id;
+export const getDadosServicosByEmpresaCliente = async (idempresa: number, userId?: number) => {
+  const idcliente = await User.findOne({
+    where: { id: userId },
+    attributes: ["clienteselecionado"],
+  });
 
-  if (cliente_id) {
-    const data = await Servicos.findAll({
-      where: {
-        empresa_id: idempresa,
-        cliente_id: cliente_id,
+   const data = await Servicos.findAll({
+    where: {
+      empresa_id: idempresa,
       },
-    });
-    return data;
-  } else if (idcliente) {
-    const data = await Servicos.findAll({
-      where: {
-        empresa_id: idempresa,
-        cliente_id: idcliente,
-      },
-    });
-    return data;
-  }
-};
+  });
+  return data;
+}
 
 export const getDadosServicoByEmpresaServico = async (idempresa: number, idservico: number) => {
   const data = await Servicos.findOne({
@@ -198,7 +191,8 @@ export const deleteDadosServicoByEmpresaServico = async (idempresa: number, idse
 
 export const getDadosServicosByEmpresaClienteId = async (
   idempresa: number,
-  idcliente: number
+  idcliente: number,
+  userId?: number
 ) => {
 
 
@@ -240,5 +234,25 @@ export const getResponsavelByServico = async (idempresa: number, idservico: numb
       id: idservico,
     },
   });
+  return data;
+}
+
+export const getOneServico = async (idempresa: number, email: string) => {
+  const data = await User.findOne({
+    where: {
+      empresaId: idempresa,
+      email
+    },
+    attributes: ["servicoselecionado"],
+    include: {
+      model: Servicos,
+      as: "servicos",
+      where: {
+        empresa_id: idempresa,
+      },
+      attributes: ["descricao"],
+    }
+  });
+
   return data;
 }

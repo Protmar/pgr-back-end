@@ -3,6 +3,8 @@ import { sequelize } from "../database";
 import bcrypt from "bcrypt";
 import { Role } from "./enums/role.enum";
 import { EmpresaInstance } from "./Empresa";
+import Servicos from "./Servicos";
+import { Cliente } from "./Cliente";
 
 const roles = Object.keys(Role)
 
@@ -21,6 +23,8 @@ export interface UserAttributes {
   recoverCode: string | null;
   recoverExpires: Date | null;
   role: string;
+  clienteselecionado?: number | null;
+  servicoselecionado?: number | null;
 }
 
 export interface UserCreationAttributes
@@ -33,7 +37,7 @@ export interface UserInstance
   Empresa?: EmpresaInstance;
 }
 
-export const User = sequelize.define<UserInstance>("User", {
+export const User = sequelize.define<UserInstance>("users", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -80,15 +84,27 @@ export const User = sequelize.define<UserInstance>("User", {
   role: {
     allowNull: false,
     type: DataTypes.STRING,
+  },
+  clienteselecionado: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: "clienteselecionado", // <- nome no banco
+  },
+  servicoselecionado: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: "servicoselecionado", // <- nome no banco
   }
+
+
 },
 
   {
     hooks:
     {
-      beforeSave: async (user) => {
-        if (user.isNewRecord || user.changed('senha')) {
-          user.senha = await bcrypt.hash(user.senha.toString(), 10);
+      beforeSave: async (users) => {
+        if (users.isNewRecord || users.changed('senha')) {
+          users.senha = await bcrypt.hash(users.senha.toString(), 10);
         }
       }
     }
@@ -107,3 +123,13 @@ User.prototype.checkPassword = function (
     }
   })
 }
+
+User.belongsTo(Servicos, {
+  foreignKey: "servicoselecionado",
+  as: "servicos"
+});
+
+User.belongsTo(Cliente, {
+  foreignKey: "clienteselecionado",
+  as: "clientes"
+});

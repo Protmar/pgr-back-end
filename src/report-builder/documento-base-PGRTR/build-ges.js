@@ -18,38 +18,6 @@ module.exports = {
 
             const filteredData = data.filter(item => gesIds.includes(item.id));
 
-            const createHeaderRow = () => [
-                {
-                    text: "GES", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-                {
-                    text: "Cargo", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-                {
-                    text: "Função", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-                {
-                    text: "Setor", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-                {
-                    text: "Gerência", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-                {
-                    text: "Qtd. Trab. Expostos", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-                {
-                    text: "Jornada (min)", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                    lineHeight: 1
-                },
-
-            ];
-
             const createTitle = () => ({
                 text: "Grupo de Exposição Similar - GES",
                 fontSize: 18,
@@ -58,7 +26,7 @@ module.exports = {
                 margin: [0, 10, 0, 10]
             });
 
-            const getGesData = async (trabalhadores) => {
+            const getGesData = async (trabalhadores, codigoGes) => {
                 if (!trabalhadores || !Array.isArray(trabalhadores)) {
                     return [];
                 }
@@ -72,7 +40,6 @@ module.exports = {
                         return null;
                     })
                 );
-
 
                 const workersData = (await Promise.all(workerPromises)).filter(Boolean);
                 const groupedWorkers = {};
@@ -88,6 +55,7 @@ module.exports = {
 
                     if (!groupedWorkers[key]) {
                         groupedWorkers[key] = {
+                            codigoGes: codigoGes || "",
                             cargo: cargo.dataValues.descricao,
                             funcao: worker.dataValues.funcao.dataValues.funcao || "",
                             setor: setor.dataValues.descricao,
@@ -97,18 +65,25 @@ module.exports = {
                             descricaoServico: worker.dataValues.funcao.dataValues.descricao || ""
                         };
                     }
+
                     groupedWorkers[key].qtdExpostos += 1;
                 }
 
-                return Object.values(groupedWorkers);
+                const compare = (x, y) => (x || "").localeCompare(y || "");
+
+                return Object.values(groupedWorkers).sort((a, b) =>
+                    compare(a.codigoGes, b.codigoGes) ||
+                    compare(a.funcao, b.funcao) ||
+                    compare(a.cargo, b.cargo) ||
+                    compare(a.setor, b.setor) ||
+                    compare(a.gerencia, b.gerencia)
+                );
             };
 
             const tableBody = [];
 
             for (const item of filteredData) {
-                // const ambiente = item.ambientesTrabalhos?.[0] || {};
-                const gesData = await getGesData(item.trabalhadores);
-                // console.log(item.trabalhadores[0].dataValues.trabalhador.dataValues.funcao.dataValues.descricao);
+                const gesData = await getGesData(item.trabalhadores, item.codigo);
 
                 if (gesData.length === 0) {
                     tableBody.push([
@@ -118,101 +93,50 @@ module.exports = {
                         { text: undefined, fontSize: 12, alignment: "center" },
                         { text: undefined, fontSize: 12, alignment: "center" },
                         { text: undefined, fontSize: 12, alignment: "center" },
-                        {
-                            text: undefined, fontSize: 10,
-                            alignment: "center",
-                            margin: [5, 0, 5, 0],
-                            lineHeight: 1,
-                        },
-
+                        { text: undefined, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], lineHeight: 1 },
                     ]);
                 } else {
+                    tableBody.push([
+                        { text: "GES", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Cargo", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Função", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Setor", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Gerência", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Qtd. Trab. Expostos", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Jornada (min)", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    ]);
                     gesData.forEach((ges) => {
-                        tableBody.push([
-                            {
-                                text: "GES", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
-                            {
-                                text: "Cargo", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
-                            {
-                                text: "Função", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
-                            {
-                                text: "Setor", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
-                            {
-                                text: "Gerência", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
-                            {
-                                text: "Qtd. Trab. Expostos", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
-                            {
-                                text: "Jornada (min)", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
-                                lineHeight: 1
-                            },
+                        // Cabeçalho de cada grupo
 
-                        ]);
+                        // Dados
                         tableBody.push([
-                            {
-                                text: `${item.codigo} - ${item.descricao_ges}` || undefined, fontSize: 10, alignment: "center", lineHeight: 1
-                            },
-                            {
-                                text: ges.cargo || undefined, fontSize: 12, alignment: "center", lineHeight: 1
-                            },
-                            {
-                                text: ges.funcao || undefined, fontSize: 12, alignment: "center", lineHeight: 1
-                            },
-                            {
-                                text: ges.setor || undefined, fontSize: 12, alignment: "center", lineHeight: 1
-                            },
-                            {
-                                text: ges.gerencia || undefined, fontSize: 12, alignment: "center", lineHeight: 1
-                            },
-                            {
-                                text: typeof ges.qtdExpostos === 'number' ? String(ges.qtdExpostos) : undefined, fontSize: 12, alignment: "center", lineHeight: 1
-                            },
-                            {
-                                text: ges.jornada ? String(ges.jornada) : undefined, fontSize: 12, alignment: "center", lineHeight: 1
-                            },
+                            { text: `${item.codigo} - ${item.descricao_ges}` || undefined, fontSize: 10, alignment: "center", lineHeight: 1 },
+                            { text: ges.cargo || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
+                            { text: ges.funcao || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
+                            { text: ges.setor || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
+                            { text: ges.gerencia || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
+                            { text: typeof ges.qtdExpostos === 'number' ? String(ges.qtdExpostos) : undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
+                            { text: ges.jornada ? String(ges.jornada) : undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
                         ]);
-
-                        // tableBody.push([
-                        //     {
-                        //         text: `• Item 1.5.7.3.2 b) Caracterização das Atividades`, fontSize: 12, alignment: "left", lineHeight: 1, colSpan: 8, fillColor: "#f0f0f0"
-                        //     }
-                        // ]);
 
                         if (ges.descricaoServico) {
-                            tableBody.push([
-                                {
-                                    text: [
-                                        { text: '• Item 31.3.3.2.1 b) Caracterização das Atividades: ', bold: true },
-                                        ges.descricaoServico || ''
-                                    ],
-                                    fontSize: 12,
-                                    alignment: "justify",
-                                    lineHeight: 1,
-                                    colSpan: 7,
-                                    margin: [5, 5]
-                                }
-
-                            ])
+                            tableBody.push([{
+                                text: [
+                                    { text: '• Caracterização das Atividades: ', bold: true },
+                                    ges.descricaoServico || ''
+                                ],
+                                fontSize: 12,
+                                alignment: "justify",
+                                lineHeight: 1,
+                                colSpan: 7,
+                                margin: [5, 5]
+                            }]);
                         }
 
-                        tableBody.push([{
-                            text: "", fontSize: 12, bold: true, alignment: "center", color: "white",
-                            lineHeight: 5, colSpan: 7
-                        }])
-
-
-
+                        // tableBody.push([{
+                        //     text: "", fontSize: 12, bold: true, alignment: "center", color: "white",
+                        //     lineHeight: 5, colSpan: 7
+                        // }]);
                     });
                 }
             }

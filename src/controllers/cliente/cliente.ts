@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, postDadosClienteService, postLogoClienteService, putDadosClienteService } from "../../services/Cliente";
+import { deleteDadosClienteService, getDadosAllClientesService, getDadosClienteService, getOneClienteService, postDadosClienteService, postLogoClienteService, putDadosClienteService } from "../../services/Cliente";
 import { AuthenticatedUserRequest } from "../../middleware";
 import NodeCache from "node-cache";
+import { User } from "../../models";
 
 
 const cache = new NodeCache({ stdTTL: 0 });
@@ -194,7 +195,7 @@ export const dadosCliente = {
         }
     },
 
-    selecionarCliente: async (req: Request, res: Response) => {
+    selecionarCliente: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { cliente_id } = req.body;
 
@@ -203,6 +204,11 @@ export const dadosCliente = {
                     message: "O cliente_id é obrigatório",
                 });
             }
+
+            User.update(
+                { clienteselecionado: cliente_id },
+                { where: { id: req.user!.id } }
+            );
 
             globalThis.cliente_id = cliente_id;
 
@@ -227,7 +233,19 @@ export const dadosCliente = {
             message: "Logo do cliente atualizado com sucesso",
             response,
         });
-    }
+    },
+
+    getOneCliente: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId, email } = req.user!;
+            const response = await getOneClienteService(empresaId, email);
+            res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
 
 };
 

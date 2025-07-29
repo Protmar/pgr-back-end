@@ -21,7 +21,8 @@ export const matrizPadraoPostService = async (params: any) => {
     riskClasses,
     riskDesc,
     riskColors,
-    formaAtuacao, // Novo campo adicionado
+    formaAtuacao,
+    lessChecked
   } = params;
 
   try {
@@ -45,6 +46,7 @@ export const matrizPadraoPostService = async (params: any) => {
       parametro,
       size,
       is_padrao: is_padrao || false,
+      lessChecked
     });
 
     const matrizId = Number(matrizData.dataValues.id);
@@ -142,7 +144,8 @@ export const matrizPadraoPostService = async (params: any) => {
           cor: riskColors[grauRisco] || "#000000",
           definicao: classIndex >= 0 ? adjustedRiskDesc[classIndex] : "",
           forma_atuacao:
-            classIndex >= 0 ? adjustedFormaAtuacao[classIndex] : "", // Novo campo adicionado
+            classIndex >= 0 ? adjustedFormaAtuacao[classIndex] : "",
+          lessChecked: lessChecked[0] || false,
         });
       }
     }
@@ -268,7 +271,8 @@ export const matrizPadraoPut = async (
   riskColors: { [key: number]: string },
   riskDesc: string[],
   formaAtuacao: string[],
-  is_padrao?: boolean
+  is_padrao?: boolean,
+  lessChecked?: boolean
 ) => {
   const numericSize = Number(size);
 
@@ -303,7 +307,7 @@ export const matrizPadraoPut = async (
             tipo,
             parametro,
             is_padrao: true,
-            id: { [Op.ne]: Number(matrizId) }, // Exclui a matriz atual
+            id: { [Op.ne]: Number(matrizId) },
           },
           transaction,
         }
@@ -316,7 +320,8 @@ export const matrizPadraoPut = async (
         size: numericSize,
         tipo,
         parametro,
-        is_padrao: is_padrao || false, // Inclui is_padrao na atualização
+        is_padrao: is_padrao || false,
+        lessChecked: lessChecked || false,
       },
       {
         where: {

@@ -1,5 +1,5 @@
 import { getCache } from "../../controllers/cliente/cliente";
-import { Ges } from "../../models";
+import { Ges, User } from "../../models";
 import { CadastroCargo } from "../../models/Cargos";
 import { Cliente } from "../../models/Cliente";
 import { CadastroFuncao } from "../../models/Funcoes";
@@ -215,13 +215,28 @@ export const postDadosTrabalhadorExcelService = async (
 
 
 
-export const getDadosAllTrabalhadoresService = (empresaId: string) => {
-  const cliente_id = globalThis.cliente_id;
-  const servico_id = globalThis.servico_id;
+export const getDadosAllTrabalhadoresService = async (empresaId: string, userId: number) => {
+  const cliente_id = await User.findOne({
+        where: { id: userId },
+        attributes: ["clienteselecionado"],
+      });
+  const servicoObj = await User.findOne({
+          where: { id: userId },
+          attributes: ["servicoselecionado"],
+        });
+  const servico_id = servicoObj;
 
-  if (cliente_id) {
+  if (cliente_id ) {
+    const servicoSelecionado = servicoObj?.dataValues?.servicoselecionado;
+    const whereClause: any = {
+      empresa_id: Number(empresaId),
+      cliente_id: Number(cliente_id?.dataValues.clienteselecionado),
+    };
+    if (typeof servicoSelecionado === "number") {
+      whereClause.servico_id = servicoSelecionado;
+    }
     const data = Trabalhadores.findAll({
-      where: { empresa_id: Number(empresaId), cliente_id: Number(cliente_id), servico_id },
+      where: whereClause,
     });
     return data;
   }

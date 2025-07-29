@@ -22,6 +22,7 @@ export const matrizesServicoPostService = async (params: any) => {
     riskDesc,
     riskColors,
     formaAtuacao,
+    lessChecked
   } = params;
 
   try {
@@ -45,6 +46,7 @@ export const matrizesServicoPostService = async (params: any) => {
       parametro,
       size,
       is_padrao: is_padrao || false,
+      lessChecked: lessChecked[0]
     });
 
     const matrizId = Number(matrizData.dataValues.id);
@@ -229,7 +231,8 @@ export const matrizServicoPut = async (
   riskColors: { [key: number]: string },
   riskDesc: string[],
   formaAtuacao: string[],
-  is_padrao?: boolean
+  is_padrao?: boolean,
+  lessChecked?: boolean
 ) => {
   const numericSize = Number(size);
 
@@ -266,6 +269,7 @@ export const matrizServicoPut = async (
             parametro,
             is_padrao: true,
             id: { [Op.ne]: Number(matrizId) },
+            lessChecked: lessChecked || false,
           },
           transaction,
         }
@@ -278,6 +282,7 @@ export const matrizServicoPut = async (
         tipo,
         parametro,
         is_padrao: is_padrao || false,
+        lessChecked: lessChecked || false,
       },
       {
         where: {

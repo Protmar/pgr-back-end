@@ -10,6 +10,8 @@ export const middlewareCanEditAndCreate = async (
   const empresaId = req.user?.empresaId;
   const email = req.user?.email;
 
+  console.log("AAA", empresaId, email);
+
   if (!empresaId) {
     return res.status(403).json({ message: "Acesso negado: ID da empresa não encontrado." });
   }

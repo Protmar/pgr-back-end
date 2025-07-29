@@ -52,10 +52,11 @@ export interface RiscoAttributes {
   conclusao_ltcat?: string | null;
   conclusao_periculosidade?: string | null;
   conclusao_insalubridade?: string | null;
+  menor_limite_quantificacao?: boolean | null;
 }
 
 export interface RiscoCreationAttributes
-  extends Optional<RiscoAttributes, "id"|"conclusao_ltcat"|"conclusao_periculosidade"|"conclusao_insalubridade"> {}
+  extends Optional<RiscoAttributes, "id" | "conclusao_ltcat" | "conclusao_periculosidade" | "conclusao_insalubridade"> { }
 
 export const Risco = sequelize.define<
   Model<RiscoAttributes, RiscoCreationAttributes>
@@ -89,7 +90,7 @@ export const Risco = sequelize.define<
       onDelete: "RESTRICT",
       allowNull: true,
     },
-    id_exigencia_atividade:{
+    id_exigencia_atividade: {
       type: DataTypes.INTEGER,
       references: { model: "exigencia_atividade", key: "id" },
       onUpdate: "CASCADE",
@@ -196,6 +197,10 @@ export const Risco = sequelize.define<
       type: DataTypes.STRING,
       allowNull: true,
     },
+    menor_limite_quantificacao: {
+      allowNull: true,
+      type: DataTypes.BOOLEAN,
+    },
   },
   { tableName: "riscos" }
 );
@@ -203,19 +208,19 @@ export const Risco = sequelize.define<
 
 
 Risco.hasMany(ImagensFichaCampo, {
-  foreignKey: "risco_id",  
+  foreignKey: "risco_id",
   as: "imagensFichaCampo",
 });
 Risco.hasMany(ImagensFotoAvaliacao, {
-  foreignKey: "risco_id",  
+  foreignKey: "risco_id",
   as: "imagensFotoAvaliacao",
 });
 Risco.hasMany(ImagensHistogramas, {
-  foreignKey: "risco_id",  
+  foreignKey: "risco_id",
   as: "imagensHistogramas",
 });
 Risco.hasMany(ImagensMemorialCalculo, {
-  foreignKey: "risco_id",  
+  foreignKey: "risco_id",
   as: "imagensMemorialCalculo",
 })
 
@@ -266,7 +271,7 @@ Risco.belongsToMany(CadastroMedidaControleAdministrativaExistente, {
 
 Risco.hasMany(RiscoAdministrativoExistente, {
   foreignKey: "id_risco",
-  as: "relacoes_administrativas", 
+  as: "relacoes_administrativas",
 });
 
 Risco.belongsToMany(CadastroMedidaControleColetivaExistente, {
@@ -278,7 +283,7 @@ Risco.belongsToMany(CadastroMedidaControleColetivaExistente, {
 
 Risco.hasMany(RiscoColetivoExistente, {
   foreignKey: "id_risco",
-  as: "relacoes_coletivas", 
+  as: "relacoes_coletivas",
 });
 
 Risco.belongsToMany(CadastroMedidaControleIndividualExistente, {
@@ -290,5 +295,5 @@ Risco.belongsToMany(CadastroMedidaControleIndividualExistente, {
 
 Risco.hasMany(RiscoIndividualExistente, {
   foreignKey: "id_risco",
-  as: "relacoes_individuais", 
+  as: "relacoes_individuais",
 });

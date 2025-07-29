@@ -48,7 +48,7 @@ export const empresaService = {
 
       // Busca as matrizes padrão da empresa com id=1
       const matrizesPadraoRaw = await MatrizPadrao.findAll({
-        where: { empresa_id: 1 },
+        where: { empresa_id: empresa.id },
         include: [
           { model: Probabilidade, as: "probabilidades" },
           { model: SeveridadeConsequencia, as: "severidades" },

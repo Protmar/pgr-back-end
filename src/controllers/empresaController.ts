@@ -55,6 +55,8 @@ export const empresaController = {
                 logoUrl: null,
             });
 
+            console.log(empresa)
+
             const user = await userService.create({
                 nome: formattedNomeUsuario,
                 email,

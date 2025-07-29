@@ -9,7 +9,6 @@ export interface ClassificacaoRiscoAttributes {
   cor: string;
   definicao: string;
   forma_atuacao: string;
-  lessChecked?: boolean;
 }
 
 export interface ClassificacaoRiscoCreationAttributes
@@ -53,10 +52,6 @@ export const ClassificacaoRisco = sequelize.define<
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    lessChecked: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
   },
   { tableName: "classificacao_riscos" }
 )

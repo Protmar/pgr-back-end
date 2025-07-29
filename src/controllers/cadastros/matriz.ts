@@ -31,7 +31,6 @@ export const dadosMatrizServico = {
         riskDesc,
         riskColors,
         formaAtuacao,
-        lessChecked
       } = req.body;
 
       let servicoId = servicoid;
@@ -97,7 +96,6 @@ export const dadosMatrizServico = {
         riskDesc,
         riskColors,
         formaAtuacao,
-        lessChecked
       });
 
       return res.status(201).json(data);
@@ -195,7 +193,6 @@ export const dadosMatrizServico = {
         riskDesc,
         formaAtuacao,
         servicoId,
-        lessChecked
       } = req.body;
 
       if (!tipo || !parametro || !size) {
@@ -250,7 +247,6 @@ export const dadosMatrizServico = {
         riskDesc,
         formaAtuacao,
         is_padrao,
-        lessChecked
       );
 
       return res

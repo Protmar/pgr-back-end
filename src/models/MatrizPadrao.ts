@@ -17,7 +17,6 @@ export interface MatrizPadraoAttributes {
     tipo: string;
     parametro: string;
     is_padrao: boolean;
-    lessChecked?: boolean;
 }
 
 export interface MatrizPadraoCreationAttributes
@@ -63,10 +62,7 @@ export const MatrizPadrao = sequelize.define<
         type: DataTypes.BOOLEAN,
         allowNull: false,
     },
-    lessChecked: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-    }
+    
 },
     { tableName: "matriz_padroes" },
 );

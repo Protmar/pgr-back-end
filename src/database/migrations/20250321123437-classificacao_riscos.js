@@ -37,9 +37,6 @@ module.exports = {
         type: Sequelize.DataTypes.TEXT,
         allowNull: true,
       },
-      lessChecked : {
-        type: Sequelize.DataTypes.BOOLEAN,
-      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

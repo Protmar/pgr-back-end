@@ -28,7 +28,6 @@ export const dadosMatrizPadrao = {
         riskDesc,
         riskColors,
         formaAtuacao,
-        lessChecked
       } = req.body;
 
       // Validação básica
@@ -91,7 +90,6 @@ export const dadosMatrizPadrao = {
         riskDesc,
         riskColors,
         formaAtuacao,
-        lessChecked
       });
 
       return res.status(201).json(data);
@@ -150,7 +148,6 @@ export const dadosMatrizPadrao = {
         riskColors,
         riskDesc,
         formaAtuacao, // Novo campo adicionado
-        lessChecked
       } = req.body;
 
       if (!tipo || !parametro || !size) {
@@ -207,7 +204,6 @@ export const dadosMatrizPadrao = {
         riskDesc,
         formaAtuacao,
         is_padrao,
-        lessChecked[0]
       );
 
       res.status(200).json({ message: "Matriz atualizada com sucesso", data });

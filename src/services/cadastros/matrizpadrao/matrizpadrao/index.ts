@@ -22,7 +22,6 @@ export const matrizPadraoPostService = async (params: any) => {
     riskDesc,
     riskColors,
     formaAtuacao,
-    lessChecked
   } = params;
 
   try {
@@ -46,7 +45,6 @@ export const matrizPadraoPostService = async (params: any) => {
       parametro,
       size,
       is_padrao: is_padrao || false,
-      lessChecked
     });
 
     const matrizId = Number(matrizData.dataValues.id);
@@ -145,7 +143,6 @@ export const matrizPadraoPostService = async (params: any) => {
           definicao: classIndex >= 0 ? adjustedRiskDesc[classIndex] : "",
           forma_atuacao:
             classIndex >= 0 ? adjustedFormaAtuacao[classIndex] : "",
-          lessChecked: lessChecked[0] || false,
         });
       }
     }
@@ -272,7 +269,6 @@ export const matrizPadraoPut = async (
   riskDesc: string[],
   formaAtuacao: string[],
   is_padrao?: boolean,
-  lessChecked?: boolean
 ) => {
   const numericSize = Number(size);
 
@@ -321,7 +317,6 @@ export const matrizPadraoPut = async (
         tipo,
         parametro,
         is_padrao: is_padrao || false,
-        lessChecked: lessChecked || false,
       },
       {
         where: {

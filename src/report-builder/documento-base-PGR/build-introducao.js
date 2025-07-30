@@ -158,9 +158,19 @@
                         },
                     ]);
 
-                    // Adiciona imagem ou mensagem de erro, se houver
                     if (imagem?.data) {
-                        
+                        tableBody.push([
+                            {
+                                text: "FLUXOGRAMA",
+                                fontSize: 10,
+                                alignment: "center",
+                                colSpan: 4,
+                                lineHeight: 1,
+                                fillColor: "#D9D9D9",
+                                bold: true,
+                            },
+                            {}, {}, {}
+                        ])
                         tableBody.push([
                             {
                                 image: imagem.data,
@@ -174,7 +184,6 @@
                     } 
                 }
 
-                // Retorna apenas UM stack com título + tabela + tudo
                 return [{
                     stack: [
                         createTitle(),

@@ -96,9 +96,23 @@ export const empresaController = {
     put: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
             const { empresaId } = req.user!;
-            const { params } = req.body;
+            const { cnpj,
+                nome,
+                email,
+                nmrCrea,
+                endereco,
+                telefone,
+                logoUrl } = req.body;
 
-            const empresa = await empresaService.update(empresaId, params);
+            const empresa = await empresaService.update(empresaId, {
+                cnpj,
+                nome,
+                email,
+                nmrCrea,
+                endereco,
+                telefone,
+                logoUrl
+            });
 
             return res.status(200).json(empresa);
         } catch (err) {

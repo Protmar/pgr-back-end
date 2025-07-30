@@ -15,18 +15,45 @@ module.exports = {
     gesIds
   }) => {
 
-    const nomeLogo = cliente.dataValues.logo_url || null;
+   // === Logo Cliente ===
+      let logoCliente = null;
+      let logoClienteWidth = 50;
+      let logoClienteHeight = 50; // Altura fixa para manter espaço
 
-    const urlImageLogoCliente = await getFileToS3(nomeLogo);
-    const urlImageLogoEmpresa = await getFileToS3(empresa.dataValues.logoUrl);
+      try {
+        const nomeLogo = cliente?.dataValues?.logo_url;
+        const logoClienteS3 = nomeLogo ? await getFileToS3(nomeLogo) : null;
+        logoCliente = await getImageData(logoClienteS3?.url);
 
-    const logoCliente = cliente.dataValues.logo_url ? (await getImageData(urlImageLogoCliente.url)) : (await getImageData(reportConfig.noImageUrl));
-    let logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
-    if (logoClienteWidth > 100) logoClienteWidth = 100;
+        logoClienteWidth = (logoCliente.width / logoCliente.height) * 50;
+        if (logoClienteWidth > 100) logoClienteWidth = 100;
+        logoClienteHeight = 50;
+      } catch (err) {
+        console.error("Erro ao carregar logo do cliente. Usando espaço vazio:", err);
+        logoCliente = { data: "", width: 50, height: 50 };
+        logoClienteWidth = 50;
+        logoClienteHeight = 50;
+      }
 
-    const logoEmpresa = empresa.dataValues.logoUrl ? (await getImageData(urlImageLogoEmpresa.url)) : (await getImageData(reportConfig.noImageUrl));
-    let logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
-    if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
+      // === Logo Empresa ===
+      let logoEmpresa = null;
+      let logoEmpresaWidth = 50;
+      let logoEmpresaHeight = 50;
+
+      try {
+        const nomeLogoEmpresa = empresa?.dataValues?.logoUrl;
+        const logoEmpresaS3 = nomeLogoEmpresa ? await getFileToS3(nomeLogoEmpresa) : null;
+        logoEmpresa = await getImageData(logoEmpresaS3?.url);
+
+        logoEmpresaWidth = (logoEmpresa.width / logoEmpresa.height) * 50;
+        if (logoEmpresaWidth > 100) logoEmpresaWidth = 100;
+        logoEmpresaHeight = 50;
+      } catch (err) {
+        console.error("Erro ao carregar logo da empresa. Usando espaço vazio:", err);
+        logoEmpresa = { data: "", width: 50, height: 50 };
+        logoEmpresaWidth = 50;
+        logoEmpresaHeight = 50;
+      }
 
     const resultadoLTCAT = await buildLTCAT(empresa, servicoId, gesIds, cliente)
 
@@ -110,13 +137,30 @@ module.exports = {
           widths: [100, "*", 100],
           body: [
             [
-              {
-                border: [false, false, false, true],
-                image: logoCliente.data,
-                width: logoClienteWidth,
-                alignment: "center",
-                margin: [0, 0, 0, 5],
-              },
+              logoCliente?.data
+                  ? {
+                    border: [false, false, false, true],
+                    image: logoCliente.data,
+                    width: logoClienteWidth,
+                    height: logoClienteHeight,
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  }
+                  : {
+                    border: [false, false, false, true],
+                    canvas: [
+                      {
+                        type: "rect",
+                        x: 0,
+                        y: 0,
+                        w: 50,
+                        h: 50,
+                        color: "#ffffff", // cor branca para deixar invisível
+                      },
+                    ],
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  },
               {
                 margin: [5, 10, 5, 0],
                 border: [true, false, true, true],
@@ -125,13 +169,30 @@ module.exports = {
                 alignment: "center",
                 fontSize: 12,
               },
-              {
-                border: [false, false, false, true],
-                image: logoEmpresa.data,
-                width: logoEmpresaWidth,
-                alignment: "center",
-                margin: [0, 0, 0, 5],
-              },
+              logoEmpresa?.data
+                  ? {
+                    border: [false, false, false, true],
+                    image: logoEmpresa.data,
+                    width: logoEmpresaWidth,
+                    height: logoEmpresaHeight,
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  }
+                  : {
+                    border: [false, false, false, true],
+                    canvas: [
+                      {
+                        type: "rect",
+                        x: 0,
+                        y: 0,
+                        w: 50,
+                        h: 50,
+                        color: "#ffffff",
+                      },
+                    ],
+                    alignment: "center",
+                    margin: [0, 0, 0, 5],
+                  },
             ],
           ],
         },

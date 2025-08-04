@@ -533,6 +533,10 @@ export const getAmbientesTrabalho = async (empresa_id: number, idges: number) =>
 // services/ges/getOneGesService.ts
 export const getOneGesService = async (empresa_id: number, idges: number) => {
 
+    if (!empresa_id || !idges || isNaN(empresa_id) || isNaN(idges)) {
+        throw new Error("Parâmetros empresa_id e idges devem ser números válidos.");
+    }
+    
     const [riscos, cursos, imagens, racs, tiposPgr, trabalhadores, ambientesTrabalho] = await Promise.all([
         getRiscos(empresa_id, idges),
         getCursos(empresa_id, idges),
@@ -556,55 +560,6 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
         },
     };
 };
-
-// export const getOneCor = async (
-//     tipo: any,
-//     parametro: any,
-//     classeRisco: any,
-//     grauRisco: any
-//     userId: number
-// ) => {
-//     try {
-//         const servicoId = User.findOne({
-//         where: { id: userId },
-//         attributes: ["servico_id"],
-//       });
-
-//         const matriz = await Matriz.findOne({
-//             where: {
-//                 servico_id: servicoId,
-//                 tipo,
-//                 parametro,
-//                 is_padrao: true,
-//             },
-//         });
-
-//         if (!matriz) {
-//             console.warn("Nenhuma matriz encontrada para os parâmetros fornecidos.");
-//             return null;
-//         }
-
-
-//         const classificacaoRisco = await ClassificacaoRiscoServico.findOne({
-//             where: {
-//                 matriz_id: matriz.dataValues.id,
-//                 classe_risco: classeRisco,
-//                 grau_risco: grauRisco,
-//             },
-//         });
-
-//         if (!classificacaoRisco) {
-//             console.warn("Nenhuma classificação de risco encontrada para a matriz e parâmetros fornecidos.");
-//         }
-
-//         return classificacaoRisco;
-//     } catch (error) {
-//         console.error("Erro ao buscar cor/classificação de risco:", error);
-//         throw new Error("Erro ao buscar classificação de risco.");
-//     }
-// };
-
-
 
 export const gesPutService = async (
     newValuesMultiInput: any,
@@ -955,6 +910,7 @@ export const getAllGesByClienteService = async (empresaId: number, clienteId: nu
         console.error(error)
     }
 }
+
 
 export const deleteImageAtService = async (id: number) => {
     try {

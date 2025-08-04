@@ -89,10 +89,7 @@ module.exports = {
                 ],
             );
 
-            // Cabeçalho da tabela de riscos
-
-
-            const gesData = await Promise.all(
+            let gesData = await Promise.all(
                 gesIds.map(async (gesId) => {
                     const response = await getOneGesService(empresa.id, gesId, cliente.dataValues.id);
                     if (!response?.dataValues) {
@@ -101,6 +98,12 @@ module.exports = {
                     }
                     return response;
                 })
+            );
+
+            gesData = gesData.filter(Boolean);
+
+            gesData.sort((a, b) =>
+                String(a.dataValues.codigo).localeCompare(String(b.dataValues.codigo), 'pt-BR', { numeric: true, sensitivity: 'base' })
             );
 
             for (const ges of gesData) {

@@ -32,7 +32,7 @@ export const exigenciaAtividadeGetService = async (empresaId: string, idexigenci
   const data = await CadastroExigenciaAtividade.findOne({
     where: {
       empresa_id: Number(empresaId),
-      id: idexigenciaatividade,
+      id: idexigenciaatividade || "",
     },
   });
 

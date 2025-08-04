@@ -14,6 +14,10 @@ module.exports = {
 
             const filteredData = data.filter(item => gesIds.includes(item.id));
 
+            filteredData.sort((a, b) =>
+                String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true, sensitivity: 'base' })
+            );
+
             const createHeaderRow = () => [
                 {
                     text: "GES", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
@@ -58,7 +62,6 @@ module.exports = {
                 try {
                     const cursosStrings = await Promise.all(
                         cursos.map(async (curso) => {
-                            console.log(curso.curso.dataValues.descricao)
                             try {
                                 return curso.curso.dataValues.descricao;
                             } catch (err) {

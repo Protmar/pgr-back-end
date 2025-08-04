@@ -138,11 +138,6 @@ export const getDadosServicosService = async (
 
 // Mantém as outras funções do serviço intactas
 export const getDadosServicosByEmpresaCliente = async (idempresa: number, userId?: number) => {
-  const idcliente = await User.findOne({
-    where: { id: userId },
-    attributes: ["clienteselecionado"],
-  });
-
    const data = await Servicos.findAll({
     where: {
       empresa_id: idempresa,

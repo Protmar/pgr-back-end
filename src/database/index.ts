@@ -10,5 +10,6 @@ export const sequelize = new Sequelize({
     password: process.env.DB_PASSWORD,
     define: {
         underscored: true
-    }
+    },
+    logging: false
 });

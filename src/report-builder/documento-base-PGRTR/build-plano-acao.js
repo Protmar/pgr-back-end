@@ -36,8 +36,8 @@ module.exports = {
             let item = 0;
 
             const gesOrdenados = gesData && gesData.sort((a, b) => {
-                const descA = a.dataValues.descricao_ges.toLowerCase(); // Para ignorar maiúsculas/minúsculas
-                const descB = b.dataValues.descricao_ges.toLowerCase();
+                const descA = a.dataValues.codigo.toLowerCase(); // Para ignorar maiúsculas/minúsculas
+                const descB = b.dataValues.codigo.toLowerCase();
 
                 if (descA < descB) return -1;
                 if (descA > descB) return 1;

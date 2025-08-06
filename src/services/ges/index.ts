@@ -811,6 +811,17 @@ export const getAllGesByServico = async (empresaId: number, idServico: number) =
             },
             include: [
                 {
+                    model: Risco, as: "riscos",
+                    attributes: ["id"],
+                    include: [
+                        {
+                            model: CadastroMedidaControleIndividualExistente,
+                            as: "medidas_individuais_existentes",
+                            attributes: ["descricao"],
+                        }
+                    ]
+                },
+                {
                     model: GesCurso, as: "cursos"
                     , include: [
                         {

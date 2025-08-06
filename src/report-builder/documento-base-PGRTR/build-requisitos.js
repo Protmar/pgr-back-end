@@ -20,27 +20,27 @@ module.exports = {
 
             const createHeaderRow = () => [
                 {
-                    text: "GES", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
+                    text: "GES", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
                     margin: [0, 6, 0, 0],
                     lineHeight: 1
                 },
                 {
-                    text: "Requisitos de Atividade Crítica", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
+                    text: "Requisitos de Atividade Crítica", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
                     margin: [0, 6, 0, 0],
                     lineHeight: 1
                 },
                 {
-                    text: "Cursos de Capacitação Obrigatórios e Requisitos de Atividade Crítica", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
+                    text: "Cursos de Capacitação Obrigatórios e Requisitos de Atividade Crítica", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
                     margin: [0, 0, 0, 0],
                     lineHeight: 1
                 },
                 {
-                    text: "Lista de EPIs", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
+                    text: "Lista de EPIs", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
                     margin: [0, 6, 0, 0],
                     lineHeight: 1
                 },
                 {
-                    text: "Observação", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
+                    text: "Observação", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white",
                     margin: [0, 6, 0, 0],
                     lineHeight: 1
                 },
@@ -56,13 +56,12 @@ module.exports = {
 
             const getCursosObrigatorios = async (cursos) => {
                 if (!Array.isArray(cursos) || cursos.length === 0) {
-                    return { text: "", fontSize: 12, alignment: "center" };
+                    return { text: "", fontSize: 8, alignment: "center" };
                 }
 
                 try {
                     const cursosStrings = await Promise.all(
                         cursos.map(async (curso) => {
-                            console.log(curso.curso.dataValues.descricao)
                             try {
                                 return curso.curso.dataValues.descricao;
                             } catch (err) {
@@ -78,13 +77,13 @@ module.exports = {
                         lineHeight: 1,
                     };
                 } catch (err) {
-                    return { text: "Erro ao carregar cursos", fontSize: 12, alignment: "center" };
+                    return { text: "Erro ao carregar cursos", fontSize: 8, alignment: "center" };
                 }
             };
 
             const getRacs = async (racs) => {
                 if (!Array.isArray(racs) || racs.length === 0) {
-                    return { text: "", fontSize: 12, alignment: "center" };
+                    return { text: "", fontSize: 8, alignment: "center" };
                 }
 
 
@@ -115,28 +114,50 @@ module.exports = {
 
                 const cursos = await getCursosObrigatorios(item.cursos);
                 const racs = await getRacs(item.racs);
-                // const epis = await getEpisObrigatorios(ambiente.EquipamentoAmbienteTrabalho); // caso queira usar
+
+                // Coletar todas as medidas individuais de todos os riscos do item
+                const medidas = [];
+
+                const riscos = item?.dataValues?.riscos || [];
+                for (const risco of riscos) {
+                    const medidasIndividuais = risco?.dataValues?.medidas_individuais_existentes || [];
+                    for (const medida of medidasIndividuais) {
+                        const descricao = medida?.dataValues?.descricao;
+                        if (descricao) medidas.push(descricao);
+                    }
+                }
+
+                // Ordenar e juntar em string separada por ";"
+                const medidasTexto = medidas.length > 0
+                    ? medidas.sort((a, b) => a.localeCompare(b, 'pt-BR')).join('; ')
+                    : '';
 
                 const row = [
-                    item.codigo && item.descricao_ges ? { text: `${item.codigo} - ${item.descricao_ges}`, fontSize: 10, alignment: "center", lineHeight: 1 } : { text: undefined },
+                    item.codigo && item.descricao_ges
+                        ? { text: `${item.codigo} - ${item.descricao_ges}`, fontSize: 10, alignment: "center", lineHeight: 1 }
+                        : { text: undefined },
                     racs?.text ? racs : { text: undefined },
                     cursos?.text ? cursos : { text: undefined },
-                    { text: undefined, alignment: "center", lineHeight: 1 }, // espaço reservado para futuros dados (como EPIs)
-                    item.observacao ? {
-                        text: item.observacao, fontSize: 10,
-                        alignment: "center",
-                        margin: [5, 0, 5, 0],
-                        lineHeight: 1,
-                    } : { text: undefined },
+                    { text: medidasTexto ? medidasTexto + "; " : "", alignment: "center", fontSize: 10, lineHeight: 1 },
+                    item.observacao
+                        ? {
+                            text: item.observacao,
+                            fontSize: 10,
+                            alignment: "center",
+                            margin: [5, 0, 5, 0],
+                            lineHeight: 1,
+                        }
+                        : { text: undefined },
                 ];
 
                 tableBody.push(row);
             }
 
 
+
             if (tableBody.length === 1) {
                 tableBody.push([
-                    { text: "Nenhum dado disponível", colSpan: 5, alignment: "center", fontSize: 12 }
+                    { text: "Nenhum dado disponível", colSpan: 5, alignment: "center", fontSize: 8 }
                 ]);
             }
 
@@ -162,7 +183,7 @@ module.exports = {
                     body: [[
                         {
                             text: `Erro ao carregar dados: ${error.message}`,
-                            fontSize: 12,
+                            fontSize: 8,
                             color: "red",
                             alignment: "center",
                             colSpan: 5

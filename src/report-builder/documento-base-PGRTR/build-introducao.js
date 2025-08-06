@@ -10,17 +10,17 @@ module.exports = {
             const createHeaderRow = () => [
                 {
                     text: "GES",
-                    fontSize: 12,
+                    fontSize: 8,
                     bold: true,
                     alignment: "center",
                     fillColor: "#2f945d",
                     color: "white",
-                    margin: [0, 12, 0, 0],
+                    margin: [0, 8, 0, 0],
                     lineHeight: 1,
                 },
                 {
                     text: "Item  31.3.3.2.1\na) Caracterização dos Processos",
-                    fontSize: 12,
+                    fontSize: 8,
                     bold: true,
                     alignment: "center",
                     fillColor: "#2f945d",
@@ -30,7 +30,7 @@ module.exports = {
                 },
                 {
                     text: "Item  31.3.3.2.1\na) Caracterização dos Ambientes de Trabalho",
-                    fontSize: 12,
+                    fontSize: 8,
                     bold: true,
                     alignment: "center",
                     fillColor: "#2f945d",
@@ -40,12 +40,12 @@ module.exports = {
                 },
                 {
                     text: "Responsável",
-                    fontSize: 12,
+                    fontSize: 8,
                     bold: true,
                     alignment: "center",
                     fillColor: "#2f945d",
                     color: "white",
-                    margin: [0, 12, 0, 0],
+                    margin: [0, 8, 0, 0],
                     lineHeight: 1,
                 },
             ];
@@ -55,7 +55,7 @@ module.exports = {
                 fontSize: 18,
                 bold: true,
                 alignment: "center",
-                margin: [0, 10, 0, 10],
+                margin: [0, 8, 0, 8],
             });
 
             if (!empresa?.dataValues?.id || !Array.isArray(gesIds) || !reportConfig?.noImageUrl) {
@@ -116,6 +116,11 @@ module.exports = {
                 const ambiente = ges.ambientesTrabalhos?.ambientesTrabalhos[0]?.dataValues || {};
                 const episText = await getEpisObrigatorios(ambiente.EquipamentoAmbienteTrabalho);
 
+                function capitalizeFirst(str) {
+                    if (!str) return '';
+                    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+                }
+
                 const createAmbienteInfo = (ambiente, episText) => {
                     const info = [];
                     if (ambiente.area) info.push({ text: `• Área: ${ambiente.area}\n` });
@@ -131,31 +136,31 @@ module.exports = {
                     if (ambiente.parede?.descricao) info.push({ text: `• Parede: ${ambiente.parede.descricao}\n` });
                     if (ambiente.ventilacao?.descricao) info.push({ text: `• Ventilação: ${ambiente.ventilacao.descricao}\n` });
                     if (ambiente.iluminacao?.descricao) info.push({ text: `• Iluminação: ${ambiente.iluminacao.descricao}\n` });
-                    if (ambiente.informacoes_adicionais) info.push({ text: `• Informações Adicionais: ${ambiente.informacoes_adicionais}\n` });
+                    if (ambiente.informacoes_adicionais) info.push({ text: `• Informações Adicionais: ${capitalizeFirst(ambiente.informacoes_adicionais)}\n` });
 
                     return info;
                 };
 
                 // Adiciona a linha de dados do GES
                 tableBody.push([
-                    { text: `${ges.codigo} - ${ges.descricao_ges}` || "", fontSize: 10, alignment: "center", lineHeight: 1 },
+                    { text: `${ges.codigo} - ${ges.descricao_ges}` || "", fontSize: 8, alignment: "center", lineHeight: 1 },
                     {
                         text: ges.texto_caracterizacao_processos || "",
-                        fontSize: 10,
+                        fontSize: 8,
                         alignment: "center",
                         margin: [5, 0, 5, 0],
                         lineHeight: 1,
                     },
                     {
                         text: createAmbienteInfo(ambiente, episText),
-                        fontSize: 10,
+                        fontSize: 8,
                         alignment: "justify",
                         margin: [5, 0, 5, 0],
                         lineHeight: 1,
                     },
                     {
                         text: ges.responsavel || "",
-                        fontSize: 10,
+                        fontSize: 8,
                         alignment: "center",
                         margin: [5, 0, 5, 0],
                         lineHeight: 1,
@@ -167,7 +172,7 @@ module.exports = {
                     tableBody.push([
                         {
                             text: "FLUXOGRAMA",
-                            fontSize: 10,
+                            fontSize: 8,
                             alignment: "center",
                             colSpan: 4,
                             lineHeight: 1,
@@ -183,7 +188,7 @@ module.exports = {
                             width: 250,
                             alignment: "center",
                             colSpan: 4,
-                            margin: [0, 10, 0, 10],
+                            margin: [0, 8, 0, 8],
                         },
                         {}, {}, {}
                     ]);
@@ -195,7 +200,7 @@ module.exports = {
                     createTitle(),
                     {
                         table: {
-                            widths: ["10%", "30%", "30%", "*"],
+                            widths: ["8%", "30%", "30%", "*"],
                             body: tableBody,
                         },
                         layout: "centerPGR",
@@ -212,7 +217,7 @@ module.exports = {
                             [
                                 {
                                     text: `Erro ao carregar os dados: ${error.message}`,
-                                    fontSize: 12,
+                                    fontSize: 8,
                                     color: "red",
                                     alignment: "center",
                                     colSpan: 4,

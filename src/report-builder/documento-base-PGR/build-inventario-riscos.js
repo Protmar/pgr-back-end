@@ -9,15 +9,13 @@ const { CadastroExigenciaAtividade } = require("../../models/ExigenciasAtividade
 module.exports = {
     buildInventarioRiscos: async (reportConfig, empresa, servicoId, gesIds, cliente) => {
         try {
-            const createTitle = () => {
-                return {
-                    text: "Inventário de Riscos",
-                    fontSize: 18,
-                    bold: true,
-                    alignment: "center",
-                    margin: [0, 10, 0, 10]
-                };
-            };
+            const createTitle = () => ({
+                text: "Inventário de Riscos",
+                fontSize: 18,
+                bold: true,
+                alignment: "center",
+                margin: [0, 10, 0, 10]
+            });
 
             const tableBody = [];
             const tableBody2 = [];
@@ -106,224 +104,239 @@ module.exports = {
                 String(a.dataValues.codigo).localeCompare(String(b.dataValues.codigo), 'pt-BR', { numeric: true, sensitivity: 'base' })
             );
 
+            const todosRiscos = [];
+            const ordemTipos = {
+                'Físico': 0,
+                'Químico': 1,
+                'Biológico': 2,
+                'Mecânico': 3,
+                'Ergonômico': 4,
+            };
+
             for (const ges of gesData) {
                 if (!ges?.dataValues?.riscos?.riscos) continue;
 
                 for (const risco of ges.dataValues.riscos.riscos) {
-                    let exigenciaAtividade = null;
-                    if (risco.dataValues.id_exigencia_atividade) {
-                        exigenciaAtividade = await CadastroExigenciaAtividade.findOne({
-                            where: { id: risco.dataValues.id_exigencia_atividade }
-                        });
-                        if (exigenciaAtividade) {
-                            console.log("AAA", exigenciaAtividade.dataValues.descricao);
-                        } else {
-                            console.warn(
-                                "Exigência da atividade não encontrada para o ID:",
-                                risco.dataValues.id_exigencia_atividade
-                            );
-                        }
-                    } else {
-                        console.warn("ID de exigência da atividade não definido para risco ID:", risco.dataValues.id);
-                    }
-
-                    if (risco?.dataValues.fatorRisco.dataValues?.pgr !== true) {
-                        continue;
-                    }
-
-                    tableBody2.push([
-                        { text: "Nº GES", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Descrição GES", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Agente de Risco", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Fator de Risco (eSocial)/Descrição dos Perigos", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Código eSocial", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Transm. E-Social", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "FONTE GERADORA OU CIRCUNSTÂNCIA", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Exposição / Meio de Propagação / Trajetória", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Intens. / Conc.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "LT / LE", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Anotações", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Prob.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Sev.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "G.R.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "C.R.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                    ]);
-
-                    tableBody2.push([
-                        { text: ges.dataValues.codigo, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: ges.dataValues.descricao_ges, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.fatorRisco.dataValues.tipo[0], fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.fatorRisco.dataValues.descricao, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.fatorRisco.dataValues.codigo_esocial, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.transmitir_esocial[0], fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.fonteGeradora.dataValues.descricao, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        {
-                            text: [
-                                { text: "• Exposição: ", bold: true },
-                                risco.exposicao.dataValues.descricao,
-                                "\n",
-                                { text: "• Meio de Propagação: ", bold: true },
-                                risco.meioPropagacao.dataValues.descricao,
-                                "\n",
-                                { text: "• Trajetória: ", bold: true },
-                                risco.trajetoria.dataValues.descricao,
-                            ],
-                            fontSize: 8,
-                            alignment: "center",
-                            bold: false,
-                            lineHeight: 1,
-                            colSpan: 1
-                        },
-                        { text: risco.intens_conc, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.lt_le, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.comentario, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.probab_freq, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.conseq_severidade, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.grau_risco, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                        { text: risco.classe_risco, fontSize: 8, alignment: "center", bold: false, lineHeight: 1, colSpan: 1 },
-                    ]);
-
-                    // Adiciona informações adicionais logo após a linha principal
-                    const itemNr = await itemNrGetAll2(risco.fatorRisco.dataValues.id);
-                    if (risco.fatorRisco.dataValues) {
-                        tableBody2.push([
-                            {
-                                text: [
-                                    { text: "• Possíveis Lesões ou Agravos à Saúde: ", bold: true },
-                                    risco.fatorRisco.dataValues.danos_saude || ""
-                                ],
-                                fontSize: 8,
-                                alignment: "justify",
-                                lineHeight: 1,
-                                colSpan: 15,
-                                margin: [5, 0, 5, 0],
-                            }
-                        ]);
-
-                        tableBody2.push([
-                            {
-                                table: {
-                                    widths: ["33%", "33%", "33%"],
-                                    body: [
-                                        [
-                                            {
-                                                text: [
-                                                    { text: "• Técnica Utilizada: ", bold: true },
-                                                    risco.tecnicaUtilizada.dataValues.descricao
-                                                ],
-                                                fontSize: 8,
-                                                alignment: "justify",
-                                                lineHeight: 1,
-                                                margin: [5, 0, 5, 0],
-                                            },
-                                            {
-                                                text: [
-                                                    { text: "• Exigências da atividade: ", bold: true },
-                                                    exigenciaAtividade ? exigenciaAtividade.dataValues.descricao : ""
-                                                ],
-                                                fontSize: 8,
-                                                alignment: "justify",
-                                                lineHeight: 1,
-                                                margin: [5, 0, 5, 0],
-                                            },
-                                            {
-                                                text: [
-                                                    { text: "• Item NR: ", bold: true },
-                                                    itemNr.map(item => item.dataValues.item_norma).join("; ") + "; "
-                                                ],
-                                                fontSize: 8,
-                                                alignment: "justify",
-                                                lineHeight: 1,
-                                                margin: [5, 0, 5, 0],
-                                            }
-                                        ]
-                                    ]
-                                },
-                                layout: "centerPGR",
-                                fontSize: 8,
-                                alignment: "justify",
-                                lineHeight: 1,
-                                colSpan: 15,
-                                margin: [-0.5, -2.5, -8.5, -2.5],
-                            }
-                        ]);
-                    }
-
-                    // Medidas de controle existentes
-                    const medidasColetivas = risco.relacoes_coletivas?.map(relacao => relacao.dataValues.medidas_coletivas_existentes?.dataValues?.descricao).filter(Boolean).join("; ");
-                    const medidasAdministrativas = risco.dataValues.relacoes_administrativas?.map(relacao => relacao.dataValues.medidas_administrativas_existen).filter(Boolean).join("; ");
-                    const medidasIndividuais = risco.relacoes_individuais?.map(relacao => relacao.dataValues.medidas_individuais_existentes?.dataValues?.desc).filter(Boolean).join("; ");
-
-                    if (medidasColetivas || medidasAdministrativas || medidasIndividuais) {
-                        tableBody2.push([
-                            {
-                                text: [
-                                    medidasColetivas ? { text: `• Medida de Controle Coletiva Existente: `, bold: true } : null,
-                                    medidasColetivas ? { text: ` ${medidasColetivas}.\n` } : null,
-                                    medidasAdministrativas ? { text: `• Medida de Controle Administrativa Existente: `, bold: true } : null,
-                                    medidasAdministrativas ? { text: ` ${medidasAdministrativas}.\n` } : null,
-                                    medidasIndividuais ? { text: `• Medida de Controle Individual Existente: `, bold: true } : null,
-                                    medidasIndividuais ? { text: ` ${medidasIndividuais}.\n` } : null,
-                                ].filter(Boolean),
-                                fontSize: 8,
-                                alignment: "justify",
-                                margin: [5, 0, 5, 0],
-                                lineHeight: 1,
-                                colSpan: 15
-                            },
-                        ]);
-                    }
-
-                    // Medidas a serem implantadas
-                    const medidasColetivasNec = (risco.planosAcao?.flatMap(plano =>
-                        plano.dataValues.riscosColetivosNecessaria?.flatMap(m => m.dataValues.medidas_coletivas_n || [])
-                    ) || []).filter(Boolean).join("; ");
-                    const medidasAdministrativasNec = (risco.planosAcao?.flatMap(plano =>
-                        plano.dataValues.riscosAdministrativosNecessaria?.flatMap(m => m.dataValues.medidas_admin || [])
-                    ) || []).filter(Boolean).join("; ");
-                    const medidasIndividuaisNec = (risco.planosAcao?.flatMap(plano =>
-                        plano.dataValues.riscosIndividuaisNecessaria?.flatMap(m => m.dataValues.medidas_individua || [])
-                    ) || []).filter(Boolean).join("; ");
-
-                    if (medidasColetivasNec || medidasAdministrativasNec || medidasIndividuaisNec) {
-                        tableBody2.push([
-                            {
-                                text: [
-                                    medidasColetivasNec ? { text: `• Medida de Controle Coletiva Necessária: `, bold: true } : null,
-                                    medidasColetivasNec ? { text: ` ${medidasColetivasNec}.\n` } : null,
-                                    medidasAdministrativasNec ? { text: `• Medida de Controle Administrativa Necessária: `, bold: true } : null,
-                                    medidasAdministrativasNec ? { text: ` ${medidasAdministrativasNec}.\n` } : null,
-                                    medidasIndividuaisNec ? { text: `• Medida de Controle Individual Necessária: `, bold: true } : null,
-                                    medidasIndividuaisNec ? { text: ` ${medidasIndividuaisNec}.\n` } : null,
-                                ].filter(Boolean),
-                                fontSize: 8,
-                                alignment: "justify",
-                                margin: [5, 0, 5, 0],
-                                lineHeight: 1,
-                                colSpan: 15
-                            },
-                        ]);
-                    }
-
-                    if (risco.obs) {
-                        tableBody2.push([
-                            {
-                                text: [
-                                    { text: "• Observação: ", bold: true },
-                                    risco.obs
-                                ],
-                                fontSize: 8,
-                                alignment: "justify",
-                                lineHeight: 1,
-                                colSpan: 15,
-                                margin: [5, 0, 5, 0]
-                            }
-                        ]);
-                    }
+                    todosRiscos.push({ risco, ges });
                 }
             }
 
-            if (tableBody2.length === 1) { // Apenas o cabeçalho, sem dados de riscos
+            todosRiscos.sort((a, b) => {
+                const tipoA = a.risco?.fatorRisco?.dataValues?.tipo ?? '';
+                const tipoB = b.risco?.fatorRisco?.dataValues?.tipo ?? '';
+                const prioridadeA = ordemTipos[tipoA] ?? 9999;
+                const prioridadeB = ordemTipos[tipoB] ?? 9999;
+
+                if (prioridadeA !== prioridadeB) {
+                    return prioridadeA - prioridadeB;
+                }
+
+                const descA = a.risco?.fatorRisco?.dataValues?.descricao?.toLowerCase() ?? '';
+                const descB = b.risco?.fatorRisco?.dataValues?.descricao?.toLowerCase() ?? '';
+                return descA.localeCompare(descB, 'pt-BR');
+            });
+
+            for (const { risco, ges } of todosRiscos) {
+                tableBody2.push([
+                    { text: "Nº GES", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Descrição GES", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Agente de Risco", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Fator de Risco (eSocial)/Descrição dos Perigos", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Código eSocial", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Transm. E-Social", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "FONTE GERADORA OU CIRCUNSTÂNCIA", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Exposição / Meio de Propagação / Trajetória", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Intens. / Conc.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "LT / LE", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Anotações", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Prob.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "Sev.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "G.R.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                    { text: "C.R.", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                ]);
+                if (risco?.dataValues?.id_exigencia_atividade) {
+                    var exigenciaAtividade = await CadastroExigenciaAtividade.findOne({
+                        where: { id: risco.dataValues.id_exigencia_atividade }
+                    });
+                } else {
+                    var exigenciaAtividade = null;
+                }
+
+                if (!risco?.dataValues?.fatorRisco?.dataValues?.pgr) {
+                    continue; 
+                }
+
+                tableBody2.push([
+                    { text: ges.dataValues.codigo, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: ges.dataValues.descricao_ges, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.fatorRisco.dataValues.tipo[0], fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.fatorRisco.dataValues.descricao, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.fatorRisco.dataValues.codigo_esocial, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.transmitir_esocial[0], fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.fonteGeradora.dataValues.descricao, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    {
+                        text: [
+                            { text: "• Exposição: ", bold: true },
+                            risco.exposicao.dataValues.descricao,
+                            "\n",
+                            { text: "• Meio de Propagação: ", bold: true },
+                            risco.meioPropagacao.dataValues.descricao,
+                            "\n",
+                            { text: "• Trajetória: ", bold: true },
+                            risco.trajetoria.dataValues.descricao,
+                        ],
+                        fontSize: 8,
+                        alignment: "center",
+                        bold: false,
+                        lineHeight: 1,
+                    },
+                    { text: risco.intens_conc, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.lt_le, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.comentario, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.probab_freq, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.conseq_severidade, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.grau_risco, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                    { text: risco.classe_risco, fontSize: 8, alignment: "center", bold: false, lineHeight: 1 },
+                ]);
+
+                const itemNr = await itemNrGetAll2(risco.fatorRisco.dataValues.id);
+
+                if (risco.fatorRisco.dataValues) {
+                    tableBody2.push([
+                        {
+                            text: [
+                                { text: "• Possíveis Lesões ou Agravos à Saúde: ", bold: true },
+                                risco.fatorRisco.dataValues.danos_saude || ""
+                            ],
+                            fontSize: 8,
+                            alignment: "justify",
+                            lineHeight: 1,
+                            colSpan: 15,
+                            margin: [5, 0, 5, 0],
+                        }
+                    ]);
+
+                    tableBody2.push([
+                        {
+                            table: {
+                                widths: ["33%", "33%", "33%"],
+                                body: [
+                                    [
+                                        {
+                                            text: [
+                                                { text: "• Técnica Utilizada: ", bold: true },
+                                                risco.tecnicaUtilizada.dataValues.descricao
+                                            ],
+                                            fontSize: 8,
+                                            alignment: "justify",
+                                            lineHeight: 1,
+                                            margin: [5, 0, 5, 0],
+                                        },
+                                        {
+                                            text: [
+                                                { text: "• Exigências da atividade: ", bold: true },
+                                                exigenciaAtividade ? exigenciaAtividade.dataValues.descricao : ""
+                                            ],
+                                            fontSize: 8,
+                                            alignment: "justify",
+                                            lineHeight: 1,
+                                            margin: [5, 0, 5, 0],
+                                        },
+                                        {
+                                            text: [
+                                                { text: "• Item NR: ", bold: true },
+                                                itemNr.map(item => item.dataValues.item_norma).join("; ") + "; "
+                                            ],
+                                            fontSize: 8,
+                                            alignment: "justify",
+                                            lineHeight: 1,
+                                            margin: [5, 0, 5, 0],
+                                        }
+                                    ]
+                                ]
+                            },
+                            layout: "centerPGR",
+                            fontSize: 8,
+                            alignment: "justify",
+                            lineHeight: 1,
+                            colSpan: 15,
+                            margin: [-0.5, -2.5, -8.5, -2.5],
+                        }
+                    ]);
+                }
+
+                const medidasColetivas = risco.relacoes_coletivas?.map(relacao => relacao.dataValues.medidas_coletivas_existentes?.dataValues?.descricao).filter(Boolean).join("; ");
+                const medidasAdministrativas = risco.dataValues.relacoes_administrativas?.map(relacao => relacao.dataValues.medidas_administrativas_existen).filter(Boolean).join("; ");
+                const medidasIndividuais = risco.relacoes_individuais?.map(relacao => relacao.dataValues.medidas_individuais_existentes?.dataValues?.desc).filter(Boolean).join("; ");
+
+                if (medidasColetivas || medidasAdministrativas || medidasIndividuais) {
+                    tableBody2.push([
+                        {
+                            text: [
+                                medidasColetivas ? { text: `• Medida de Controle Coletiva Existente: `, bold: true } : null,
+                                medidasColetivas ? { text: ` ${medidasColetivas}.\n` } : null,
+                                medidasAdministrativas ? { text: `• Medida de Controle Administrativa Existente: `, bold: true } : null,
+                                medidasAdministrativas ? { text: ` ${medidasAdministrativas}.\n` } : null,
+                                medidasIndividuais ? { text: `• Medida de Controle Individual Existente: `, bold: true } : null,
+                                medidasIndividuais ? { text: ` ${medidasIndividuais}.\n` } : null,
+                            ].filter(Boolean),
+                            fontSize: 8,
+                            alignment: "justify",
+                            margin: [5, 0, 5, 0],
+                            lineHeight: 1,
+                            colSpan: 15
+                        },
+                    ]);
+                }
+
+                const medidasColetivasNec = (risco.planosAcao?.flatMap(plano =>
+                    plano.dataValues.riscosColetivosNecessaria?.flatMap(m => m.dataValues.medidas_coletivas_n || [])
+                ) || []).filter(Boolean).join("; ");
+                const medidasAdministrativasNec = (risco.planosAcao?.flatMap(plano =>
+                    plano.dataValues.riscosAdministrativosNecessaria?.flatMap(m => m.dataValues.medidas_admin || [])
+                ) || []).filter(Boolean).join("; ");
+                const medidasIndividuaisNec = (risco.planosAcao?.flatMap(plano =>
+                    plano.dataValues.riscosIndividuaisNecessaria?.flatMap(m => m.dataValues.medidas_individua || [])
+                ) || []).filter(Boolean).join("; ");
+
+                if (medidasColetivasNec || medidasAdministrativasNec || medidasIndividuaisNec) {
+                    tableBody2.push([
+                        {
+                            text: [
+                                medidasColetivasNec ? { text: `• Medida de Controle Coletiva Necessária: `, bold: true } : null,
+                                medidasColetivasNec ? { text: ` ${medidasColetivasNec}.\n` } : null,
+                                medidasAdministrativasNec ? { text: `• Medida de Controle Administrativa Necessária: `, bold: true } : null,
+                                medidasAdministrativasNec ? { text: ` ${medidasAdministrativasNec}.\n` } : null,
+                                medidasIndividuaisNec ? { text: `• Medida de Controle Individual Necessária: `, bold: true } : null,
+                                medidasIndividuaisNec ? { text: ` ${medidasIndividuaisNec}.\n` } : null,
+                            ].filter(Boolean),
+                            fontSize: 8,
+                            alignment: "justify",
+                            margin: [5, 0, 5, 0],
+                            lineHeight: 1,
+                            colSpan: 15
+                        },
+                    ]);
+                }
+
+                if (risco.obs) {
+                    tableBody2.push([
+                        {
+                            text: [
+                                { text: "• Observação: ", bold: true },
+                                risco.obs
+                            ],
+                            fontSize: 8,
+                            alignment: "justify",
+                            lineHeight: 1,
+                            colSpan: 15,
+                            margin: [5, 0, 5, 0]
+                        }
+                    ]);
+                }
+            }
+
+            if (tableBody2.length <= 1) { 
                 console.warn("Nenhum risco encontrado. Nada será retornado.");
                 return null;
             }
@@ -385,6 +398,7 @@ module.exports = {
             };
         } catch (error) {
             console.error("Erro ao construir os requisitos:", error);
+            throw error;
         }
     }
 };

@@ -87,23 +87,23 @@ module.exports = {
 
                 if (gesData.length === 0) {
                     tableBody.push([
-                        { text: undefined, fontSize: 12, alignment: "center" },
-                        { text: undefined, fontSize: 12, alignment: "center" },
-                        { text: undefined, fontSize: 12, alignment: "center" },
-                        { text: undefined, fontSize: 12, alignment: "center" },
-                        { text: undefined, fontSize: 12, alignment: "center" },
-                        { text: undefined, fontSize: 12, alignment: "center" },
-                        { text: undefined, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], lineHeight: 1 },
+                        { text: undefined, fontSize: 8, alignment: "center" },
+                        { text: undefined, fontSize: 8, alignment: "center" },
+                        { text: undefined, fontSize: 8, alignment: "center" },
+                        { text: undefined, fontSize: 8, alignment: "center" },
+                        { text: undefined, fontSize: 8, alignment: "center" },
+                        { text: undefined, fontSize: 8, alignment: "center" },
+                        { text: undefined, fontSize: 8, alignment: "center", margin: [5, 0, 5, 0], lineHeight: 1 },
                     ]);
                 } else {
                     tableBody.push([
-                        { text: "GES", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Cargo", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Função", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Setor", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Gerência", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Qtd. Trab. Expostos", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
-                        { text: "Jornada (min)", fontSize: 12, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "GES", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Cargo", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Função", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Setor", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Gerência", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Qtd. Trab. Expostos", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
+                        { text: "Jornada (min)", fontSize: 8, bold: true, alignment: "center", fillColor: "#2f945d", color: "white", lineHeight: 1 },
                     ]);
                     gesData.forEach((ges) => {
                         // Cabeçalho de cada grupo
@@ -111,12 +111,12 @@ module.exports = {
                         // Dados
                         tableBody.push([
                             { text: `${item.codigo} - ${item.descricao_ges}` || undefined, fontSize: 10, alignment: "center", lineHeight: 1 },
-                            { text: ges.cargo || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
-                            { text: ges.funcao || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
-                            { text: ges.setor || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
-                            { text: ges.gerencia || undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
-                            { text: typeof ges.qtdExpostos === 'number' ? String(ges.qtdExpostos) : undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
-                            { text: ges.jornada ? String(ges.jornada) : undefined, fontSize: 12, alignment: "center", lineHeight: 1 },
+                            { text: ges.cargo || undefined, fontSize: 8, alignment: "center", lineHeight: 1 },
+                            { text: ges.funcao || undefined, fontSize: 8, alignment: "center", lineHeight: 1 },
+                            { text: ges.setor || undefined, fontSize: 8, alignment: "center", lineHeight: 1 },
+                            { text: ges.gerencia || undefined, fontSize: 8, alignment: "center", lineHeight: 1 },
+                            { text: typeof ges.qtdExpostos === 'number' ? String(ges.qtdExpostos) : undefined, fontSize: 8, alignment: "center", lineHeight: 1 },
+                            { text: ges.jornada ? String(ges.jornada) : undefined, fontSize: 8, alignment: "center", lineHeight: 1 },
                         ]);
 
                         if (ges.descricaoServico) {
@@ -125,18 +125,13 @@ module.exports = {
                                     { text: '• Caracterização das Atividades: ', bold: true },
                                     ges.descricaoServico || ''
                                 ],
-                                fontSize: 12,
+                                fontSize: 8,
                                 alignment: "justify",
                                 lineHeight: 1,
                                 colSpan: 7,
                                 margin: [5, 5]
                             }]);
                         }
-
-                        // tableBody.push([{
-                        //     text: "", fontSize: 12, bold: true, alignment: "center", color: "white",
-                        //     lineHeight: 5, colSpan: 7
-                        // }]);
                     });
                 }
             }
@@ -169,7 +164,7 @@ module.exports = {
                     body: [[
                         {
                             text: `Erro ao carregar dados: ${error.message}`,
-                            fontSize: 12,
+                            fontSize: 8,
                             color: "red",
                             alignment: "center",
                             colSpan: 7

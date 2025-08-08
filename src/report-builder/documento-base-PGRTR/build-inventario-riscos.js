@@ -120,8 +120,12 @@ module.exports = {
                     todosRiscos.push({ risco, ges });
                 }
             }
+            console.log(todosRiscos[0].risco.dataValues.ges_id);
+            console.log(todosRiscos[0].risco.dataValues.fatorRisco.dataValues.ordem);
+            console.log(todosRiscos[0].risco.dataValues.fatorRisco.dataValues.descricao);
 
             todosRiscos.sort((a, b) => {
+                // 1. Ordem pelo tipo de risco
                 const tipoA = a.risco?.fatorRisco?.dataValues?.tipo ?? '';
                 const tipoB = b.risco?.fatorRisco?.dataValues?.tipo ?? '';
                 const prioridadeA = ordemTipos[tipoA] ?? 9999;
@@ -129,6 +133,18 @@ module.exports = {
 
                 if (prioridadeA !== prioridadeB) {
                     return prioridadeA - prioridadeB;
+                }
+
+                const gesA = a.risco?.dataValues?.ges_id ?? 0;
+                const gesB = b.risco?.dataValues?.ges_id ?? 0;
+                if (gesA !== gesB) {
+                    return gesA - gesB;
+                }
+
+                const ordemA = a.risco?.fatorRisco?.dataValues?.ordem ?? 0;
+                const ordemB = b.risco?.fatorRisco?.dataValues?.ordem ?? 0;
+                if (ordemA !== ordemB) {
+                    return ordemA - ordemB;
                 }
 
                 const descA = a.risco?.fatorRisco?.dataValues?.descricao?.toLowerCase() ?? '';
@@ -163,7 +179,7 @@ module.exports = {
                 }
 
                 if (!risco?.dataValues?.fatorRisco?.dataValues?.pgr) {
-                    continue; 
+                    continue;
                 }
 
                 tableBody2.push([
@@ -336,7 +352,7 @@ module.exports = {
                 }
             }
 
-            if (tableBody2.length <= 1) { 
+            if (tableBody2.length <= 1) {
                 console.warn("Nenhum risco encontrado. Nada será retornado.");
                 return null;
             }

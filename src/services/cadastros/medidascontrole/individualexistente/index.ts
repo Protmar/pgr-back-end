@@ -2,16 +2,28 @@ import { CadastroMedidaControleIndividualExistente } from "../../../../models/Me
 
 const formatarNome = (nome: string) => {
   if (!nome) return "";
-  const palavras = nome.toLowerCase().split(" ");
+  const palavras = nome.trim().toLowerCase().split(" ");
   palavras[0] = palavras[0].charAt(0).toUpperCase() + palavras[0].slice(1);
   return palavras.join(" ");
 };
+
 
 export const individualExistentePostService = async (
   empresaId: string,
   descricao: string
 ) => {
   const descricaoFormatada = formatarNome(descricao);
+
+  const dataExistente = await CadastroMedidaControleIndividualExistente.findOne({
+    where: {
+      empresa_id: Number(empresaId),
+      descricao: descricaoFormatada
+    }
+  })
+
+  if(dataExistente) {
+    return { status: 409, error: "Medida Controle Individual Existente com essa descrição ja cadastrado." };
+  }
 
   const data = await CadastroMedidaControleIndividualExistente.create({
     empresa_id: Number(empresaId),

@@ -115,22 +115,30 @@ module.exports = {
                 const cursos = await getCursosObrigatorios(item.cursos);
                 const racs = await getRacs(item.racs);
 
-                // Coletar todas as medidas individuais de todos os riscos do item
-                const medidas = [];
+                const medidasSet = new Set();
 
                 const riscos = item?.dataValues?.riscos || [];
                 for (const risco of riscos) {
                     const medidasIndividuais = risco?.dataValues?.medidas_individuais_existentes || [];
                     for (const medida of medidasIndividuais) {
                         const descricao = medida?.dataValues?.descricao;
-                        if (descricao) medidas.push(descricao);
+                        if (descricao) {
+                            const normalizada = descricao.trim().toLowerCase();
+                            medidasSet.add(normalizada);
+                        }
                     }
                 }
 
-                // Ordenar e juntar em string separada por ";"
-                const medidasTexto = medidas.length > 0
-                    ? medidas.sort((a, b) => a.localeCompare(b, 'pt-BR')).join('; ')
+                const medidasUnicas = Array.from(medidasSet).map(medida =>
+                    medida.charAt(0).toUpperCase() + medida.slice(1)
+                );
+
+                medidasUnicas.sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+                const medidasTexto = medidasUnicas.length > 0
+                    ? medidasUnicas.join('; ')
                     : '';
+
 
                 const row = [
                     item.codigo && item.descricao_ges

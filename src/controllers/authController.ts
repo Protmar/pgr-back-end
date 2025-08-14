@@ -20,13 +20,20 @@ export const authController = {
     const { email, senha, recaptchaToken } = req.body;
 
     try {
-      const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-      const recaptchaRes = await axios.post(
-        `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${recaptchaToken}`
-      );
+      const isLocalhost = req.hostname === "localhost";
 
-      if (!recaptchaRes.data.success || recaptchaRes.data.score < 0.5) {
-        return res.status(403).json({ message: "Falha na verificação do reCAPTCHA" });
+      if (!isLocalhost) {
+        // Valida reCAPTCHA apenas em produção
+        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+        const recaptchaRes = await axios.post(
+          `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${recaptchaToken}`
+        );
+
+        if (!recaptchaRes.data.success || recaptchaRes.data.score < 0.5) {
+          return res.status(403).json({ message: "Falha na verificação do reCAPTCHA" });
+        }
+      } else {
+        console.log("reCAPTCHA ignorado em localhost");
       }
 
       const user = await userService.findByEmail(email);
@@ -54,6 +61,7 @@ export const authController = {
       }
     }
   },
+
 
   //POST /auth/forgotPassword
   forgotPassword: async (req: Request, res: Response) => {

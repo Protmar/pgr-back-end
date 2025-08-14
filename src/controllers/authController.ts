@@ -9,6 +9,7 @@ import { AuthenticatedUserRequest } from "../middleware";
 import { empresaController } from "./empresaController";
 import { empresaService } from "../services/empresaService";
 import { User } from "../models";
+import axios from "axios";
 
 const roles = Object.keys(Role);
 const webUrl = "https://www.pgrsoftware.com.br";
@@ -16,11 +17,19 @@ const webUrl = "https://www.pgrsoftware.com.br";
 export const authController = {
   //POST /auth/login
   login: async (req: Request, res: Response) => {
-    const { email, senha } = req.body;
+    const { email, senha, recaptchaToken } = req.body;
 
     try {
-      const user = await userService.findByEmail(email);
+      const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+      const recaptchaRes = await axios.post(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${recaptchaToken}`
+      );
 
+      if (!recaptchaRes.data.success || recaptchaRes.data.score < 0.5) {
+        return res.status(403).json({ message: "Falha na verificação do reCAPTCHA" });
+      }
+
+      const user = await userService.findByEmail(email);
       if (!user)
         return res.status(404).json({ message: "E-mail não registrado" });
 
@@ -37,7 +46,6 @@ export const authController = {
         };
 
         const token = jwtService.signToken(payload, "12hr");
-
         return res.json({ authenticated: true, ...payload, token });
       });
     } catch (err) {

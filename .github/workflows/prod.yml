@@ -47,6 +47,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
         run: |
           sudo docker run -d --restart unless-stopped -p 3000:3000 --name api \
           -e TZ="${TZ}" \
@@ -67,6 +68,7 @@ jobs:
           -e DB_PASSWORD="${DB_PASSWORD}" \
           -e DOCKER_USERNAME="${DOCKER_USERNAME}" \
           -e DOCKER_PASSWORD="${DOCKER_PASSWORD}" \
+          -e RECAPTCHA_SECRET_KEY="${RECAPTCHA_SECRET_KEY}" \
           pgrsoftware/pgr:latest
       - name: Clean up unused Docker images
         run: sudo docker system prune -f

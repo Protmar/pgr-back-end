@@ -1,24 +1,23 @@
 
 import { Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { deleteDadosEstatisticos, getAllDadosEstatisticos, getOneDadosEstatisticos, postDadosEstatisticos, putDadosEstatisticos } from "../../services/servicos/dadosEstatisticos";
+import { deleteArt, getAllArt, getOneArt, postArt, putArt } from "../../services/servicos/art";
 
-export const dadosEstatisticos = {
+export const art = {
     post: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            const { cliente_id, servico_id, url_imagem, descricao, tipo_laudo } = req.body;
+            const { cliente_id, servico_id, url_imagem, descricao } = req.body;
             const { empresaId } = req.user!;
 
-            const newDadoEstatistico = await postDadosEstatisticos({
+            const newArt = await postArt({
                 empresa_id: empresaId,
                 cliente_id,
                 servico_id,
                 url_imagem,
-                descricao,
-                tipo_laudo
+                descricao
             });
 
-            res.status(201).json(newDadoEstatistico);
+            res.status(201).json(newArt);
         } catch (err) {
             console.error(err);
             if (err instanceof Error) {
@@ -30,20 +29,19 @@ export const dadosEstatisticos = {
 
     put: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            const idDadoEstatistico = req.params.dadoestatisticoid;
-            const { cliente_id, servico_id, url_imagem, descricao, tipo_laudo } = req.body;
+            const idArt = req.params.artid;
+            const { cliente_id, servico_id, url_imagem, descricao } = req.body;
             const { empresaId } = req.user!;
 
-            const newDadoEstatistico = await putDadosEstatisticos(Number(idDadoEstatistico), {
-                 empresa_id: empresaId,
+            const newArt = await putArt(Number(idArt), {
+                empresa_id: empresaId,
                 cliente_id,
                 servico_id,
                 url_imagem,
                 descricao,
-                tipo_laudo
             });
 
-            res.status(201).json(newDadoEstatistico);
+            res.status(201).json(newArt);
 
         } catch (err) {
             if (err instanceof Error) {
@@ -57,7 +55,7 @@ export const dadosEstatisticos = {
             const { empresaId } = req.user!;
             const { servicoid } = req.params;
 
-            const servicos = await getAllDadosEstatisticos(empresaId, Number(servicoid));
+            const servicos = await getAllArt(empresaId, Number(servicoid));
 
             res.json(servicos);
         } catch (err) {
@@ -72,7 +70,7 @@ export const dadosEstatisticos = {
             const { empresaId } = req.user!;
             const { servicoid } = req.params;
 
-            const servicos = await getOneDadosEstatisticos(empresaId, Number(servicoid));
+            const servicos = await getOneArt(empresaId, Number(servicoid));
 
             res.json(servicos);
         } catch (err) {
@@ -81,12 +79,13 @@ export const dadosEstatisticos = {
             }
         }
     },
+    
 
     delete: async (req: AuthenticatedUserRequest, res: Response) => {
         const { empresaId } = req.user!;
-        const { dadoestatisticoid } = req.params;
+        const { artid } = req.params;
 
-        const data = await deleteDadosEstatisticos(empresaId, dadoestatisticoid);
+        const data = await deleteArt(empresaId, artid);
         res.status(204).json(data);
     },
 

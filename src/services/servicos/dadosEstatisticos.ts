@@ -10,9 +10,27 @@ export const postDadosEstatisticos = (params: DadosEstatisticosCreationAttribute
     }
 }
 
+export const putDadosEstatisticos = (id: number, params: DadosEstatisticosCreationAttributes) => {
+    try {
+        const data = DadosEstatisticos.update(params, { where: { id } });
+        return data;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const getAllDadosEstatisticos = (empresaId: number, servicoId: number) => {
     try {
         const data = DadosEstatisticos.findAll({ where: { empresa_id: empresaId, servico_id: servicoId } });
+        return data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getOneDadosEstatisticos = (empresaId: number, servicoId: number) => {
+    try {
+        const data = DadosEstatisticos.findAll({ where: { empresa_id: empresaId, id: servicoId } });
         return data;
     } catch (error) {
         return error;

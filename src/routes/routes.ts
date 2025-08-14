@@ -55,6 +55,8 @@ import { dadosCadastroExigenciaAtividade } from "../controllers/cadastros/exigen
 import { docBasePgrReportController } from "../controllers/pdfs/docBasePGR";
 import { dadosEstatisticos } from "../controllers/servicos/dadosEstatisticos";
 import { middlewareCanEditAndCreate } from "../middleware/middlewareCanEditAndCreate";
+import { memorialProcessos } from "../controllers/servicos/memorialProcessos";
+import { art } from "../controllers/servicos/art";
 
 
 
@@ -84,6 +86,7 @@ router.get("/configuracoes/usuarios/getuserlogado", ensureUserAuth, authControll
 
 //Servicos
 router.post("/postservico", ensureUserAuth, middlewareCanEditAndCreate, dadosServicos.post);
+router.post("/postservicowithlastclient/:idcliente", ensureUserAuth, middlewareCanEditAndCreate, dadosServicos.postWithLastClient);
 router.get("/getservicosbycliente", ensureUserAuth, dadosServicos.getServicosByCliente);
 router.get("/:idservico/getservico", ensureUserAuth, dadosServicos.get);
 router.put("/:idservico/editservico", ensureUserAuth, dadosServicos.put);
@@ -95,7 +98,30 @@ router.get("/getoneservico", ensureUserAuth, dadosServicos.getOneServico);
 //Dados Estatisticos
 router.post("/postdadoestatistico", ensureUserAuth, middlewareCanEditAndCreate, dadosEstatisticos.post);
 router.get("/:servicoid/getdadoestatisticos", ensureUserAuth, dadosEstatisticos.getAll);
+router.get("/:servicoid/getonedadoestatistico", ensureUserAuth, dadosEstatisticos.getOne);
 router.delete("/:dadoestatisticoid/deletedadoestatistico", ensureUserAuth, dadosEstatisticos.delete);
+router.put("/:dadoestatisticoid/updatedadoestatistico", ensureUserAuth, middlewareCanEditAndCreate, dadosEstatisticos.put);
+
+//ART
+router.post("/postart", ensureUserAuth, middlewareCanEditAndCreate, art.post);
+router.get("/:servicoid/getoneart", ensureUserAuth, art.getOne);
+router.get("/:servicoid/getarts", ensureUserAuth, art.getAll);
+router.delete("/:artid/deleteart", ensureUserAuth, art.delete);
+router.put("/:artid/updateart", ensureUserAuth, middlewareCanEditAndCreate, art.put);
+
+//Memorial Processos
+router.post("/postmemorialprocesso", ensureUserAuth, middlewareCanEditAndCreate, memorialProcessos.post);
+router.get("/:servicoid/getmemorialprocessos", ensureUserAuth, memorialProcessos.getAll);
+router.get("/:servicoid/getonememorialprocesso", ensureUserAuth, memorialProcessos.getOne);
+router.delete("/:memorialprocessoid/deletememorialprocesso", ensureUserAuth, memorialProcessos.delete);
+router.put("/:memorialprocessoid/updatememorialprocesso", ensureUserAuth, middlewareCanEditAndCreate, memorialProcessos.put);
+
+//Responsável Técnico Servico
+router.post("/postresponsaveltecnicoservico", ensureUserAuth, middlewareCanEditAndCreate, responsavelTecnicoController.postServico);
+router.get("/:servicoid/getresponsaveltecnicoservico", ensureUserAuth, responsavelTecnicoController.getAllByServico);
+router.get("/:servicoid/getoneresptecservico", ensureUserAuth, responsavelTecnicoController.getOneByServico);
+router.delete("/:resptecservicoid/deleteresptecservico", ensureUserAuth, responsavelTecnicoController.deleteServico);
+router.put("/:resptecservicoid/updateresptecservico", ensureUserAuth, middlewareCanEditAndCreate, responsavelTecnicoController.putServico);
 
 //empresa
 router.post("/postcadastroempresa", empresaController.createNoAuth);

@@ -11,7 +11,7 @@ import { empresaService } from "../services/empresaService";
 import { User } from "../models";
 
 const roles = Object.keys(Role);
-const webUrl = process.env.WEB_URL;
+const webUrl = "https://www.pgrsoftware.com.br";
 
 export const authController = {
   //POST /auth/login
@@ -69,6 +69,8 @@ export const authController = {
       const emailContent = `
       <p>Para recuperar a sua senha <a href="${webUrl}/login/redefinirsenha/${token}">clique aqui</a> ou utilize o seguinte código: </p>
       <h3>${token}</h3>
+      <p>Se você não solicitou a recuperação de senha, por favor ignore este e-mail.</p>
+      <p>Mensagem enviada automaticamente, não responda.</p>
       `;
 
       await mailerService.sendEmail(

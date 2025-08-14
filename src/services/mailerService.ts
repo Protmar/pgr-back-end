@@ -26,10 +26,9 @@ export const mailerService = {
                 <body>
                     ${content}
                     <br />
-                    <p>Software</p>
-                    <p>Rua Teste, 10 - Cidade UF</p>
-                    <p>email@email.com.br</p>
-                    <p>www.dominio.com.br</p>
+                    <p>PGR Software</p>
+                    <p>pgrsoftware@protmar.com.br</p>
+                    <p>www.pgrsoftware.com.br/</p>
                 </body>
             </html>
             `,

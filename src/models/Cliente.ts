@@ -20,12 +20,15 @@ export interface ClienteAttributes {
     observacoes?: string;
     logo_url?: string;
     add_documento_base_url?: string;
+    contato_responsavel?: string;
+    email_responsavel?: string;
+    nome_responsavel?: string;    
     created_at?: Date;
     updated_at?: Date;
 }
 
 // Use a versão `Optional` para tornar id opcional durante a criação
-export interface ClienteCreationAttributes extends Optional<ClienteAttributes, 'id'> {}
+export interface ClienteCreationAttributes extends Optional<ClienteAttributes, 'id'> { }
 
 export const Cliente = sequelize.define<Model<ClienteAttributes, ClienteCreationAttributes>>(
     "Cliente",
@@ -87,6 +90,15 @@ export const Cliente = sequelize.define<Model<ClienteAttributes, ClienteCreation
             type: DataTypes.STRING,
         },
         add_documento_base_url: {
+            type: DataTypes.STRING,
+        },
+        contato_responsavel: {
+            type: DataTypes.STRING,
+        },
+        email_responsavel: {
+            type: DataTypes.STRING,
+        },
+        nome_responsavel: {
             type: DataTypes.STRING,
         },
     }

@@ -10,6 +10,10 @@ import { empresaController } from "./empresaController";
 import { empresaService } from "../services/empresaService";
 import { User } from "../models";
 import axios from "axios";
+import crypto from "crypto";
+import otpauth from "otpauth";
+import QRCode from "qrcode";
+import { promisify } from "util";
 
 const roles = Object.keys(Role);
 const webUrl = "https://www.pgrsoftware.com.br";
@@ -17,13 +21,12 @@ const webUrl = "https://www.pgrsoftware.com.br";
 export const authController = {
   //POST /auth/login
   login: async (req: Request, res: Response) => {
-    const { email, senha, recaptchaToken } = req.body;
+    const { email, senha, recaptchaToken, code } = req.body;
 
     try {
       const isLocalhost = req.hostname === "localhost";
 
       if (!isLocalhost) {
-        // Valida reCAPTCHA apenas em produção
         const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
         const recaptchaRes = await axios.post(
           `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${recaptchaToken}`
@@ -32,33 +35,31 @@ export const authController = {
         if (!recaptchaRes.data.success || recaptchaRes.data.score < 0.5) {
           return res.status(403).json({ message: "Falha na verificação do reCAPTCHA" });
         }
-      } else {
-        console.log("reCAPTCHA ignorado em localhost");
       }
 
       const user = await userService.findByEmail(email);
-      if (!user)
-        return res.status(404).json({ message: "E-mail não registrado" });
+      if (!user) return res.status(404).json({ message: "E-mail não registrado" });
 
-      user.checkPassword(senha, (err, isSame) => {
-        if (err) return res.status(400).json({ message: err.message });
-        if (!isSame)
-          return res.status(401).json({ message: "Senha incorreta" });
+      // Promisify checkPassword
+      const checkPasswordAsync = promisify(user.checkPassword.bind(user));
+      const isSame = await checkPasswordAsync(senha);
 
-        const payload = {
-          id: user.id,
-          empresaId: user.empresaId,
-          nome: user.nome,
-          email: user.email,
-        };
+      if (!isSame) return res.status(401).json({ message: "Senha incorreta" });
 
-        const token = jwtService.signToken(payload, "12hr");
-        return res.json({ authenticated: true, ...payload, token });
-      });
+      const payload = {
+        id: user.id,
+        empresaId: user.empresaId,
+        nome: user.nome,
+        email: user.email,
+      };
+
+      const token = jwtService.signToken(payload, "12hr");
+
+      return res.json({ authenticated: true, ...payload, token, use_token_mfa: user.use_token_mfa });
+
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
-      }
+      console.error(err);
+      return res.status(400).json({ message: err instanceof Error ? err.message : "Erro inesperado" });
     }
   },
 
@@ -281,5 +282,225 @@ export const authController = {
         return res.status(400).json({ message: err.message });
       }
     }
+  },
+
+  enableMFA: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId, email } = req.user!;
+
+      const secretHex = crypto.randomBytes(48).toString("hex");
+      const secret = otpauth.Secret.fromHex(secretHex);
+
+      await User.update(
+        { use_token_mfa: false, token_mfa: secret.base32 },
+        {
+          where: {
+            empresaId: empresaId,
+            email: email
+          }
+        }
+      );
+
+      const totp = new otpauth.TOTP({
+        issuer: "PGR Software",
+        label: email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret,
+      });
+
+      const uri = totp.toString();
+      const svg = await QRCode.toString(uri, { type: "svg" });
+
+      return res.status(200).json({
+        message: "MFA habilitado com sucesso",
+        qrCode: svg,
+        secret: secretHex,
+      });
+    } catch (err) {
+      console.error("Erro ao gerar QR Code:", err);
+      return res.status(500).json({ message: "Erro ao gerar QR Code" });
+    }
+  },
+
+  addToken: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId, email } = req.user!;
+
+      const user = await User.findOne({
+        where: {
+          empresaId: empresaId,
+          email: email
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário nao encontrado" });
+      }
+
+      const { code } = req.body;
+
+      const totp = new otpauth.TOTP({
+        issuer: "PGR Software",
+        label: email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: user.token_mfa!,
+      });
+
+      const delta = totp.validate({ token: code, window: 1 });
+
+      if (delta! === 0) {
+        await User.update(
+          { use_token_mfa: true },
+          {
+            where: {
+              empresaId: empresaId,
+              email: email
+            }
+          }
+        );
+        return res.status(200).json({ message: "Código MFA validado com sucesso", status: 200 });
+      } else {
+        await User.update(
+          { use_token_mfa: false },
+          {
+            where: {
+              empresaId: empresaId,
+              email: email
+            }
+          }
+        );
+        return res.status(401).json({ message: "Código MFA inválido" });
+      }
+
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  removeToken: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId, email } = req.user!;
+
+      const user = await User.findOne({
+        where: {
+          empresaId: empresaId,
+          email: email
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário nao encontrado" });
+      }
+
+      const userUpdate = await User.update(
+        { use_token_mfa: false, token_mfa: null },
+        {
+          where: {
+            empresaId: empresaId,
+            email: email
+          }
+        }
+      );
+      console.log("Usuário atualizado:", user);
+      return res.status(200).json({ message: "Token removido com sucesso" });
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  removeTokenInternal: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId, email } = req.user!;
+
+      const user = await User.findOne({
+        where: {
+          empresaId: empresaId,
+          email: email
+        }
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário nao encontrado" });
+      }
+
+      const userUpdate = await User.update(
+        { use_token_mfa: false, token_mfa: null },
+        {
+          where: {
+            empresaId: empresaId,
+            email: email
+          }
+        }
+      );
+      console.log("Usuário atualizado:", user);
+      return res.status(200).json({ message: "Token removido com sucesso" });
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  getUserByEmail: async (req: AuthenticatedUserRequest, res: Response) => {
+
+    const { email } = req.params;
+
+    const user = await User.findOne({ where: { email } });
+    return user;
+  },
+
+  verify: async (req: AuthenticatedUserRequest, res: Response) => {
+  try {
+    const { code, email } = req.body;
+
+    const user = await User.findOne({
+      where: {
+        email: email
+      }
+    });
+
+    console.log(user?.dataValues.token_mfa);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    if (!user.dataValues.token_mfa) {
+      return res.status(400).json({ message: "MFA não configurado para este usuário" });
+    }
+
+    const totp = new otpauth.TOTP({
+      issuer: "PGR Software",
+      label: email,
+      algorithm: "SHA1",
+      digits: 6,
+      period: 30,
+      secret: user.dataValues.token_mfa,
+    });
+
+    const delta = totp.validate({ token: code, window: 1 });
+
+    if (delta !== null && delta === 0) {
+      return res.status(200).json({ message: "Código MFA validado com sucesso" });
+    } else {
+      return res.status(401).json({ message: "Código MFA inválido" });
+    }
+
+  } catch (err) {
+    console.error("Erro ao validar MFA:", err);
+    if (err instanceof Error) {
+      return res.status(500).json({ message: err.message });
+    }
+    return res.status(500).json({ message: "Erro inesperado ao validar MFA" });
   }
+}
+
 };

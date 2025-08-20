@@ -63,6 +63,15 @@ module.exports = {
       add_documento_base_url: {
         type: Sequelize.DataTypes.STRING,
       },
+      contato_responsavel: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      email_responsavel: {
+        type: Sequelize.DataTypes.STRING,
+      },
+      nome_responsavel: {
+        type: Sequelize.DataTypes.STRING,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DataTypes.DATE,

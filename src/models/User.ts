@@ -23,6 +23,8 @@ export interface UserAttributes {
   recoverCode: string | null;
   recoverExpires: Date | null;
   role: string;
+  token_mfa?: string | null;
+  use_token_mfa?: boolean | null;
   clienteselecionado?: number | null;
   servicoselecionado?: number | null;
 }
@@ -88,15 +90,21 @@ export const User = sequelize.define<UserInstance>("users", {
   clienteselecionado: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    field: "clienteselecionado", // <- nome no banco
+    field: "clienteselecionado", 
   },
   servicoselecionado: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    field: "servicoselecionado", // <- nome no banco
-  }
-
-
+    field: "servicoselecionado",
+  },
+  token_mfa: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  use_token_mfa: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
 },
 
   {

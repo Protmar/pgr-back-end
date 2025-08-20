@@ -38,10 +38,12 @@ export const postDadosClienteService = async (
   contato_financeiro: string,
   observacoes: string,
   logo_url: string,
-  add_documento_base_url: string
+  add_documento_base_url: string,
+  contato_responsavel: string,
+  email_responsavel: string,
+  nome_responsavel: string
 ): Promise<{ success: boolean; cliente?: any; error?: string }> => {
   try {
-    // Primeiro, verificar se já existe um cliente com o mesmo CNPJ e empresa_id
     const dadoExistente = await Cliente.findOne({
       where: {
         empresa_id,
@@ -53,7 +55,6 @@ export const postDadosClienteService = async (
       return { success: false, error: "Cliente com este nome já cadastrado." };
     }
 
-    // Se não existir, cria um novo cliente
     const cliente = await Cliente.create({
       empresa_id,
       cnpj,
@@ -71,6 +72,9 @@ export const postDadosClienteService = async (
       observacoes,
       logo_url,
       add_documento_base_url,
+      contato_responsavel,
+      email_responsavel,
+      nome_responsavel
     });
 
     return { success: true, cliente };
@@ -140,7 +144,10 @@ export const putDadosClienteService = async (
   contato_financeiro: string,
   observacoes: string,
   logo_url: string,
-  add_documento_base_url: string
+  add_documento_base_url: string,
+  contato_responsavel: string,
+  email_responsavel: string,
+  nome_responsavel: string
 ): Promise<any> => {
   const data = await Cliente.update(
     {
@@ -152,7 +159,10 @@ export const putDadosClienteService = async (
       localizacao_completa,
       email_financeiro,
       logo_url,
-      add_documento_base_url
+      add_documento_base_url,
+      contato_responsavel,
+      email_responsavel,
+      nome_responsavel
     },
     {
       where: {

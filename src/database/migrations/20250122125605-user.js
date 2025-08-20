@@ -60,6 +60,14 @@ module.exports = {
           type: Sequelize.DataTypes.INTEGER,
           allowNull: true,
         },
+        token_mfa: {
+          type: Sequelize.DataTypes.STRING,
+          allowNull: true,
+        },
+        use_token_mfa: {
+          type: Sequelize.DataTypes.BOOLEAN,
+          allowNull: true,
+        },
         created_at: {
           allowNull: false,
           type: Sequelize.DataTypes.DATE,

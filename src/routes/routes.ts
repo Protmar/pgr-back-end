@@ -67,6 +67,13 @@ router.post("/auth/login", authController.login)
 router.post("/auth/forgotPassword", authController.forgotPassword)
 router.post("/auth/resetPassword/:token", authController.resetPassword)
 
+//mfa
+router.get("/auth/mfa/enable", ensureUserAuth, authController.enableMFA);
+router.post("/auth/mfa/addtoken", ensureUserAuth, authController.addToken);
+router.get("/auth/mfa/removetoken", authController.removeToken);
+router.post("/auth/mfa/verify", authController.verify);
+router.get("/auth/mfa/removetokeninternal", ensureUserAuth, authController.removeTokenInternal);
+
 //cliente
 router.get("/getclientes", ensureUserAuth, dadosCliente.getAll);
 router.get("/:idcliente/getcliente", ensureUserAuth, dadosCliente.get);
@@ -83,6 +90,7 @@ router.get("/configuracoes/usuarios/getallusersbyempresa", ensureUserAuth,  auth
 router.post("/configuracoes/usuarios/postuser", ensureUserAuth, middlewareCanEditAndCreate, authController.registerUserByEmpresa);
 router.delete("/configuracoes/usuarios/deleteuser/:id", ensureUserAuth, authController.deleteUser);
 router.get("/configuracoes/usuarios/getuserlogado", ensureUserAuth, authController.getUserLogado);
+router.get("/configuracoes/usuarios/getuserbyemail/:email", ensureUserAuth, authController.getUserByEmail);
 
 //Servicos
 router.post("/postservico", ensureUserAuth, middlewareCanEditAndCreate, dadosServicos.post);

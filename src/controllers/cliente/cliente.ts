@@ -45,7 +45,6 @@ export const dadosCliente = {
     post: async (req: AuthenticatedUserRequest, res: Response) => {
         const { empresaId } = req.user!;
 
-
         const {
             cnpj,
             nome_fantasia,
@@ -62,19 +61,19 @@ export const dadosCliente = {
             observacoes,
             logo_url,
             add_documento_base_url,
+            contato_responsavel,
+            email_responsavel,
+            nome_responsavel
         } = req.body;
 
-
         try {
-            // Validação dos campos obrigatórios
-            if (!empresaId || !nome_fantasia || !razao_social) {
+            if (!empresaId) {
                 res.status(400).json({
-                    message: "Campos obrigatórios não fornecidos: empresa_id, nome_fantasia, razao_social",
+                    message: "Campos obrigatórios não fornecidos: empresa_id",
                 });
                 return;
             }
 
-            // Chama o serviço para criar o cliente
             const newCliente = await postDadosClienteService(
                 empresaId,
                 cnpj,
@@ -92,8 +91,14 @@ export const dadosCliente = {
                 observacoes,
                 logo_url,
                 add_documento_base_url,
-
+                contato_responsavel,
+                email_responsavel,
+                nome_responsavel
             );
+
+            if (!newCliente.success) {
+                return res.status(200).json({ message: newCliente.error });
+            }
 
             // Resposta de sucesso
             res.status(201).json({
@@ -161,7 +166,10 @@ export const dadosCliente = {
                 contato_financeiro,
                 observacoes,
                 logo_url,
-                add_documento_base_url
+                add_documento_base_url,
+                contato_responsavel,
+                email_responsavel,
+                nome_responsavel
             } = req.body;
 
             const updatedData = await putDadosClienteService(
@@ -181,7 +189,10 @@ export const dadosCliente = {
                 contato_financeiro,
                 observacoes,
                 logo_url,
-                add_documento_base_url
+                add_documento_base_url,
+                contato_responsavel,
+                email_responsavel,
+                nome_responsavel
             );
 
             res.status(200).json({

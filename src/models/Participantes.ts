@@ -9,8 +9,8 @@ export interface ParticipantesAttributes {
   cliente_id: number;
   servico_id: number;
   nome: string;
-  cargo: number;
-  setor: number;
+  cargo: string;
+  setor: string;
   created_at: Date;
   updated_at: Date;
 }

@@ -55,7 +55,6 @@ module.exports = {
                         );
                     }
 
-                    console.log(item.classificacaoRisco)
                 });
             });
 
@@ -83,115 +82,115 @@ module.exports = {
             const resultadoOrdenado = resultadoFinal.sort(ordenarMatrizes);
 
             const pdfMatrizBlocks = resultadoOrdenado.map((matriz) => {
-    if (!matriz.probabilidadesMatriz.length || !matriz.severidadesMatriz.length) return null;
+                if (!matriz.probabilidadesMatriz.length || !matriz.severidadesMatriz.length) return null;
 
-    // Ordena eixos e classificação
-    matriz.severidadesMatriz.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
-    matriz.probabilidadesMatriz.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
-    matriz.classificacaoRiscoMatriz.sort((a, b) => (a.valor ?? 0) - (b.valor ?? 0));
+                // Ordena eixos e classificação
+                matriz.severidadesMatriz.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+                matriz.probabilidadesMatriz.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+                matriz.classificacaoRiscoMatriz.sort((a, b) => (a.valor ?? 0) - (b.valor ?? 0));
 
-    const headerRow = [""].concat(
-        matriz.probabilidadesMatriz.map((p) => ({
-            text: p.description || "N/A",
-            bold: true,
-            alignment: "center"
-        }))
-    );
+                const headerRow = [""].concat(
+                    matriz.probabilidadesMatriz.map((p) => ({
+                        text: p.description || "N/A",
+                        bold: true,
+                        alignment: "center"
+                    }))
+                );
 
-    const body = matriz.severidadesMatriz.map((s) => {
-        const row = [{ text: s.description || "N/A", bold: true, alignment: "left" }];
+                const body = matriz.severidadesMatriz.map((s) => {
+                    const row = [{ text: s.description || "N/A", bold: true, alignment: "left" }];
 
-        matriz.probabilidadesMatriz.forEach((p) => {
-            const valor = s.position * p.position;
+                    matriz.probabilidadesMatriz.forEach((p) => {
+                        const valor = s.position * p.position;
 
-            // Encontra a classificação de risco correspondente
-            const classificacao = matriz.classificacaoRiscoMatriz.find(
-                (c) => c.grau_risco === valor
-            );
+                        // Encontra a classificação de risco correspondente
+                        const classificacao = matriz.classificacaoRiscoMatriz.find(
+                            (c) => c.grau_risco === valor
+                        );
 
-            let bgColor = classificacao?.cor || "#ffffff";
-            let textColor = "#000000";
+                        let bgColor = classificacao?.cor || "#ffffff";
+                        let textColor = "#000000";
 
-            // Se a cor de fundo for preta ou escura, texto branco
-            if (bgColor === "#000000" || bgColor.toLowerCase() === "black") textColor = "#ffffff";
+                        // Se a cor de fundo for preta ou escura, texto branco
+                        if (bgColor === "#000000" || bgColor.toLowerCase() === "black") textColor = "#ffffff";
 
-            row.push({
-                text: valor.toString(),
-                alignment: "center",
-                fillColor: bgColor,
-                color: textColor
-            });
-        });
+                        row.push({
+                            text: valor.toString(),
+                            alignment: "center",
+                            fillColor: bgColor,
+                            color: textColor
+                        });
+                    });
 
-        return row;
-    });
+                    return row;
+                });
 
-    body.unshift(headerRow);
+                body.unshift(headerRow);
 
-    // Tabela de classificação de risco
-    const classificacaoTableBody = [
-        [
-            { text: "Grau de Risco", bold: true, alignment: "center" },
-            { text: "Classe de Risco", bold: true, alignment: "center" }
-        ],
-        ...matriz.classificacaoRiscoMatriz.map((c) => [
-            { text: c.grau_risco?.toString() || "N/A", alignment: "center" },
-            { text: c.classe_risco?.trim() || "N/A", alignment: "center" }
-        ])
-    ];
+                // Tabela de classificação de risco
+                const classificacaoTableBody = [
+                    [
+                        { text: "Grau de Risco", bold: true, alignment: "center" },
+                        { text: "Classe de Risco", bold: true, alignment: "center" }
+                    ],
+                    ...matriz.classificacaoRiscoMatriz.map((c) => [
+                        { text: c.grau_risco?.toString() || "N/A", alignment: "center" },
+                        { text: c.classe_risco?.trim() || "N/A", alignment: "center" }
+                    ])
+                ];
 
-    return [
-        {
-            text: `Matriz de Risco ${matriz.info.tipo || ""} ${matriz.info.parametro || ""}`,
-            fontSize: 12,
-            bold: true,
-            margin: [0, 10, 0, 5],
-            alignment: "center"
-        },
-        {
-            table: {
-                headerRows: 1,
-                widths: Array(matriz.probabilidadesMatriz.length + 1).fill("*"),
-                body
-            },
-            layout: {
-                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
-                vLineWidth: () => 0.5,
-                hLineColor: () => "#666666",
-                vLineColor: () => "#666666",
-                paddingLeft: () => 8,
-                paddingRight: () => 8,
-                paddingTop: () => 4,
-                paddingBottom: () => 4
-            },
-            margin: [-20, 5, 0, 10]
-        },
-        {
-            text: "Classificação de Risco",
-            fontSize: 11,
-            bold: true,
-            margin: [0, 5, 0, 5]
-        },
-        {
-            table: {
-                headerRows: 1,
-                widths: ["*", "*"],
-                body: classificacaoTableBody
-            },
-            layout: {
-                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
-                vLineWidth: () => 0.5,
-                hLineColor: () => "#666666",
-                vLineColor: () => "#666666",
-                paddingLeft: () => 6,
-                paddingRight: () => 6,
-                paddingTop: () => 4,
-                paddingBottom: () => 4
-            },
-            margin: [-20, 0, 0, 10]
-        }
-    ];
-}).filter(Boolean);
+                return [
+                    {
+                        text: `Matriz de Risco ${matriz.info.tipo || ""} ${matriz.info.parametro || ""}`,
+                        fontSize: 12,
+                        bold: true,
+                        margin: [-20, 10, -20, 5],
+                        alignment: "center"
+                    },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: Array(matriz.probabilidadesMatriz.length + 1).fill("*"),
+                            body
+                        },
+                        layout: {
+                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => "#666666",
+                            vLineColor: () => "#666666",
+                            paddingLeft: () => 8,
+                            paddingRight: () => 8,
+                            paddingTop: () => 4,
+                            paddingBottom: () => 4
+                        },
+                        margin: [-20, 5, -20, 10]
+                    },
+                    {
+                        text: "Classificação de Risco",
+                        fontSize: 11,
+                        bold: true,
+                        margin: [0, 5, 0, 5]
+                    },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ["*", "*"],
+                            body: classificacaoTableBody
+                        },
+                        layout: {
+                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => "#666666",
+                            vLineColor: () => "#666666",
+                            paddingLeft: () => 6,
+                            paddingRight: () => 6,
+                            paddingTop: () => 4,
+                            paddingBottom: () => 4
+                        },
+                        margin: [-20, 0, -20, 10]
+                    }
+                ];
+            }).filter(Boolean);
 
 
 

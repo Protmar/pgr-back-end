@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { sequelize } from "../database";
 import ResponsavelTecnico from "./ResponsavelTecnico";
+import Servicos from "./Servicos";
 
 export interface ResponsavelTecnicoServicoAttributes {
   id: number;

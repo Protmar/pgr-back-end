@@ -2,21 +2,233 @@ const { getAllGesByServico, getOneGesService, getEpisInString } = require("../..
 const { getFileToS3 } = require("../../services/aws/s3/index");
 const { getImageData } = require("../utils/report-utils");
 const { convertToPng } = require("../utils/image-utils");
-const { getResponsavelByServico, getDadosServicoByEmpresaServico } = require("../../services/servicos");
+const { getResponsavelByServico, getDadosServicoByEmpresaServico, getDadosServicoByEmpresaServicoToDocbase } = require("../../services/servicos");
 const { getDataDadosEstatisticosByOneLaudoType } = require("../../services/servicos/dadosEstatisticos");
 const { ConnectContactLens } = require("aws-sdk");
+const { text } = require("body-parser");
+const { matrizPadraoGetAllDocBase } = require("../../services/cadastros/matrizpadrao/matrizpadrao");
 
 module.exports = {
+
     buildDocBasePgr: async (empresa, servicoId, cliente) => {
         try {
+
+            const allMatriz = await matrizPadraoGetAllDocBase(
+                empresa.dataValues.id,
+                servicoId
+            );
+
+            let matrizAgrupada = {};
+
+            // --- Agrupa os dados por matriz_id e salva apenas os campos essenciais ---
+            Object.values(allMatriz).forEach(({ data }) => {
+                data.forEach((item) => {
+                    const matrizId = item.dataValues?.id || item.id;
+
+                    if (!matrizAgrupada[matrizId]) {
+                        const { size, tipo, parametro, is_padrao } = item.dataValues ?? {};
+
+                        matrizAgrupada[matrizId] = {
+                            matriz_id: matrizId,
+                            info: { size, tipo, parametro, is_padrao },
+                            probabilidadesMatriz: [],
+                            severidadesMatriz: [],
+                            classificacaoRiscoMatriz: []
+                        };
+                    }
+
+                    if (item.probabilidades) {
+                        matrizAgrupada[matrizId].probabilidadesMatriz.push(
+                            ...item.probabilidades.map((p) => p.dataValues ?? p)
+                        );
+                    }
+
+                    if (item.severidades) {
+                        matrizAgrupada[matrizId].severidadesMatriz.push(
+                            ...item.severidades.map((s) => s.dataValues ?? s)
+                        );
+                    }
+
+                    if (item.classificacaoRisco) {
+                        matrizAgrupada[matrizId].classificacaoRiscoMatriz.push(
+                            ...item.classificacaoRisco.map((c) => c.dataValues ?? c)
+                        );
+                    }
+
+                    console.log(item.classificacaoRisco)
+                });
+            });
+
+            // transforma em array
+            const resultadoFinal = Object.values(matrizAgrupada);
+
+            // ordem fixa dos tipos e parâmetros
+            const ordemTipos = ["Físico", "Químico", "Biológico", "Mecânico", "Ergonômico"];
+            const ordemParametros = ["Quantitativo", "Qualitativo"];
+
+            // função para ordenar
+            function ordenarMatrizes(matrizA, matrizB) {
+                const tipoA = ordemTipos.indexOf(matrizA.info.tipo) ?? 999;
+                const tipoB = ordemTipos.indexOf(matrizB.info.tipo) ?? 999;
+
+                if (tipoA !== tipoB) return tipoA - tipoB;
+
+                const paramA = ordemParametros.indexOf(matrizA.info.parametro) ?? 999;
+                const paramB = ordemParametros.indexOf(matrizB.info.parametro) ?? 999;
+
+                return paramA - paramB;
+            }
+
+            // aplica a ordenação
+            const resultadoOrdenado = resultadoFinal.sort(ordenarMatrizes);
+
+            const pdfMatrizBlocks = resultadoOrdenado.map((matriz) => {
+    if (!matriz.probabilidadesMatriz.length || !matriz.severidadesMatriz.length) return null;
+
+    // Ordena eixos e classificação
+    matriz.severidadesMatriz.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    matriz.probabilidadesMatriz.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    matriz.classificacaoRiscoMatriz.sort((a, b) => (a.valor ?? 0) - (b.valor ?? 0));
+
+    const headerRow = [""].concat(
+        matriz.probabilidadesMatriz.map((p) => ({
+            text: p.description || "N/A",
+            bold: true,
+            alignment: "center"
+        }))
+    );
+
+    const body = matriz.severidadesMatriz.map((s) => {
+        const row = [{ text: s.description || "N/A", bold: true, alignment: "left" }];
+
+        matriz.probabilidadesMatriz.forEach((p) => {
+            const valor = s.position * p.position;
+
+            // Encontra a classificação de risco correspondente
+            const classificacao = matriz.classificacaoRiscoMatriz.find(
+                (c) => c.grau_risco === valor
+            );
+
+            let bgColor = classificacao?.cor || "#ffffff";
+            let textColor = "#000000";
+
+            // Se a cor de fundo for preta ou escura, texto branco
+            if (bgColor === "#000000" || bgColor.toLowerCase() === "black") textColor = "#ffffff";
+
+            row.push({
+                text: valor.toString(),
+                alignment: "center",
+                fillColor: bgColor,
+                color: textColor
+            });
+        });
+
+        return row;
+    });
+
+    body.unshift(headerRow);
+
+    // Tabela de classificação de risco
+    const classificacaoTableBody = [
+        [
+            { text: "Grau de Risco", bold: true, alignment: "center" },
+            { text: "Classe de Risco", bold: true, alignment: "center" }
+        ],
+        ...matriz.classificacaoRiscoMatriz.map((c) => [
+            { text: c.grau_risco?.toString() || "N/A", alignment: "center" },
+            { text: c.classe_risco?.trim() || "N/A", alignment: "center" }
+        ])
+    ];
+
+    return [
+        {
+            text: `Matriz de Risco ${matriz.info.tipo || ""} ${matriz.info.parametro || ""}`,
+            fontSize: 12,
+            bold: true,
+            margin: [0, 10, 0, 5],
+            alignment: "center"
+        },
+        {
+            table: {
+                headerRows: 1,
+                widths: Array(matriz.probabilidadesMatriz.length + 1).fill("*"),
+                body
+            },
+            layout: {
+                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                vLineWidth: () => 0.5,
+                hLineColor: () => "#666666",
+                vLineColor: () => "#666666",
+                paddingLeft: () => 8,
+                paddingRight: () => 8,
+                paddingTop: () => 4,
+                paddingBottom: () => 4
+            },
+            margin: [-20, 5, 0, 10]
+        },
+        {
+            text: "Classificação de Risco",
+            fontSize: 11,
+            bold: true,
+            margin: [0, 5, 0, 5]
+        },
+        {
+            table: {
+                headerRows: 1,
+                widths: ["*", "*"],
+                body: classificacaoTableBody
+            },
+            layout: {
+                hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                vLineWidth: () => 0.5,
+                hLineColor: () => "#666666",
+                vLineColor: () => "#666666",
+                paddingLeft: () => 6,
+                paddingRight: () => 6,
+                paddingTop: () => 4,
+                paddingBottom: () => 4
+            },
+            margin: [-20, 0, 0, 10]
+        }
+    ];
+}).filter(Boolean);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             const responseServico = await getResponsavelByServico(empresa.dataValues.id, servicoId);
             const servicoData = await getDadosServicoByEmpresaServico(empresa.dataValues.id, servicoId);
-            
+            const servicoToDocBase = await getDadosServicoByEmpresaServicoToDocbase(empresa.dataValues.id, servicoId);
+
+            const participantes = servicoToDocBase.dataValues.participantes.map((item) => {
+                return item.dataValues;
+            });
+
+            const memorialProcessos = servicoToDocBase.dataValues.memorialProcessos.map((item) => {
+                return item.dataValues;
+            });
+
+            const responsaveisTecnicos = servicoToDocBase.dataValues.responsavelTecnicoServicos.map((item) => {
+                return item.dataValues.responsavelTecnico.dataValues;
+            })
+
             const meses = [
                 "janeiro", "fevereiro", "março", "abril", "maio", "junho",
                 "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
             ];
-            
+
             const dataInicio = servicoData.dataValues.data_inicio;
             const dataFim = servicoData.dataValues.data_fim;
 
@@ -30,7 +242,7 @@ module.exports = {
             const mesFimNome = meses[mesFimNum];
             const anoFim = dataFim.slice(0, 4);
 
-            const processo = servicoData.dataValues.memorial_descritivo_processo_pgr;
+            const processo = memorialProcessos;
 
             const dataDadosEstatisticos = await getDataDadosEstatisticosByOneLaudoType(empresa.dataValues.id, servicoId, "pgr");
 
@@ -40,7 +252,7 @@ module.exports = {
             await Promise.all(dataDadosEstatisticos.map(async (e) => {
                 const urlImagem = e?.dataValues?.url_imagem;
                 const descricao = e?.dataValues?.descricao || "";
-                
+
                 let imagem = null;
                 if (urlImagem) {
                     try {
@@ -71,15 +283,58 @@ module.exports = {
                 }
             }));
 
-            
+
+
+
+
+
+
+
+            let memorialProcessosFinal = [];
+
+            // Prepara os dados estatísticos com imagem (se houver)
+            await Promise.all(memorialProcessos.map(async (e) => {
+                const urlImagem = e?.url_imagem;
+                const descricao = e?.descricao || "";
+
+                let imagem = null;
+                if (urlImagem) {
+                    try {
+                        imagem = await getFileToS3(urlImagem);
+                    } catch (error) {
+                        console.log(`Erro ao buscar imagem do S3: ${urlImagem}`, error);
+                    }
+                }
+
+                memorialProcessosFinal.push({
+                    url_imagem: imagem?.url ? imagem.url : null,
+                    descricao
+                });
+            }));
+
+            // Converte as imagens em base64, se houver
+            await Promise.all(memorialProcessosFinal.map(async (e) => {
+                if (e.url_imagem) {
+                    try {
+                        const image64 = await getImageData(e.url_imagem);
+                        e.base64 = image64?.data || "";
+                    } catch (error) {
+                        console.log(`Erro ao converter imagem em base64: ${e.url_imagem}`, error);
+                        e.base64 = "";
+                    }
+                } else {
+                    e.base64 = "";
+                }
+            }));
+
             const stack = [
-                {
-                    text: 'Sumário',
-                    fontSize: 16,
-                    bold: true,
-                    alignment: 'center',
-                    color: '#40618b'
-                },
+                // {
+                //     text: 'Sumário',
+                //     fontSize: 16,
+                //     bold: true,
+                //     alignment: 'center',
+                //     color: '#40618b'
+                // },
                 {
                     text: '1. SIGLAS',
                     fontSize: 10,
@@ -310,7 +565,7 @@ f) acompanhar, monitorando o controle dos riscos ocupacionais;
                 },
 
                 {
-                    text: '6. DADOS DA ATIVIDADE',
+                    text: '6. DADOS ESTATÍSTICOS',
                     fontSize: 10,
                     bold: true,
                     alignment: 'left',
@@ -328,7 +583,7 @@ f) acompanhar, monitorando o controle dos riscos ocupacionais;
                     stack: dadosEstatisticosFinal.flatMap(e => {
                         const bloco = [
                             {
-                                text: e.descricao || "",
+                                text: "• " + e.descricao || "",
                                 fontSize: 10,
                                 alignment: "justify",
                                 margin: [5, 5, 5, 10],
@@ -449,13 +704,15 @@ f) acompanhar, monitorando o controle dos riscos ocupacionais;
                             alignment: 'left',
                         },
                         `${empresa && empresa.dataValues.nmrCrea !== null ? empresa.dataValues.nmrCrea : ""}\n`,
+
+
+
                         {
-                            text: "Responsável Técnico: ",
+                            text: responsaveisTecnicos.length > 0 ? "Responsáveis Técnico: " : "",
                             fontSize: 10,
                             bold: true,
                             alignment: 'left',
                         },
-                        `${responseServico ? responseServico.dataValues.responsavel_aprovacao : ""}\n`,
                         // {
                         //     text: "ART Vinculada: ",
                         //     fontSize: 10,
@@ -463,18 +720,77 @@ f) acompanhar, monitorando o controle dos riscos ocupacionais;
                         //     alignment: 'left',
                         // },
                         // `lorem lorem lorem\n`,
-                        {
-                            text: "Responsável pelo PGR: ",
-                            fontSize: 10,
-                            bold: true,
-                            alignment: 'left',
-                        },
-                        `${responseServico ? responseServico.dataValues.responsavel_aprovacao : ""}\n\n`,
+                        // {
+                        //     text: "Responsável pelo PGR: ",
+                        //     fontSize: 10,
+                        //     bold: true,
+                        //     alignment: 'left',
+                        // },
+                        // `${responseServico ? responseServico.dataValues.responsavel_aprovacao : ""}\n\n`,
 
                     ],
                     fontSize: 10,
                     bold: false,
                     alignment: 'left',
+                },
+
+                {
+                    stack: responsaveisTecnicos.flatMap(e => {
+                        const bloco = [];
+
+                        if (e.nome && e.funcao) {
+                            if (e.numero_crea && e.estado_crea) {
+                                bloco.push(
+                                    {
+                                        text: "• " + e.funcao + " " + e.nome + " " + "CREA-" + e.estado_crea + ": " + e.numero_crea,
+                                        fontSize: 10,
+                                        alignment: "justify",
+                                        margin: [5, 5, 5, 10],
+                                        lineHeight: 1.2,
+                                    }
+                                )
+                            } else {
+                                bloco.push(
+                                    {
+                                        text: "• " + e.funcao + " " + e.nome,
+                                        fontSize: 10,
+                                        alignment: "justify",
+                                        margin: [5, 5, 5, 10],
+                                        lineHeight: 1.2,
+                                    }
+                                )
+                            }
+                        }
+
+
+
+                        return bloco;
+                    })
+                },
+
+                {
+                    text: participantes.length > 0 ? "Participantes: " : "",
+                    fontSize: 10,
+                    bold: true,
+                    alignment: 'left',
+                },
+
+                {
+                    stack: participantes ? participantes.flatMap(e => {
+                        const bloco = [];
+
+                        bloco.push(
+                            {
+                                text: "• " + (e.nome ? e.nome + "; " : "") + (e.cargo ? e.cargo + "; " : "") + (e.setor ? e.setor : ""),
+                                fontSize: 10,
+                                alignment: "justify",
+                                margin: [5, 5, 5, 10],
+                                lineHeight: 1.2,
+                            }
+                        )
+
+                        return bloco;
+                    }) : []
                 },
 
                 {
@@ -543,7 +859,7 @@ f) acompanhar, monitorando o controle dos riscos ocupacionais;
                     bold: false,
                 },
 
-                processo && {
+                memorialProcessosFinal && {
                     text: '8. MEMORIAL DESCRITIVO DO PROCESSO',
                     fontSize: 10,
                     bold: true,
@@ -551,17 +867,42 @@ f) acompanhar, monitorando o controle dos riscos ocupacionais;
                 },
 
                 {
-                    text: [
-                        {
-                            text: ".",
-                            color: "#ffffff"
-                        },
-                        `\t\t\t${processo || ""}
-                    `,
-                    ],
-                    fontSize: 10,
-                    bold: false,
+                    stack: memorialProcessosFinal.flatMap(e => {
+                        const bloco = [
+                            {
+                                text: "• " + e.descricao || "",
+                                fontSize: 10,
+                                alignment: "justify",
+                                margin: [5, 5, 5, 10],
+                                lineHeight: 1.2,
+                            }
+                        ];
+
+                        if (e.base64) {
+                            bloco.push({
+                                image: e.base64,
+                                width: 250,
+                                height: 250,
+                                alignment: 'center',
+                                margin: [0, 0, 0, 10],
+                            });
+                        }
+
+                        return bloco;
+                    })
                 },
+                // {
+                //     text: [
+                //         {
+                //             text: ".",
+                //             color: "#ffffff"
+                //         },
+                //         `\t\t\t${processo || ""}
+                //     `,
+                //     ],
+                //     fontSize: 10,
+                //     bold: false,
+                // },
 
                 {
                     text: `${processo ? "9." : "8."} MEIO AMBIENTE DE TRABALHO E ATIVIDADES`,
@@ -798,27 +1139,21 @@ trabalhadores sujeitos a esses riscos, e descrição de medidas de prevenção i
                 },
                 {
                     text: [
-                        {
-                            text: ".",
-                            color: "#ffffff"
-                        },
+                        { text: ".", color: "#ffffff" },
                         `\t\t\tNo inventário de riscos, foram contempladas as seguintes informações:
 a) Caracterização sucinta dos processos e ambientes de trabalho;
 b) Caracterização das funções e atividades;
 c) Critérios adotados para avaliação dos riscos e tomada de decisão;
-d) Dados disponíveis relativos a monitoramentos de exposições a agentes ambientais, de acidentes e danos à
-saúde relacionados ao trabalho;
-e) Descrição dos perigos, com identificação dos trabalhadores expostos, fatores determinantes dos riscos e das
-medidas de controle existentes;
+d) Dados disponíveis relativos a monitoramentos de exposições a agentes ambientais, de acidentes e danos à saúde relacionados ao trabalho;
+e) Descrição dos perigos, com identificação dos trabalhadores expostos, fatores determinantes dos riscos e das medidas de controle existentes;
 f) Avaliação dos riscos, incluindo sua estimativa e classificação em termos da importância para fins preventivos;
-g) Para a classificação dos perigos e os fatores de riscos identificados, foram utilizadas as matrizes (referência
-AIHA – riscos físicos, químicos e biológicos e definida pelo procedimento da empresa – riscos mecânicos; para
-os riscos ergonômicos, foi utilizada a matriz da análise ergonômica, indicada pela responsável técnico;
-                        `,
+g) Para a classificação dos perigos e os fatores de riscos identificados, foram utilizadas as matrizes (referência AIHA – riscos físicos, químicos e biológicos e definida pelo procedimento da empresa – riscos mecânicos; para os riscos ergonômicos, foi utilizada a matriz da análise ergonômica, indicada pela responsável técnico;`,
                     ],
                     fontSize: 10,
                     bold: false,
+                    margin: [0, 0, 0, 10],
                 },
+                ...pdfMatrizBlocks.flat(),
 
                 {
                     text: `${processo ? "14." : "13."} PLANO DE AÇÃO`,
@@ -1022,46 +1357,72 @@ Pilar atrelado a processos e ações:
                             bold: false,
                             alignment: 'left',
                         },
-
-
-
                     ],
                     fontSize: 10,
                     bold: false,
                 },
-            ];
+                responsaveisTecnicos.map((e) => {
+                    const bloco = [];
 
-            stack.push({
-                table: {
-                    alignment: 'center',
-                    body: [
-                        [
-                            { text: "", margin: [0, 90, 250, 40] },
-                            { text: "", margin: [0, 90, 250, 40] }
-                        ],
-                        [
-                            {
-                                text: `${servicoData.dataValues.responsavel_aprovacao}\n${servicoData.dataValues.cargo_responsavel_aprovacao} - Responsável Técnico`,
-                                fontSize: 10,
-                                alignment: "center",
-                                lineHeight: 1.2
-                            },
-                            {
-                                text: "Responsável Empresa",
-                                fontSize: 10,
-                                alignment: "center",
-                                lineHeight: 1.2
-                            }
-                        ]
-                    ]
+                    if (e.nome && e.funcao) {
+                        if (e.numero_crea && e.estado_crea) {
+                            bloco.push(
+                                {
+                                    text: e.funcao + " " + e.nome + " " + "CREA-" + e.estado_crea + ": " + e.numero_crea,
+                                    fontSize: 10,
+                                    alignment: "center",
+                                    margin: [5, 5, 5, 10],
+                                    lineHeight: 1.2,
+                                    bold: true,
+                                },
+                                {
+                                    text: "_______________________________________________________________",
+                                    fontSize: 10,
+                                    alignment: "center",
+                                    margin: [5, 5, 5, 10],
+                                    lineHeight: 2,
+                                }
+                            )
+                        } else {
+                            bloco.push(
+                                {
+                                    text: e.funcao + " " + e.nome,
+                                    fontSize: 10,
+                                    alignment: "center",
+                                    margin: [5, 5, 5, 10],
+                                    lineHeight: 1.2,
+                                    bold: true,
+                                },
+                                {
+                                    text: "_______________________________________________________________",
+                                    fontSize: 10,
+                                    alignment: "center",
+                                    margin: [5, 5, 5, 10],
+                                    lineHeight: 2,
+                                }
+                            )
+                        }
+                    }
+
+                    return bloco;
+                }),
+
+                {
+                    text: "Responsável pela Empresa",
+                    fontSize: 10,
+                    alignment: "center",
+                    margin: [5, 5, 5, 10],
+                    lineHeight: 1.2,
+                    bold: true,
                 },
-                margin: [-7, 0, 0, 0],
-                vLineWidth: () => 0.5,
-                hLineWidth: () => 0.5
-
-
-            });
-
+                {
+                    text: "_______________________________________________________________",
+                    fontSize: 10,
+                    alignment: "center",
+                    margin: [5, 5, 5, 10],
+                    lineHeight: 2,
+                }
+            ];
 
             return stack;
         } catch (error) {

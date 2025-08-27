@@ -38,8 +38,7 @@ export const uploadFileToS3 = async (id_AT: number, filePath: string, fileName: 
 
     try {
         await s3.send(command);
-        console.log("Arquivo enviado para o S3 com sucesso.");
-
+        fs.unlinkSync(filePath);
         const url = await getSignedUrl(s3, new GetObjectCommand({
             Bucket: process.env.AWS_S3_BUCKET_NAME,
             Key: key,

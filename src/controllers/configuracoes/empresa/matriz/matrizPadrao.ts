@@ -4,6 +4,7 @@ import {
   matrizPadraoDelete,
   matrizPadraoGet,
   matrizPadraoGetAll,
+  matrizPadraoGetAllDocBase,
   matrizPadraoGetTipoParametro,
   matrizPadraoPostService,
   matrizPadraoPut,

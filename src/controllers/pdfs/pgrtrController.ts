@@ -4,9 +4,10 @@ import { AuthenticatedUserRequest } from "../../middleware";
 import { Cliente } from "../../models/Cliente";
 import { Empresa } from "../../models";
 import { getFileToS3 } from '../../services/aws/s3';
-import { getNameDocBaseByServicoPGR } from '../../services/servicos';
+import { getNameDocBaseByServicoPGR, getNameDocBaseByServicoPGRTR } from '../../services/servicos';
 import { PDFDocument } from 'pdf-lib';
 import axios from 'axios';
+import ART from '../../models/ART';
 
 const { buildDocumentoBase } = require("../../report-builder/documento-base-PGRTR/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
@@ -28,7 +29,7 @@ export const pgrtrReportController = {
                     gesIds,
                     servicoId
                 ),
-                getNameDocBaseByServicoPGR(Number(empresaId), Number(servicoId))
+                getNameDocBaseByServicoPGRTR(Number(empresaId), Number(servicoId))
             ]);
 
             // Etapa 2: Gerar documento principal e baixar documento base (se existir), em paralelo
@@ -71,11 +72,47 @@ export const pgrtrReportController = {
                 return res.status(200).send(Buffer.from(finalPdfBytes));
             }
 
-            // Caso não haja documento base
-            const finalPdfBytes = await mainPdfDoc.save();
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename=relatorio.pdf');
-            res.status(200).send(Buffer.from(finalPdfBytes));
+            const ARTs = await ART.findAll({
+                where: { empresa_id: Number(empresaId), servico_id: Number(servicoId) }
+            });
+
+            // Ordena ARTS por descrição
+            ARTs.sort((a, b) =>
+                (a.dataValues.descricao || "").localeCompare(b.dataValues.descricao || "")
+            );
+
+            if (ARTs.length > 0) {
+                const finalPdfDoc = await PDFDocument.create();
+
+                // Copia todas as páginas do mainPdfDoc
+                const mainPages = await finalPdfDoc.copyPages(mainPdfDoc, mainPdfDoc.getPageIndices());
+                mainPages.forEach(page => finalPdfDoc.addPage(page));
+
+                // Adiciona todas as ARTS no final
+                for (const art of ARTs) {
+                    const key = art.dataValues.url_imagem;
+                    if (!key) continue; // pula se não houver URL
+
+                    const fileDocumentoART = await getFileToS3(key); // agora é sempre string
+                    const artPdfBytes = (await axios.get(fileDocumentoART.url, { responseType: "arraybuffer" })).data;
+                    const artPdfDoc = await PDFDocument.load(artPdfBytes);
+                    const artPages = await finalPdfDoc.copyPages(artPdfDoc, artPdfDoc.getPageIndices());
+                    artPages.forEach(page => finalPdfDoc.addPage(page));
+                }
+
+
+                const finalPdfBytes = await finalPdfDoc.save();
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=relatorio.pdf');
+                return res.status(200).send(Buffer.from(finalPdfBytes));
+            } else {
+                // Caso não haja ARTS, retorna o PDF normalmente
+                const finalPdfBytes = await mainPdfDoc.save();
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'attachment; filename=relatorio.pdf');
+                return res.status(200).send(Buffer.from(finalPdfBytes));
+            }
+
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(400).json({ message: err.message });

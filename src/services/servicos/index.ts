@@ -7,6 +7,10 @@ import { ClassificacaoRisco, ClassificacaoRiscoAttributes } from "../../models/C
 import { Model } from "sequelize";
 import { matrizesServicoPostService } from "../cadastros/matrizes/matrizservico";
 import { User } from "../../models";
+import ResponsavelTecnico from "../../models/ResponsavelTecnico";
+import ResponsavelTecnicoServico from "../../models/ResponsaveisTecnicosServicos";
+import Participantes from "../../models/Participantes";
+import MemorialProcessos from "../../models/MemorialProcessos";
 
 // Vou assumir que existe um serviço pra criar a Matriz por serviço
 
@@ -263,6 +267,41 @@ export const getDadosServicoByEmpresaServico = async (idempresa: number, idservi
   return data;
 };
 
+export const getDadosServicoByEmpresaServicoToDocbase = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+    attributes: ["id"],
+    include: [
+      {
+        model: ResponsavelTecnicoServico,
+        as: "responsavelTecnicoServicos",
+        attributes: ["id"],
+        include: [
+          {
+            model: ResponsavelTecnico,
+            as: "responsavelTecnico",
+            attributes: ['nome', 'funcao', 'numero_crea', 'estado_crea'],
+          }
+        ]
+      },
+      {
+        model: Participantes,
+        as: "participantes",
+        attributes: ['nome', 'cargo', 'setor'],
+      },
+      {
+        model: MemorialProcessos,
+        as: "memorialProcessos",
+        attributes: ['url_imagem', 'descricao', 'tipo_laudo'],
+      }
+    ]
+  });
+  return data;
+}
+
 export const putDadosServicosService = async (
   idempresa: number,
   idservico: number,
@@ -309,6 +348,17 @@ export const getDadosServicosByEmpresaClienteId = async (
 export const getNameDocBaseByServicoPGR = async (idempresa: number, idservico: number) => {
   const data = await Servicos.findOne({
     attributes: ["base_document_url_pgr"],
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+  });
+  return data;
+};
+
+export const getNameDocBaseByServicoPGRTR = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    attributes: ["base_document_url_pgrtr"],
     where: {
       empresa_id: idempresa,
       id: idservico,

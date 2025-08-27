@@ -1,6 +1,10 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { sequelize } from "../database";
 import { EmpresaInstance } from "./Empresa"; // Importação do modelo de Empresa
+import ResponsavelTecnico from "./ResponsavelTecnico";
+import ResponsavelTecnicoServico from "./ResponsaveisTecnicosServicos";
+import Participantes from "./Participantes";
+import MemorialProcessos from "./MemorialProcessos";
 
 // Definição dos atributos do Servico
 export interface ServicoAttributes {
@@ -155,5 +159,31 @@ export const Servicos = sequelize.define<ServicoInstance>("servicos", {
   },
 },
   { tableName: "servicos" });
+
+  // Associação many-to-many: Serviços <-> Responsável Técnico
+Servicos.belongsToMany(ResponsavelTecnico, {
+  through: ResponsavelTecnicoServico,
+  foreignKey: "servico_id",
+  otherKey: "responsavel_tecnico_id",
+  as: "responsaveisTecnicos",
+});
+
+// Se quiser acessar direto a pivot:
+Servicos.hasMany(ResponsavelTecnicoServico, {
+  foreignKey: "servico_id",
+  as: "responsavelTecnicoServicos",
+});
+
+// Associação com Participantes
+Servicos.hasMany(Participantes, {
+  foreignKey: "servico_id",
+  as: "participantes",
+});
+
+// Associação com MemorialProcessos
+Servicos.hasMany(MemorialProcessos, {
+  foreignKey: "servico_id",
+  as: "memorialProcessos",
+});
 
 export default Servicos;

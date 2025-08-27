@@ -57,6 +57,7 @@ import { dadosEstatisticos } from "../controllers/servicos/dadosEstatisticos";
 import { middlewareCanEditAndCreate } from "../middleware/middlewareCanEditAndCreate";
 import { memorialProcessos } from "../controllers/servicos/memorialProcessos";
 import { art } from "../controllers/servicos/art";
+import { dadosParticipantes } from "../controllers/servicos/participantes";
 
 
 
@@ -91,6 +92,7 @@ router.post("/configuracoes/usuarios/postuser", ensureUserAuth, middlewareCanEdi
 router.delete("/configuracoes/usuarios/deleteuser/:id", ensureUserAuth, authController.deleteUser);
 router.get("/configuracoes/usuarios/getuserlogado", ensureUserAuth, authController.getUserLogado);
 router.get("/configuracoes/usuarios/getuserbyemail/:email", ensureUserAuth, authController.getUserByEmail);
+router.put("/configuracoes/usuarios/changepassword", ensureUserAuth, authController.changePassword);
 
 //Servicos
 router.post("/postservico", ensureUserAuth, middlewareCanEditAndCreate, dadosServicos.post);
@@ -102,6 +104,13 @@ router.delete("/:idservico/deleteservico", ensureUserAuth, dadosServicos.delete)
 router.post("/selecionarservico", ensureUserAuth, dadosServicos.selecionarServico);
 router.get("/getservicosbycliente/:idcliente", ensureUserAuth, dadosServicos.getServicosByClienteId);
 router.get("/getoneservico", ensureUserAuth, dadosServicos.getOneServico);
+
+//participantes
+router.post("/postparticipante", ensureUserAuth, middlewareCanEditAndCreate, dadosParticipantes.post);
+router.get("/:servicoid/getparticipantes", ensureUserAuth, middlewareCanEditAndCreate, dadosParticipantes.getAll);
+router.get("/:servicoid/:idparticipante/getoneparticipante", middlewareCanEditAndCreate, ensureUserAuth, dadosParticipantes.getOne);
+router.put("/putparticipante", ensureUserAuth, middlewareCanEditAndCreate, dadosParticipantes.put);
+router.delete("/:idparticipante/deleteparticipante", ensureUserAuth, middlewareCanEditAndCreate, dadosParticipantes.delete);
 
 //Dados Estatisticos
 router.post("/postdadoestatistico", ensureUserAuth, middlewareCanEditAndCreate, dadosEstatisticos.post);

@@ -6,6 +6,10 @@ import { Probabilidade } from "../../../../models/Probabilidades";
 import { SeveridadeConsequencia } from "../../../../models/SeveridadeConsequencia";
 import { probabilidadePostService } from "../probabilidades";
 import { severidadeConsequenciaPostService } from "../severidadeconsequencia";
+import { Matriz } from '../../../../models/Matriz';
+import { SeveridadeConsequenciaServico } from '../../../../models/SeveridadeConsequenciaServico';
+import { ProbabilidadeServico } from '../../../../models/ProbabildadesServicos';
+import { ClassificacaoRiscoServico } from '../../../../models/ClassificacaoRiscoServico';
 
 export const matrizPadraoPostService = async (params: any) => {
   const {
@@ -161,6 +165,50 @@ export const matrizPadraoGetAll = async (empresaId: string) => {
   });
   return data;
 };
+
+export const matrizPadraoGetAllDocBase = async (empresaId: number, servicoId: number) => {
+  try {
+    const tipos = ["Físico", "Químico", "Biológico", "Mecânico", "Ergonômico"];
+
+    const promessas = tipos.map(async (tipo) => {
+      const matrizServico = await Matriz.findAll({
+        where: { servico_id: servicoId, is_padrao: true, tipo },
+        include: [
+          { model: ProbabilidadeServico, as: "probabilidades" },
+          { model: SeveridadeConsequenciaServico, as: "severidades" },
+          { model: ClassificacaoRiscoServico, as: "classificacaoRisco" },
+        ],
+      });
+
+      if (matrizServico.length > 0) {
+        return { tipo, origem: "servico", data: matrizServico };
+      }
+
+      const matrizEmpresa = await MatrizPadrao.findAll({
+        where: { empresa_id: empresaId, is_padrao: true, tipo },
+        include: [
+          { model: Probabilidade, as: "probabilidades" },
+          { model: SeveridadeConsequencia, as: "severidades" },
+          { model: ClassificacaoRisco, as: "classificacaoRisco" },
+        ],
+      });
+
+      return { tipo, origem: "empresa", data: matrizEmpresa };
+    });
+
+    const resultados = await Promise.all(promessas);
+
+    // Mantém exatamente a ordem do array "tipos"
+    return resultados;
+  } catch (error) {
+    console.error("Erro ao buscar matriz:", error);
+    throw error;
+  }
+};
+
+
+
+
 
 export const matrizPadraoGet = async (empresaId: string, matrizId: string) => {
   const data = await MatrizPadrao.findOne({

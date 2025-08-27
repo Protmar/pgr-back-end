@@ -458,49 +458,72 @@ export const authController = {
   },
 
   verify: async (req: AuthenticatedUserRequest, res: Response) => {
-  try {
-    const { code, email } = req.body;
+    try {
+      const { code, email } = req.body;
 
-    const user = await User.findOne({
-      where: {
-        email: email
+      const user = await User.findOne({
+        where: {
+          email: email
+        }
+      });
+
+      console.log(user?.dataValues.token_mfa);
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
       }
-    });
 
-    console.log(user?.dataValues.token_mfa);
+      if (!user.dataValues.token_mfa) {
+        return res.status(400).json({ message: "MFA não configurado para este usuário" });
+      }
 
-    if (!user) {
-      return res.status(404).json({ message: "Usuário não encontrado" });
+      const totp = new otpauth.TOTP({
+        issuer: "PGR Software",
+        label: email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: user.dataValues.token_mfa,
+      });
+
+      const delta = totp.validate({ token: code, window: 1 });
+
+      if (delta !== null && delta === 0) {
+        return res.status(200).json({ message: "Código MFA validado com sucesso" });
+      } else {
+        return res.status(401).json({ message: "Código MFA inválido" });
+      }
+
+    } catch (err) {
+      console.error("Erro ao validar MFA:", err);
+      if (err instanceof Error) {
+        return res.status(500).json({ message: err.message });
+      }
+      return res.status(500).json({ message: "Erro inesperado ao validar MFA" });
     }
+  },
 
-    if (!user.dataValues.token_mfa) {
-      return res.status(400).json({ message: "MFA não configurado para este usuário" });
+  changePassword: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { empresaId, email } = req.user!;
+      const { password } = req.body;
+
+      const user = await User.findOne({
+        where: { empresaId, email }
+      });
+
+      if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+
+      user.senha = password;
+      await user.save();
+
+      return res.status(200).json({ message: "Senha alterada com sucesso" });
+
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
     }
-
-    const totp = new otpauth.TOTP({
-      issuer: "PGR Software",
-      label: email,
-      algorithm: "SHA1",
-      digits: 6,
-      period: 30,
-      secret: user.dataValues.token_mfa,
-    });
-
-    const delta = totp.validate({ token: code, window: 1 });
-
-    if (delta !== null && delta === 0) {
-      return res.status(200).json({ message: "Código MFA validado com sucesso" });
-    } else {
-      return res.status(401).json({ message: "Código MFA inválido" });
-    }
-
-  } catch (err) {
-    console.error("Erro ao validar MFA:", err);
-    if (err instanceof Error) {
-      return res.status(500).json({ message: err.message });
-    }
-    return res.status(500).json({ message: "Erro inesperado ao validar MFA" });
-  }
-}
+  },
 
 };

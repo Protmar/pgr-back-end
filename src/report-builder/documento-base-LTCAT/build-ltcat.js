@@ -200,7 +200,7 @@ module.exports = {
             return response.dataValues;
         };
 
-        const dataResponsavelAprovacao = await getDataResponsavel(empresa, servicoId) || {};
+        const dataResponsavelAprovacao =  {};
         const dataServico = await getDadosServicoByEmpresaServico(empresa.id, servicoId);
         if (!dataServico?.dataValues) {
             throw new Error("Dados do serviço não encontrados");

@@ -58,6 +58,8 @@ import { middlewareCanEditAndCreate } from "../middleware/middlewareCanEditAndCr
 import { memorialProcessos } from "../controllers/servicos/memorialProcessos";
 import { art } from "../controllers/servicos/art";
 import { dadosParticipantes } from "../controllers/servicos/participantes";
+import { liReportController } from "../controllers/pdfs/liController";
+import { lpReportController } from "../controllers/pdfs/lpController";
 
 
 
@@ -473,6 +475,8 @@ router.delete("/:id/deleteresponsaveltecnico", ensureUserAuth, responsavelTecnic
 router.post("/generatebasepdfpgrtr", ensureUserAuth, pgrtrReportController.getPGRTRReport);
 router.post("/generatebasepdfpgr", ensureUserAuth, pgrReportController.getPGRReport);
 router.post("/generatebasepdfltcat", ensureUserAuth, ltcatReportController.getLTCATReport);
+router.post("/generatebasepdflp", ensureUserAuth, lpReportController.getLPReport);
+router.post("/generatebasepdfli", ensureUserAuth, liReportController.getLIReport);
 router.post("/generatedocbasepgr", ensureUserAuth, docBasePgrReportController.getDocBasePGRReport);
 
 //SALVAR IMAGENS RISCOS

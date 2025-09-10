@@ -58,6 +58,7 @@ import { User } from "../../models";
 import { dadosServicos } from "../../controllers/servicos";
 import { getOneServico } from "../servicos";
 import { getOneClienteService } from "../Cliente";
+import { CadastroSetor } from "../../models/Setores";
 
 export const gesPostService = async (
     userId: number,
@@ -484,6 +485,19 @@ export const getTrabalhadores = async (empresa_id: number, idges: number) => {
                     {
                         model: Trabalhadores,
                         as: "trabalhador",
+                        include: [
+                            {
+                                model: CadastroSetor,
+                                as: "setor",
+                                attributes: ["descricao"],
+                            },
+                            {
+                                model: CadastroFuncao,
+                                as: "funcao",
+                                attributes: ["funcao", "descricao"],
+                            },
+                            
+                        ]
                     },
                 ],
             },

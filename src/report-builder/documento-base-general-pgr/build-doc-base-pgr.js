@@ -20,7 +20,6 @@ module.exports = {
 
             let matrizAgrupada = {};
 
-            // --- Agrupa os dados por matriz_id e salva apenas os campos essenciais ---
             Object.values(allMatriz).forEach(({ data }) => {
                 data.forEach((item) => {
                     const matrizId = item.dataValues?.id || item.id;
@@ -93,12 +92,13 @@ module.exports = {
                     matriz.probabilidadesMatriz.map((p) => ({
                         text: p.description || "N/A",
                         bold: true,
-                        alignment: "center"
+                        alignment: "center",
+                        fillColor: "#D9D9D9"
                     }))
                 );
 
                 const body = matriz.severidadesMatriz.map((s) => {
-                    const row = [{ text: s.description || "N/A", bold: true, alignment: "left" }];
+                    const row = [{ text: s.description || "N/A", bold: true, alignment: "left", lineHeight: 1, fillColor: "#D9D9D9" }];
 
                     matriz.probabilidadesMatriz.forEach((p) => {
                         const valor = s.position * p.position;
@@ -118,7 +118,8 @@ module.exports = {
                             text: valor.toString(),
                             alignment: "center",
                             fillColor: bgColor,
-                            color: textColor
+                            color: textColor,
+                            lineHeight: 1
                         });
                     });
 
@@ -127,25 +128,136 @@ module.exports = {
 
                 body.unshift(headerRow);
 
+                matriz.probabilidadesMatriz.map((p) => {
+                    console.log(p)
+                })
+
+                // Tabela Probabilidade e criterios
+                const sinaisMap = {
+                    Maior: "Maior",
+                    Menor: "Menor",
+                    MaiorIgual: "Maior ou Igual",
+                    MenorIgual: "Menor ou Igual",
+                    Igual: "igual"
+                };
+
+                const probabilidadeCriterios = [
+                    [
+                        { text: "Probabilidade", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" },
+                        { text: "Critérios", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" }
+                    ],
+                    ...matriz.probabilidadesMatriz.map((p) => {
+                        let criterioFormatado = "N/A";
+
+                        if (p.sinal && p.valor !== null && p.valor !== undefined) {
+                            const sinalConvertido = sinaisMap[p.sinal] || p.sinal;
+                            criterioFormatado = `${sinalConvertido} que ${p.valor}`;
+                        } else if (p.criterio) {
+                            criterioFormatado = p.criterio;
+                        }
+
+                        return [
+                            { text: p.description || "N/A", alignment: "center", lineHeight: 1 },
+                            { text: criterioFormatado, alignment: "center", lineHeight: 1 }
+                        ];
+                    })
+                ];
+
+                // Tabela severidade e criterios
+
+                const severidadeCriterios = [
+                    [
+                        { text: "Severidade / Conseq.", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" },
+                        { text: "Critérios", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" }
+                    ],
+                    ...matriz.severidadesMatriz.map((p) => {
+                        let criterioFormatado = "N/A";
+
+                        if (p.sinal && p.valor !== null && p.valor !== undefined) {
+                            const sinalConvertido = sinaisMap[p.sinal] || p.sinal;
+                            criterioFormatado = `${sinalConvertido} que ${p.valor}`;
+                        } else if (p.criterio) {
+                            criterioFormatado = p.criterio;
+                        }
+
+                        return [
+                            { text: p.description || "N/A", alignment: "center", lineHeight: 1 },
+                            { text: criterioFormatado, alignment: "center", lineHeight: 1 }
+                        ];
+                    })
+                ];
+
+
                 // Tabela de classificação de risco
                 const classificacaoTableBody = [
                     [
-                        { text: "Grau de Risco", bold: true, alignment: "center" },
-                        { text: "Classe de Risco", bold: true, alignment: "center" }
+                        { text: "Grau de Risco", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" },
+                        { text: "Classe de Risco", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" }
                     ],
                     ...matriz.classificacaoRiscoMatriz.map((c) => [
-                        { text: c.grau_risco?.toString() || "N/A", alignment: "center" },
-                        { text: c.classe_risco?.trim() || "N/A", alignment: "center" }
+                        { text: c.grau_risco?.toString() || "N/A", alignment: "center", lineHeight: 1 },
+                        { text: c.classe_risco?.trim() || "N/A", alignment: "center", lineHeight: 1 }
                     ])
+                ];
+
+                const definicaoRisco = [
+                    [
+                        { text: "Classe de Risco", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" },
+                        { text: "Definição", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" }
+                    ],
+                    ...matriz.classificacaoRiscoMatriz.map((p) => {
+                        let definicao = "N/A";
+
+                        if (p.definicao) {
+                            definicao = p.definicao;
+
+                        }
+                        return [
+                            { text: p.classe_risco || "N/A", alignment: "center", lineHeight: 1 },
+                            { text: definicao, alignment: "center", lineHeight: 1 }
+                        ];
+                    })
+                ];
+
+                const formasAtuaacao = [
+                    [
+                        { text: "Classe de Risco", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" },
+                        { text: "Formas de Atuação", bold: true, alignment: "center", lineHeight: 1, fillColor: "#D9D9D9" }
+                    ],
+                    ...matriz.classificacaoRiscoMatriz.map((p) => {
+                        let formaAtuacao = "N/A";
+
+                        if (p.formaAtuacao) {
+                            formaAtuacao = p.forma_atuacao;
+
+                        }
+                        return [
+                            { text: p.classe_risco || "N/A", alignment: "center", lineHeight: 1 },
+                            { text: formaAtuacao, alignment: "center", lineHeight: 1 }
+                        ];
+                    })
                 ];
 
                 return [
                     {
-                        text: `Matriz de Risco ${matriz.info.tipo || ""} ${matriz.info.parametro || ""}`,
-                        fontSize: 12,
-                        bold: true,
-                        margin: [-20, 10, -20, 5],
-                        alignment: "center"
+                        table: {
+                            widths: ['*'],
+                            body: [[
+                                {
+                                    text: `Matriz de Risco ${matriz.info.tipo || ""} ${matriz.info.parametro || ""}`,
+                                    fontSize: 12,
+                                    bold: true,
+                                    alignment: "center",
+                                    color: "white",
+                                    fillColor: "black",
+                                    lineHeight: 1
+                                }
+                            ]],
+
+                        },
+                        layout: "noBorders",
+                        margin: [-20, 5, -20, 10]
+
                     },
                     {
                         table: {
@@ -166,10 +278,49 @@ module.exports = {
                         margin: [-20, 5, -20, 10]
                     },
                     {
+                        table: {
+                            headerRows: 1,
+                            widths: ["*", "*"],
+                            body: probabilidadeCriterios
+                        },
+                        layout: {
+                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => "#666666",
+                            vLineColor: () => "#666666",
+                            paddingLeft: () => 6,
+                            paddingRight: () => 6,
+                            paddingTop: () => 4,
+                            paddingBottom: () => 4,
+
+                        },
+                        margin: [-20, 0, -20, 10]
+                    },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ["*", "*"],
+                            body: severidadeCriterios
+                        },
+                        layout: {
+                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => "#666666",
+                            vLineColor: () => "#666666",
+                            paddingLeft: () => 6,
+                            paddingRight: () => 6,
+                            paddingTop: () => 4,
+                            paddingBottom: () => 4,
+
+                        },
+                        margin: [-20, 0, -20, 10]
+                    },
+                    {
                         text: "Classificação de Risco",
                         fontSize: 11,
                         bold: true,
-                        margin: [0, 5, 0, 5]
+                        margin: [0, 5, 0, 5],
+                        alignment: "center"
                     },
                     {
                         table: {
@@ -188,7 +339,59 @@ module.exports = {
                             paddingBottom: () => 4
                         },
                         margin: [-20, 0, -20, 10]
-                    }
+                    },
+                    {
+                        text: "Definição de Risco",
+                        fontSize: 11,
+                        bold: true,
+                        margin: [0, 5, 0, 5],
+                        alignment: "center"
+                    },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ["*", "*"],
+                            body: definicaoRisco
+                        },
+                        layout: {
+                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => "#666666",
+                            vLineColor: () => "#666666",
+                            paddingLeft: () => 6,
+                            paddingRight: () => 6,
+                            paddingTop: () => 4,
+                            paddingBottom: () => 4,
+
+                        },
+                        margin: [-20, 0, -20, 10]
+                    },
+                    {
+                        text: "Formas de Atuação",
+                        fontSize: 11,
+                        bold: true,
+                        margin: [0, 5, 0, 5],
+                        alignment: "center"
+                    },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ["*", "*"],
+                            body: formasAtuaacao
+                        },
+                        layout: {
+                            hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 1 : 0.5),
+                            vLineWidth: () => 0.5,
+                            hLineColor: () => "#666666",
+                            vLineColor: () => "#666666",
+                            paddingLeft: () => 6,
+                            paddingRight: () => 6,
+                            paddingTop: () => 4,
+                            paddingBottom: () => 4,
+
+                        },
+                        margin: [-20, 0, -20, 10]
+                    },
                 ];
             }).filter(Boolean);
 

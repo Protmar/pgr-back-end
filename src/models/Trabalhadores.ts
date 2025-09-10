@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { sequelize } from "../database";
 import { CadastroFuncao } from "./Funcoes";
+import { CadastroSetor } from "./Setores";
 
 // Definição dos atributos do Trabalhador
 export interface TrabalhadorAttributes {
@@ -144,4 +145,8 @@ Trabalhadores.belongsTo(CadastroFuncao, {
   foreignKey: "funcao_id",
   as: "funcao",
 });
+Trabalhadores.belongsTo(CadastroSetor, {
+  foreignKey: "setor_id",
+  as: "setor",
+})
 export default Trabalhadores;

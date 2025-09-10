@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const moment = require('moment');
-const { getDadosServicoByEmpresaServico } = require('../../services/servicos/');
+const { getDadosServicoByEmpresaServico, getResponsavelByServico } = require('../../services/servicos/');
 const { getOneResponsavelTecnicoService } = require('../../services/responsavelTecnico/index');
 const { getOneGesService } = require('../../services/ges');
 const { setorGetService } = require('../../services/cadastros/setor/index');
@@ -200,8 +200,8 @@ module.exports = {
             return response.dataValues;
         };
 
-        const dataResponsavelAprovacao =  {};
-        const dataServico = await getDadosServicoByEmpresaServico(empresa.id, servicoId);
+        const dataResponsavelAprovacao = {};
+        const dataServico = await getDadosServicoByEmpresaServico(empresa.id || 1, servicoId);
         if (!dataServico?.dataValues) {
             throw new Error("Dados do serviço não encontrados");
         }
@@ -233,22 +233,22 @@ module.exports = {
                     trabalhadores.map(async (t) => {
                         if (!t?.dataValues?.trabalhador) {
                             console.warn("Trabalhador inválido, ignorando...");
-                            return { setorDescricao: "Não informado", funcaoDescricao: "Não informado", funcao: null };
+                            return { setorDescricao: "Não aplicavel", funcaoDescricao: "Não aplicavel", funcao: null };
                         }
 
                         const trabalhador = t.dataValues.trabalhador;
-                        let setorDescricao = "Não informado";
+                        let setorDescricao = "Não aplicavel";
                         if (trabalhador?.setor_id) {
                             const setor = await setorGetService(empresa.id, trabalhador.setor_id, cliente.dataValues.id);
-                            setorDescricao = setor?.dataValues?.descricao || "Não informado";
+                            setorDescricao = setor?.dataValues?.descricao || "Não aplicavel";
                         }
 
-                        let funcaoDescricao = "Não informado";
+                        let funcaoDescricao = "Não aplicavel";
                         let funcao = null;
                         if (trabalhador?.funcao_id) {
                             const funcaoResponse = await funcaoGetService(empresa.id, trabalhador.funcao_id, cliente.dataValues.id);
                             funcao = funcaoResponse?.dataValues || null;
-                            funcaoDescricao = funcao?.descricao || "Não informado";
+                            funcaoDescricao = funcao?.descricao || "Não aplicavel";
                         }
 
                         return {
@@ -295,7 +295,7 @@ module.exports = {
             return [
                 [
                     {
-                        text: `${trabalhador.setorDescricao || "Não informado"} - ${trabalhador.funcao?.funcao || trabalhador.funcaoDescricao || "Não informada"}`,
+                        text: `${trabalhador.setorDescricao || "Não aplicavel"} - ${trabalhador.funcao?.funcao || trabalhador.funcaoDescricao || "Não informada"}`,
                         fontSize: 10,
                         alignment: "justify",
                         bold: true,
@@ -321,6 +321,7 @@ module.exports = {
 
         const todasImagens = [];
         const todosPDFS = [];
+        const allConclusao = [];
 
         const generateLaudoAsOneTable = async () => {
             const body = [];
@@ -361,15 +362,43 @@ module.exports = {
                         ],
                     )
                 }
+
+                const responsaveis = await getResponsavelByServico(empresa.id, servicoId);
+                let responsaveisUnicos = [];
+
+                if (responsaveis) {
+                    const todos = responsaveis.dataValues.responsavelTecnicoServicos
+                        .map(item => item.dataValues.responsavelTecnico.dataValues)
+                        .flat();
+
+                    const unicos = [
+                        ...new Map(todos.map(item => [item.nome, item])).values()
+                    ];
+
+
+                    responsaveisUnicos = unicos;
+                }
+
+                const responsaveisTecnicosLinha = responsaveisUnicos.map((item) => {
+                    return {
+                        text: `• ${item.nome} ${item.estado_crea && item.numero_crea ? "CREA-" + item.estado_crea + " " + item.numero_crea : ""}\n`,
+                        fontSize: 10,
+                        alignment: "justify",
+                        margin: [5, 0],
+                        lineHeight: 1,
+                        colSpan: 3
+                    }
+                })
+
                 body.push(
                     [
-                        { text: "Responsável Técnico:", fontSize: 10, alignment: "justify", margin: [5, 0], bold: true, lineHeight: 1, colSpan: 3 },
+                        { text: "Responsáveis Técnicos:", fontSize: 10, alignment: "justify", margin: [5, 0], bold: true, lineHeight: 1, colSpan: 3 },
                         {}, {},
                         { text: "Data do Laudo:", fontSize: 10, alignment: "justify", margin: [5, 0], bold: true, lineHeight: 1, colSpan: 2 },
                         {}
                     ],
                     [
-                        { text: `${dataResponsavelAprovacao ? dataResponsavelAprovacao.nome : "Não informado"} (CREA-${dataResponsavelAprovacao ? dataResponsavelAprovacao.estado_crea : "Não informado"} ${dataResponsavelAprovacao ? dataResponsavelAprovacao.numero_crea : "Não informado"})`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
+                        { text: responsaveisTecnicosLinha, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
                         {}, {},
                         { text: `${dataInicioFormatada} - ${dataFimFormatada}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 2 },
                         {}
@@ -381,9 +410,9 @@ module.exports = {
                         {}
                     ],
                     [
-                        { text: `${cliente?.dataValues?.nome_fantasia || "Não informado"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
+                        { text: `${cliente?.dataValues?.nome_fantasia || "Não aplicavel"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 3 },
                         {}, {},
-                        { text: `${cliente?.dataValues?.cnpj || "Não informado"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 2 },
+                        { text: `${cliente?.dataValues?.cnpj || "Não aplicavel"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 2 },
                         {}
                     ],
                     [
@@ -391,7 +420,7 @@ module.exports = {
                         {}, {}, {}, {}
                     ],
                     [
-                        { text: `${cliente?.dataValues?.localizacao_completa || "Não informado"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 5 },
+                        { text: `${cliente?.dataValues?.localizacao_completa || "Não aplicavel"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 5 },
                         {}, {}, {}, {}
                     ],
                     [
@@ -399,7 +428,7 @@ module.exports = {
                         {}, {}, {}, {}
                     ],
                     [
-                        { text: `${ges?.dataValues?.descricao_ges || "Não informado"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 5 },
+                        { text: `${ges?.dataValues?.descricao_ges || "Não aplicavel"}`, fontSize: 10, alignment: "justify", margin: [5, 0], lineHeight: 1, colSpan: 5 },
                         {}, {}, {}, {}
                     ],
                     [
@@ -495,6 +524,8 @@ module.exports = {
                     }
                 }
 
+
+
                 if (ges?.dataValues?.riscos?.riscos.length > 0) {
                     body.push(
                         [{ text: '', colSpan: 5, pageBreak: 'before' }, {}, {}, {}, {}],
@@ -502,13 +533,15 @@ module.exports = {
                             { text: "3.  IDENTIFICAÇÃO DE AGENTE NOCIVO CAPAZ DE CAUSAR DANO À SAÚDE E INTEGRIDADE FÍSICA, ARROLADO NA LEGISLAÇÃO PREVIDENCIÁRIA", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
                             {}, {}, {}, {}
                         ],
-                    );                          
+                    );
 
                     ges?.dataValues?.riscos.riscos.map(async risco => {
-                        
-                        if(risco?.dataValues.fatorRisco.dataValues?.ltcat !== true) {
+
+                        if (risco?.dataValues.fatorRisco.dataValues?.ltcat !== true) {
                             return
                         }
+
+                        allConclusao.push(risco?.conclusao_ltcat || null);
 
                         body.push(
                             [
@@ -608,7 +641,7 @@ module.exports = {
                                         body: [
                                             [
                                                 {
-                                                    text: `${risco.fonteGeradora?.dataValues?.descricao || "Não informado"}`,
+                                                    text: `${risco.fonteGeradora?.dataValues?.descricao || "Não aplicavel"}`,
                                                     fontSize: 10,
                                                     alignment: 'justify',
                                                     margin: [5, 0],
@@ -913,7 +946,6 @@ module.exports = {
 
                 }
 
-                console.log(quadroResumidoRiscos)
                 const interiorQuadroResumido = [
                     [
                         { text: "Risco", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
@@ -972,31 +1004,118 @@ module.exports = {
                     )
                 }
 
-                body.push(
-                    [
-                        { text: "5. CONCLUSÃO FINAL", fontSize: 10, alignment: "justify", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
-                        {}, {}, {}, {}
-                    ],
-                    [
-                        { text: allRiscos.map(risco => risco != null ? risco + "; " : ""), fontSize: 10, alignment: "justify", margin: [5, 0, 5, 0], bold: false, lineHeight: 1, colSpan: 5 },
-                        {}, {}, {}, {}
-                    ],
-                    [
-                        { text: "ASSINATURA DO ENGENHEIRO RESPONSÁVEL", fontSize: 10, alignment: "center", colSpan: 5, lineHeight: 1, fillColor: "#D9D9D9", bold: true },
-                        {}, {}, {}, {}
-                    ],
-                    [
-                        { text: `${dataInicioFormatada} - ${dataFimFormatada}`, fontSize: 10, alignment: "left", margin: [5, 0, 5, 0], bold: false, lineHeight: 5, colSpan: 5 },
-                        {}, {}, {}, {}
-                    ],
-                    [
-                        { text: `${dataResponsavelAprovacao ? dataResponsavelAprovacao.nome : "Não informado"} (CREA-${dataResponsavelAprovacao ? dataResponsavelAprovacao.estado_crea : "Não informado"} ${dataResponsavelAprovacao ? dataResponsavelAprovacao.numero_crea : "Não informado"})`, fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
-                        {}, {}, {}, {}
-                    ],
-                )
+
 
             }
 
+            const responsaveis = await getResponsavelByServico(empresa.id, servicoId);
+            let responsaveisUnicos = [];
+
+            if (responsaveis) {
+                const todos = responsaveis.dataValues.responsavelTecnicoServicos
+                    .map(item => item.dataValues.responsavelTecnico.dataValues)
+                    .flat();
+
+                const unicos = [
+                    ...new Map(todos.map(item => [item.nome, item])).values()
+                ];
+
+
+                responsaveisUnicos = unicos;
+            }
+
+            let servico = await getDadosServicoByEmpresaServico(empresa.id, servicoId);
+            if (servico) {
+                const formatar = (data) => {
+                    if (!data) return '';
+                    const [ano, mes, dia] = data.split('-');
+                    return `${dia}/${mes}/${ano}`;
+                };
+                servico = {
+                    dataInicio: formatar(servico.dataValues.data_inicio),
+                    dataFim: formatar(servico.dataValues.data_fim)
+                };
+            }
+
+            body.push(
+                [
+                    {
+                        table: {
+                            widths: ['100%'],
+                            body: [
+                                [
+                                    { text: "5. CONCLUSÃO FINAL", fontSize: 10, alignment: "justify", lineHeight: 1, fillColor: "#D9D9D9", bold: true },
+                                ],
+                                [
+                                    {
+                                        text: allConclusao.map((conclusao) => conclusao !== null ? conclusao + "; " : "") || "Não aplicavel",
+                                        fontSize: 10,
+                                        bold: true,
+                                        alignment: 'left',
+                                        lineHeight: 1,
+                                        margin: [5, 0],
+                                    },
+                                ],
+                                [
+                                    { text: "6. ASSINATURAS", fontSize: 10, alignment: "justify", lineHeight: 1, fillColor: "#D9D9D9", bold: true },
+                                ],
+                            ]
+                        },
+                        colSpan: 5,
+                        margin: [-5, -2, -5, -2],
+                        layout: {
+                            hLineWidth: function () { return 0.5; },
+                            vLineWidth: function () { return 0.5; },
+                        },
+                    }, {}, {}, {}, {}
+                ]
+            )
+
+            responsaveisUnicos.map(responsavel => {
+                body.push(
+                    [
+                        {
+                            table: {
+                                widths: ['100%'],
+                                body: [
+                                    [
+                                        {
+                                            text: [
+                                                { text: "Assinatura do " + responsavel.funcao + " " + responsavel.nome },
+                                                responsavel.numero_crea && responsavel.estado_crea
+                                                    ? { text: ` ( CREA-${responsavel.estado_crea}/${responsavel.numero_crea} )` }
+                                                    : {}
+                                            ],
+                                            fontSize: 10,
+                                            bold: true,
+                                            alignment: 'center',
+                                            fillColor: "#D9D9D9",
+                                            lineHeight: 1,
+                                            colSpan: 1,
+
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: `${servico.dataInicio || "N/A"} - ${servico.dataFim || "N/A"}`,
+                                            bold: false,
+                                            alignment: 'left',
+                                            lineHeight: 10,
+                                            colSpan: 1
+                                        }
+                                    ]
+                                ],
+                            },
+                            colSpan: 5,
+                            margin: [-5, -2, -5, -2],
+                            layout: {
+                                hLineWidth: function () { return 0.5; },
+                                vLineWidth: function () { return 0.5; },
+                            },
+                        }, {}, {}, {}, {}
+                    ]
+                )
+            })
 
             await Promise.all(todasImagens.map(async (e) => {
                 const dataUrl = await getFileToS3(e.url);

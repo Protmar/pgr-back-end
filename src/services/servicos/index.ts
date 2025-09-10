@@ -249,10 +249,10 @@ export const postWithLastClientService = async (
 
 // Mantém as outras funções do serviço intactas
 export const getDadosServicosByEmpresaCliente = async (idempresa: number, userId?: number) => {
-   const data = await Servicos.findAll({
+  const data = await Servicos.findAll({
     where: {
       empresa_id: idempresa,
-      },
+    },
   });
   return data;
 }
@@ -378,6 +378,28 @@ export const getNameDocBaseByServicoLTCAT = async (idempresa: number, idservico:
   return data;
 };
 
+export const getNameDocBaseByServicoLP = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    attributes: ["base_document_url_lp"],
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+  });
+  return data;
+};
+
+export const getNameDocBaseByServicoLI = async (idempresa: number, idservico: number) => {
+  const data = await Servicos.findOne({
+    attributes: ["base_document_url_li"],
+    where: {
+      empresa_id: idempresa,
+      id: idservico,
+    },
+  });
+  return data;
+};
+
 export const getResponsavelByServico = async (idempresa: number, idservico: number) => {
   const data = await Servicos.findOne({
     attributes: ["responsavel_aprovacao"],
@@ -385,6 +407,30 @@ export const getResponsavelByServico = async (idempresa: number, idservico: numb
       empresa_id: idempresa,
       id: idservico,
     },
+    include: [
+      {
+        model: ResponsavelTecnicoServico,
+        as: "responsavelTecnicoServicos",
+        attributes: ["id"],
+        include: [
+          {
+            model: ResponsavelTecnico,
+            as: "responsavelTecnico",
+            attributes: ['nome', 'funcao', 'numero_crea', 'estado_crea'],
+          }
+        ]
+      },
+      {
+        model: Participantes,
+        as: "participantes",
+        attributes: ['nome', 'cargo', 'setor'],
+      },
+      {
+        model: MemorialProcessos,
+        as: "memorialProcessos",
+        attributes: ['url_imagem', 'descricao', 'tipo_laudo'],
+      }
+    ]
   });
   return data;
 }

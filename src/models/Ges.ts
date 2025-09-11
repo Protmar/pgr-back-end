@@ -73,16 +73,16 @@ export const Ges = sequelize.define<Model<GesAttributes, GesCreationAttributes>>
       type: DataTypes.TEXT,
     },
     responsavel: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     cargo: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     nome_fluxograma: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     texto_caracterizacao_processos: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     tipo_pgr: {
       type: DataTypes.STRING,

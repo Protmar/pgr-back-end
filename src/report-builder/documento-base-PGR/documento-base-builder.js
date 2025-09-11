@@ -83,7 +83,7 @@ module.exports = {
         }),
       ]);
 
-      const content = [buildCapa(cliente)];
+      const content = [await buildCapa(cliente, servicoId, empresa)]; // Página 1: Capa
 
       const addSection = (section) => {
         if (section && (Array.isArray(section) ? section.length > 0 : true)) {

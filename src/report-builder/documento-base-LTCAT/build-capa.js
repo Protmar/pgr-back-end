@@ -1,13 +1,33 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const moment = require('moment');
+const { getDadosServicoByEmpresaServico } = require('../../services/servicos');
 
 moment.locale('pt-BR');
 
 module.exports = {
-  buildCapa: (cliente) => {
-    const mesAno = moment().format("MMMM/YYYY");
-    const mesAnoCamelCase = `${mesAno[0].toUpperCase()}${mesAno.slice(1)}`
-  
+  buildCapa: async (cliente, servicoId, empresa) => {
+    // busca dados do serviço
+    const servico = await getDadosServicoByEmpresaServico(empresa.id, servicoId);
+
+    // usa a data_inicial do serviço
+    function formatDate(dateString) {
+      if (!dateString) return "";
+      const [year, month, day] = dateString.split("-");
+      
+      if(month == "01") return `Janeiro/${year}`;
+      if(month == "02") return `Fevereiro/${year}`;
+      if(month == "03") return `Março/${year}`;
+      if(month == "04") return `Abril/${year}`;
+      if(month == "05") return `Maio/${year}`;
+      if(month == "06") return `Junho/${year}`;
+      if(month == "07") return `Julho/${year}`;
+      if(month == "08") return `Agosto/${year}`;
+      if(month == "09") return `Setembro/${year}`;
+      if(month == "10") return `Outubro/${year}`;
+      if(month == "11") return `Novembro/${year}`;
+      if(month == "12") return `Dezembro/${year}`;
+    }
+
     return {
       stack: [
         {
@@ -42,7 +62,7 @@ module.exports = {
         },
         {
           margin: [60, 120, 60, 0],
-          text: mesAnoCamelCase,
+          text: formatDate(servico?.data_inicio),
           bold: true,
           alignment: 'center',
           fontSize: 16

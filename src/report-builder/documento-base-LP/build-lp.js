@@ -196,158 +196,7 @@ module.exports = {
             };
         }
 
-        body.push({
-            table: {
-                widths: ["50%", "50%"],
-                body: [
-                    [
-                        {
-                            text: 'IDENTIFICAÇÃO GERAL',
-                            fontSize: 10,
-                            bold: true,
-                            colSpan: 2,
-                            alignment: 'center',
-                            fillColor: "#D9D9D9",
-                            lineHeight: 1
-                        },
-                        {}
-                    ],
-                    [
-                        {
-                            text: {
-                                text: responsaveisTecnicos.length > 1 ? 'Responsáveis Técnicos: ' : 'Responsável Técnico: ',
-                                fontSize: 10,
-                                bold: true
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1
-                        },
-                        {
-                            text: {
-                                text: 'Data do Laudo: ',
-                                fontSize: 10,
-                                bold: true
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1
-                        }
-                    ],
-                    [
-                        {
-                            stack: responsaveisTecnicos.flatMap(e => {
-                                const bloco = [];
-                                if (e.nome && e.funcao) {
-                                    if (e.numero_crea && e.estado_crea) {
-                                        bloco.push(
-                                            {
-                                                text: "• " + e.funcao + " " + e.nome + " " + "CREA-" + e.estado_crea + ": " + e.numero_crea,
-                                                fontSize: 10,
-                                                alignment: "justify",
-                                                lineHeight: 1
-                                            }
-                                        );
-                                    } else {
-                                        bloco.push(
-                                            {
-                                                text: "• " + e.funcao + " " + e.nome,
-                                                fontSize: 10,
-                                                alignment: "justify",
-                                                lineHeight: 1
-                                            }
-                                        );
-                                    }
-                                }
-                                return bloco;
-                            }),
-                            colSpan: 1
-                        },
-                        {
-                            text: new Date().toLocaleDateString("pt-BR"),
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1,
-                            bold: false,
-                        }
-                    ],
-                    [
-                        {
-                            text: {
-                                text: 'Empresa:',
-                                fontSize: 10,
-                                bold: true
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1
-                        },
-                        {
-                            text: {
-                                text: 'CNPJ:',
-                                fontSize: 10,
-                                bold: true
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1
-                        }
-                    ],
-                    [
-                        {
-                            text: {
-                                text: cliente.dataValues.nome_fantasia,
-                                fontSize: 10,
-                                bold: false
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1
-                        },
-                        {
-                            text: {
-                                text: cliente.dataValues.cnpj,
-                                fontSize: 10,
-                                bold: false
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 1
-                        }
-                    ],
-                    [
-                        {
-                            text: {
-                                text: 'Endereço:',
-                                fontSize: 10,
-                                bold: true
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 2
-                        },
-                        {}
-                    ],
-                    [
-                        {
-                            text: {
-                                text: cliente.dataValues.localizacao_completa,
-                                fontSize: 10,
-                                bold: false
-                            },
-                            alignment: 'left',
-                            lineHeight: 1,
-                            colSpan: 2
-                        },
-                        {}
-                    ],
-                ],
-            },
-            layout: {
-                hLineWidth: function () { return 0.5; },
-                vLineWidth: function () { return 0.5; },
-            }
-        });
+
 
         const gesAgrupados = {};
         gesGeneralETrabalhadores.forEach(e => {
@@ -398,6 +247,159 @@ module.exports = {
                     ])
                 ).values()
             ];
+
+            body.push({
+                table: {
+                    widths: ["50%", "50%"],
+                    body: [
+                        [
+                            {
+                                text: 'IDENTIFICAÇÃO GERAL',
+                                fontSize: 10,
+                                bold: true,
+                                colSpan: 2,
+                                alignment: 'center',
+                                fillColor: "#D9D9D9",
+                                lineHeight: 1
+                            },
+                            {}
+                        ],
+                        [
+                            {
+                                text: {
+                                    text: responsaveisTecnicos.length > 1 ? 'Responsáveis Técnicos: ' : 'Responsável Técnico: ',
+                                    fontSize: 10,
+                                    bold: true
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1
+                            },
+                            {
+                                text: {
+                                    text: 'Data do Laudo: ',
+                                    fontSize: 10,
+                                    bold: true
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1
+                            }
+                        ],
+                        [
+                            {
+                                stack: responsaveisTecnicos.flatMap(e => {
+                                    const bloco = [];
+                                    if (e.nome && e.funcao) {
+                                        if (e.numero_crea && e.estado_crea) {
+                                            bloco.push(
+                                                {
+                                                    text: "• " + e.funcao + " " + e.nome + " " + "CREA-" + e.estado_crea + ": " + e.numero_crea,
+                                                    fontSize: 10,
+                                                    alignment: "justify",
+                                                    lineHeight: 1
+                                                }
+                                            );
+                                        } else {
+                                            bloco.push(
+                                                {
+                                                    text: "• " + e.funcao + " " + e.nome,
+                                                    fontSize: 10,
+                                                    alignment: "justify",
+                                                    lineHeight: 1
+                                                }
+                                            );
+                                        }
+                                    }
+                                    return bloco;
+                                }),
+                                colSpan: 1
+                            },
+                            {
+                                text: new Date().toLocaleDateString("pt-BR"),
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1,
+                                bold: false,
+                            }
+                        ],
+                        [
+                            {
+                                text: {
+                                    text: 'Empresa:',
+                                    fontSize: 10,
+                                    bold: true
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1
+                            },
+                            {
+                                text: {
+                                    text: 'CNPJ:',
+                                    fontSize: 10,
+                                    bold: true
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1
+                            }
+                        ],
+                        [
+                            {
+                                text: {
+                                    text: cliente.dataValues.nome_fantasia,
+                                    fontSize: 10,
+                                    bold: false
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1
+                            },
+                            {
+                                text: {
+                                    text: cliente.dataValues.cnpj,
+                                    fontSize: 10,
+                                    bold: false
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 1
+                            }
+                        ],
+                        [
+                            {
+                                text: {
+                                    text: 'Endereço:',
+                                    fontSize: 10,
+                                    bold: true
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 2
+                            },
+                            {}
+                        ],
+                        [
+                            {
+                                text: {
+                                    text: cliente.dataValues.localizacao_completa,
+                                    fontSize: 10,
+                                    bold: false
+                                },
+                                alignment: 'left',
+                                lineHeight: 1,
+                                colSpan: 2
+                            },
+                            {}
+                        ],
+                    ],
+                },
+                layout: {
+                    hLineWidth: function () { return 0.5; },
+                    vLineWidth: function () { return 0.5; },
+                }
+            });
 
             body.push({
                 table: {
@@ -511,8 +513,8 @@ module.exports = {
                         ],
                         ...(ambiente ? [
                             [
-                                { text: `Área: ${ambiente.area || 'Não aplicavel'} m²`, fontSize: 10, lineHeight: 1, colSpan: 1 },
-                                { text: `Pé-direito: ${ambiente.pe_direito + "m" || 'Não aplicavel'}`, fontSize: 10, lineHeight: 1, colSpan: 1 }
+                                { text: `Área: ${ambiente.area || 'Não aplicavel'} ${ambiente.area ? 'm2' : ''}`, fontSize: 10, lineHeight: 1, colSpan: 1 },
+                                { text: `Pé-direito: ${ambiente.pe_direito || 'Não aplicavel'} ${ambiente.pe_direito ? 'm' : ''}`, fontSize: 10, lineHeight: 1, colSpan: 1 }
                             ],
                             [
                                 { text: `Nº de janelas: ${ambiente.qnt_janelas || 'Não aplicavel'}`, fontSize: 10, lineHeight: 1, colSpan: 1 },
@@ -579,11 +581,47 @@ module.exports = {
                 },
             });
 
+            e.ges?.riscos?.length > 0 && body.push(
+                [
+                    {
+                        table: {
+                            widths: ['100%'],
+                            body: [
+                                [
+                                    {
+                                        text: '3. IDENTIFICAÇÃO DE ATIVIDADES PERICULOSAS CONFORME NR-16 DA PORTARIA 3214/78 DO MINISTÉRIO DO TRABALHO',
+                                        fontSize: 10,
+                                        bold: true,
+                                        alignment: 'left',
+                                        fillColor: "#D9D9D9",
+                                        lineHeight: 1
+                                    },
+                                ],
+                            ]
+                        },
+                        layout: 'centerLTCATVertically',
+                        colSpan: 5,
+                        lineHeight: 0.5
+                    }, {}, {}, {}, {}
+                ]
+            )
 
-            e.ges?.riscos.map(async risco => {
-                if(!risco?.fatorRisco.laudo_periculosidade) return
+            const ordemTipo = ["Físico", "Químico", "Biológico", "Mecânico", "Ergonômico"];
+
+            const riscosOrdenados = (e.ges?.riscos || []).sort((a, b) => {
+                const posA = ordemTipo.indexOf(a?.fatorRisco?.tipo) ?? Number.MAX_SAFE_INTEGER;
+                const posB = ordemTipo.indexOf(b?.fatorRisco?.tipo) ?? Number.MAX_SAFE_INTEGER;
+
+                if (posA !== posB) {
+                    return posA - posB; // ordena pelo tipo
+                }
+
+                return (a?.fatorRisco?.ordem ?? 0) - (b?.fatorRisco?.ordem ?? 0); // ordena dentro do tipo
+            });
+
+            riscosOrdenados.map(async risco => {
+                if (!risco?.fatorRisco.laudo_periculosidade) return
                 allConclusao.push(risco?.conclusaoPericulosidade || null);
-
 
                 body.push(
                     [
@@ -591,19 +629,6 @@ module.exports = {
                             table: {
                                 widths: ['50%', '50%'],
                                 body: [
-                                    [
-                                        {
-                                            text: '3. IDENTIFICAÇÃO DE ATIVIDADES PERICULOSAS CONFORME NR-16 DA PORTARIA 3214/78 DO MINISTÉRIO DO TRABALHO',
-                                            fontSize: 10,
-                                            bold: true,
-                                            colSpan: 2,
-                                            alignment: 'left',
-                                            fillColor: "#D9D9D9",
-                                            lineHeight: 1
-                                        },
-                                        {}
-                                    ],
-
                                     [
                                         {
                                             text: 'Risco: ',
@@ -712,7 +737,7 @@ module.exports = {
                                         {}
                                     ],
                                     [
-                                        { text: "MEDIDAS DE CONTROLE", fontSize: 10, alignment: "center", bold: true, lineHeight: 1, colSpan: 2 },
+                                        { text: "MEDIDAS DE CONTROLE EXISTENTES", fontSize: 10, alignment: "center", bold: true, lineHeight: 1, colSpan: 2 },
                                         {}
                                     ]
                                 ]
@@ -749,55 +774,74 @@ module.exports = {
                                 alignment: "justify",
 
                                 lineHeight: 1,
-                                colSpan: 5
+                                colSpan: 5,
+                                margin: [5, 0, 5, 0]
                             },
                             {}, {}, {}, {}
                         ]
                     );
                 }
+
+                risco.planosAcao?.forEach(plano => {
+                    plano.dataValues.riscosColetivosNecessaria =
+                        (plano.dataValues.riscosColetivosNecessaria || []).map(rp => rp.dataValues || rp);
+
+                    plano.dataValues.riscosAdministrativosNecessaria =
+                        (plano.dataValues.riscosAdministrativosNecessaria || []).map(rp => rp.dataValues || rp);
+
+                    plano.dataValues.riscosIndividuaisNecessaria =
+                        (plano.dataValues.riscosIndividuaisNecessaria || []).map(rp => rp.dataValues || rp);
+
+                });
+
 
                 // MEDIDAS A SEREM IMPLANTADAS
                 const medidasColetivasNec = (risco.planosAcao?.flatMap(plano =>
-                    plano.riscosColetivosNecessaria?.flatMap(m => m.medidas_coletivas_n || [])
+                    plano.dataValues.riscosColetivosNecessaria?.flatMap(m => m.medidas_coletivas_n || [])
                 ) || []).filter(Boolean).join("; ");
 
                 const medidasAdministrativasNec = (risco.planosAcao?.flatMap(plano =>
-                    plano.riscosAdministrativosNecessaria?.flatMap(m => m.medidas_admin || [])
+                    plano.dataValues.riscosAdministrativosNecessaria?.flatMap(m => m.medidas_admin || [])
                 ) || []).filter(Boolean).join("; ");
 
                 const medidasIndividuaisNec = (risco.planosAcao?.flatMap(plano =>
-                    plano.riscosIndividuaisNecessaria?.flatMap(m => m.medidas_individua || [])
+                    plano.dataValues.riscosIndividuaisNecessaria?.flatMap(m => m.medidas_individua || [])
                 ) || []).filter(Boolean).join("; ");
 
                 if (medidasColetivasNec || medidasAdministrativasNec || medidasIndividuaisNec) {
-                    body.push(
-                        [
-                            { text: "MEDIDAS DE CONTROLE A SEREM IMPLANTADAS", fontSize: 10, alignment: "center", bold: true, lineHeight: 1, colSpan: 5 },
-                            {}, {}, {}, {}
-                        ],
-                        [
-                            {
-                                text: [
-                                    medidasColetivasNec ? { text: `• Medida de Controle Coletiva Necessária: `, bold: true } : null,
-                                    medidasColetivasNec ? { text: ` ${medidasColetivasNec}.\n` } : null,
-                                    medidasAdministrativasNec ? { text: `• Medida de Controle Administrativa Necessária: `, bold: true } : null,
-                                    medidasAdministrativasNec ? { text: ` ${medidasAdministrativasNec}.\n` } : null,
-                                    medidasIndividuaisNec ? { text: `• Medida de Controle Individual Necessária: `, bold: true } : null,
-                                    medidasIndividuaisNec ? { text: ` ${medidasIndividuaisNec}.\n` } : null,
-                                ].filter(Boolean),
-                                fontSize: 10,
-                                alignment: "justify",
+                    body.push({
+                        table: {
+                            widths: ['100%'],
+                            body: [
+                                [
+                                    { text: "MEDIDAS DE CONTROLE NECESSÁRIAS", fontSize: 10, alignment: "center", bold: true, lineHeight: 1 },
 
-                                lineHeight: 1,
-                                colSpan: 5
-                            },
-                            {}, {}, {}, {}
-                        ]
-                    );
+                                ],
+                                [
+                                    {
+                                        text: [
+                                            medidasColetivasNec ? { text: `• Medida de Controle Coletiva Necessária: `, bold: true } : null,
+                                            medidasColetivasNec ? { text: ` ${medidasColetivasNec}.\n` } : null,
+                                            medidasAdministrativasNec ? { text: `• Medida de Controle Administrativa Necessária: `, bold: true } : null,
+                                            medidasAdministrativasNec ? { text: ` ${medidasAdministrativasNec}.\n` } : null,
+                                            medidasIndividuaisNec ? { text: `• Medida de Controle Individual Necessária: `, bold: true } : null,
+                                            medidasIndividuaisNec ? { text: ` ${medidasIndividuaisNec}.\n` } : null,
+                                        ].filter(Boolean),
+                                        fontSize: 10,
+                                        alignment: "justify",
+
+                                        lineHeight: 1,
+                                    },
+
+                                ]
+                            ]
+                        },
+                        layout: {
+                            hLineWidth: function () { return 0.5; },
+                            vLineWidth: function () { return 0.5; },
+                        },
+                    }, {}, {}, {}, {});
                 }
-
-
-
 
                 body.push({
                     table: {
@@ -805,7 +849,7 @@ module.exports = {
                         body: [
                             [
                                 {
-                                    text: "CONCLUSÃO", fontSize: 10,
+                                    text: "CONCLUSÃO DO RISCO", fontSize: 10,
                                     bold: true,
                                     alignment: 'left',
                                     fillColor: "#D9D9D9",
@@ -835,7 +879,7 @@ module.exports = {
                 });
             });
 
-
+            body.push({ text: "", pageBreak: "before" });
 
         }
 
@@ -856,9 +900,8 @@ module.exports = {
                         ],
                         [
                             {
-                                text: allConclusao.map((conclusao) => conclusao !== null ? conclusao + "; " : "") || "Não aplicavel",
+                                text: allConclusao.map((conclusao) => conclusao !== null ? conclusao + "\n\n" : "") || "",
                                 fontSize: 10,
-                                bold: true,
                                 alignment: 'left',
                                 lineHeight: 1,
                                 margin: [5, 0],
@@ -906,7 +949,7 @@ module.exports = {
                             ],
                             [
                                 {
-                                    text: `${gesGeneralETrabalhadores.servico.dataInicio || "Não aplicavel"} - ${gesGeneralETrabalhadores.servico.dataFim || "Não aplicavel"}`,
+                                    text: `${gesGeneralETrabalhadores.servico.dataInicio || "Não aplicavel"}`,
                                     bold: false,
                                     alignment: 'left',
                                     lineHeight: 10,

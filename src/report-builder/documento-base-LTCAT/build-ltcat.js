@@ -764,7 +764,7 @@ module.exports = {
                         if (medidasColetivas || medidasAdministrativas || medidasIndividuais) {
                             body.push(
                                 [
-                                    { text: "MEDIDAS DE CONTROLE", fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
+                                    { text: "MEDIDAS DE CONTROLE EXISTENTES", fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
                                     {}, {}, {}, {}
                                 ],
                                 [
@@ -806,7 +806,7 @@ module.exports = {
                         if (medidasColetivasNec || medidasAdministrativasNec || medidasIndividuaisNec) {
                             body.push(
                                 [
-                                    { text: "MEDIDAS DE CONTROLE A SEREM IMPLANTADAS", fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
+                                    { text: "MEDIDAS DE CONTROLE NECESSÁRIAS", fontSize: 10, alignment: "center", margin: [5, 0, 5, 0], bold: true, lineHeight: 1, colSpan: 5 },
                                     {}, {}, {}, {}
                                 ],
                                 [
@@ -1048,9 +1048,8 @@ module.exports = {
                                 ],
                                 [
                                     {
-                                        text: allConclusao.map((conclusao) => conclusao !== null ? conclusao + "; " : "") || "Não aplicavel",
+                                        text: allConclusao.map((conclusao) => conclusao !== null ? conclusao + "\n\n" : "") || "",
                                         fontSize: 10,
-                                        bold: true,
                                         alignment: 'left',
                                         lineHeight: 1,
                                         margin: [5, 0],
@@ -1097,7 +1096,7 @@ module.exports = {
                                     ],
                                     [
                                         {
-                                            text: `${servico.dataInicio || "N/A"} - ${servico.dataFim || "N/A"}`,
+                                            text: `${servico.dataInicio || "N/A"}`,
                                             bold: false,
                                             alignment: 'left',
                                             lineHeight: 10,

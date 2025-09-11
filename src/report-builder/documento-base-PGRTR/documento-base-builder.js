@@ -83,7 +83,7 @@ module.exports = {
       ]);
 
       // ==== CONTEÚDO FINAL ====
-      const content = [buildCapa(cliente)];
+      const content = [await buildCapa(cliente, servicoId, empresa)];
 
       const addSection = (section) => {
         if (section && (Array.isArray(section) ? section.length > 0 : true)) {

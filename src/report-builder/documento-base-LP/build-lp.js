@@ -321,6 +321,7 @@ module.exports = {
                                 lineHeight: 1,
                                 colSpan: 1,
                                 bold: false,
+                                fontSize: 10,
                             }
                         ],
                         [

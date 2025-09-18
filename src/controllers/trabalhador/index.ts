@@ -47,9 +47,9 @@ export const dadosTrabalhador = {
         dataCargo,
         qnt_trabalhadores,
         nao_existe_trabalhador,
+        cargo
       } = req.body;
 
-      console.log("REQ.BODY:", req.body);
 
       // Pegando cliente e serviço do usuário
       const cliente = await User.findOne({
@@ -95,7 +95,7 @@ export const dadosTrabalhador = {
         serie: serie || undefined,
         uf: uf || undefined,
         jornada_trabalho: jornada_trabalho || undefined,
-        cargo: dataCargo || undefined,
+        cargo: cargo || undefined,
       };
 
       const data = await postDadosTrabalhadorService(params);

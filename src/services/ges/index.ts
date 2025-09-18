@@ -59,6 +59,8 @@ import { dadosServicos } from "../../controllers/servicos";
 import { getOneServico } from "../servicos";
 import { getOneClienteService } from "../Cliente";
 import { CadastroSetor } from "../../models/Setores";
+import { Exames } from "../../models/Exames";
+import { GesExames } from "../../models/subdivisoesGes/GesExames";
 
 export const gesPostService = async (
     userId: number,
@@ -551,7 +553,7 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
         throw new Error("Parâmetros empresa_id e idges devem ser números válidos.");
     }
     
-    const [riscos, cursos, imagens, racs, tiposPgr, trabalhadores, ambientesTrabalho] = await Promise.all([
+    const [riscos, cursos, imagens, racs, tiposPgr, trabalhadores, ambientesTrabalho, exames] = await Promise.all([
         getRiscos(empresa_id, idges),
         getCursos(empresa_id, idges),
         getImagens(empresa_id, idges),
@@ -559,6 +561,7 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
         getTiposPgr(empresa_id, idges),
         getTrabalhadores(empresa_id, idges),
         getAmbientesTrabalho(empresa_id, idges),
+        getExames(empresa_id, idges)
     ]);
 
     return {
@@ -571,15 +574,34 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
             tiposPgr: tiposPgr?.dataValues || [],
             trabalhadores: trabalhadores?.dataValues || [],
             ambientesTrabalhos: ambientesTrabalho?.dataValues || [],
+            exames: exames?.dataValues || [],
         },
     };
 };
+
+export const getExames = async (empresa_id: number, idges: number) => {
+  return Ges.findOne({
+    where: { empresa_id, id: idges },
+    include: [
+      {
+        model: GesExames,
+        as: "gesExames", 
+        include: [
+          { model: Exames, as: "exame" } // bate com GesExames.belongsTo
+        ]
+      }
+    ]
+  });
+};
+
+
 
 export const gesPutService = async (
     newValuesMultiInput: any,
     empresa_id: number,
     id_ges: number,
     listTrabalhadores: any[],
+    listExames: any[],
     params: any,
     paramsAT: any
 ) => {
@@ -591,6 +613,7 @@ export const gesPutService = async (
     // Atualização de trabalhadores e do GES em paralelo
     await Promise.all([
         GesTrabalhadoresPut(empresa_id, id_ges, listTrabalhadores),
+        GesExamesPut(empresa_id, id_ges, listExames),
         ges.update({ ...params, empresa_id }),
     ]);
 
@@ -683,6 +706,24 @@ export const GesTrabalhadoresPut = async (
                     id_ges,
                     id_trabalhador: trabalhador.id,
                     id_funcao: trabalhador.funcao_id,
+                })
+            )
+        );
+    }
+};
+
+export const GesExamesPut = async (
+    empresa_id: number,
+    id_ges: number,
+    listExames: any[]
+) => {
+    if (listExames) {
+        await GesExames.destroy({ where: { id_ges } });
+        await Promise.all(
+            listExames.map((exame) =>
+                GesExames.create({
+                    id_ges,
+                    id_exames: exame.id,
                 })
             )
         );
@@ -950,3 +991,79 @@ export const deleteImageAtService = async (id: number) => {
         console.error(error)
     }
 }
+
+export const postExameService = async (exame: any) => {
+    try {
+        const data = await Exames.create(exame)
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getAllExamesService = async (id: number) => {
+    try {
+        const data = await Exames.findAll({
+            where: {
+                empresa_id: id
+            }
+        })
+
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getAllExamesServiceByGes = async (empresa_id: number, ges_id: number) => {
+    try {
+        const data = await GesExames.findAll({
+            where: {
+                empresa_id: empresa_id,
+                id_ges: ges_id
+            }
+        })
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getOneExamesService = async (id: number) => {
+    try {
+        const data = await Exames.findOne({
+            where: {
+                id: id
+            }
+        })
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const putExameService = async (id: number, newValues: any) => {
+    try {
+        const data = await Exames.update(newValues, {
+            where: {
+                id: id
+            }
+        })
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+} 
+
+export const deleteExameService = async (id: number) => {
+    try {
+        const data = await Exames.destroy({
+            where: {
+                id: id
+            }
+        })
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}   

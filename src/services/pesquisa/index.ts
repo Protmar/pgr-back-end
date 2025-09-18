@@ -36,6 +36,7 @@ import { CadastroMedidaControleColetivaNecessaria } from "../../models/MedidaCon
 import ResponsavelTecnico from "../../models/ResponsavelTecnico";
 import { Ges } from "../../models";
 import { getOneServico } from "../servicos";
+import { Exames } from "../../models/Exames";
 
 export const getDadosPesquisaCnpjNomeService = async (
   empresa_id: any,
@@ -786,6 +787,35 @@ export const getDadosPesquisaDescResponsaveisTecnicosService = async (
               } as any,
             }
           ],
+        },
+      ],
+    },
+  });
+
+  return data;
+};
+
+export const getDadosPesquisaDescExamesService = async (
+  empresa_id: any,
+  pesquisa: any,
+  email: any
+) => {
+  const servico = await getOneServico(empresa_id, email);
+
+  const data = await Exames.findAll({
+    where: {
+      servico_id: servico?.servicoselecionado ?? undefined,
+      empresa_id: empresa_id,
+      [Op.or]: [
+        {
+          codigo: {
+            [Op.iLike]: `%${pesquisa}%`,
+          },
+        },
+        {
+          procedimento: {
+            [Op.iLike]: `%${pesquisa}%`,
+          },
         },
       ],
     },

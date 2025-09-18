@@ -183,6 +183,7 @@ router.get("/pesquisacoletivanecessaria/:pesquisa", ensureUserAuth, pesquisaCont
 router.get("/pesquisaindividualnecessaria/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaDescMedidaControleIndividualNecessariaService);
 router.get("/pesquisaresponsaveistecnicos/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaResponsaveisTecnicos);
 router.get("/pesquisarges/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaGES);
+router.get("/pesquisaexames/:pesquisa", ensureUserAuth, pesquisaController.getDadosPesquisaExames);
 
 //Trabalhador
 router.post("/posttrabalhador", ensureUserAuth, middlewareCanEditAndCreate, dadosTrabalhador.postTrabalhador);
@@ -406,6 +407,14 @@ router.get("/getimagesat/:idges", ensureUserAuth, gesController.getImagesAt);
 router.get("/gesgetallbyservico/:idservico", ensureUserAuth, gesController.getAllByServico);
 router.get("/gesgetallbycliente/:idcliente", ensureUserAuth, gesController.getAllGesByCliente);
 router.delete("/deleteimageat/:idimageat", ensureUserAuth, gesController.deleteImageAt);
+
+//Exames
+router.post("/postexame", ensureUserAuth, middlewareCanEditAndCreate, gesController.postExame);
+router.get("/getallexames/:idges", ensureUserAuth, gesController.getAllExames);
+router.get("/getallexamesbyges/:idges", ensureUserAuth, gesController.getAllExamesByGes);
+router.get("/getoneexame/:idexame", ensureUserAuth, gesController.getOneExame);
+router.put("/updateexame/:idexame", ensureUserAuth, middlewareCanEditAndCreate, gesController.putExame);
+router.delete("/:idexame/deleteexame", ensureUserAuth, gesController.deleteExame);
 
 //S3
 router.post("/postfile", ensureUserAuth, middlewareCanEditAndCreate, upload.fields([{ name: 'file' }]), s3Controller.post);

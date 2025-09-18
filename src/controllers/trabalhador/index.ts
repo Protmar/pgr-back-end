@@ -11,6 +11,7 @@ import {
 } from "../../services/trabalhadores";
 import { getCache } from "../cliente/cliente";
 import { User } from "../../models";
+import { TrabalhadorCreationAttributes } from "../../models/Trabalhadores";
 
 export const dadosTrabalhador = {
   // Função para capitalizar a primeira letra de cada palavra
@@ -24,7 +25,8 @@ export const dadosTrabalhador = {
 
   postTrabalhador: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const { empresaId } = req.user!;
+      const { empresaId, id: userId } = req.user!;
+
       const {
         funcao_id,
         gerencia_id,
@@ -43,55 +45,64 @@ export const dadosTrabalhador = {
         uf,
         jornada_trabalho,
         dataCargo,
+        qnt_trabalhadores,
+        nao_existe_trabalhador,
       } = req.body;
 
-      const userId = req.user!.id;
+      console.log("REQ.BODY:", req.body);
 
-      const cliente_id = await User.findOne({
+      // Pegando cliente e serviço do usuário
+      const cliente = await User.findOne({
         where: { id: userId },
         attributes: ["clienteselecionado"],
       });
-      const servico_id = await User.findOne({
+
+      const servico = await User.findOne({
         where: { id: userId },
         attributes: ["servicoselecionado"],
-      });;
+      });
 
-      if (!nome) {
+      if (!nome && !nao_existe_trabalhador) {
         return res.status(400).json({ message: "O campo 'nome' é obrigatório." });
       }
 
-      if (!cliente_id || !servico_id) {
-        return res.status(500).json({ message: "IDs globais de cliente ou serviço não definidos." });
+      if (!cliente || !servico) {
+        return res.status(500).json({ message: "IDs de cliente ou serviço não definidos." });
       }
 
-      const formattedNome = dadosTrabalhador.capitalizeName(nome);
+      const formattedNome = nome ? dadosTrabalhador.capitalizeName(nome) : undefined;
 
-      const data = await postDadosTrabalhadorService({
-        funcao_id: Number(funcao_id),
-        cliente_id: Number(cliente_id.clienteselecionado),
-        empresa_id: empresaId,
-        gerencia_id,
-        cargo_id,
-        setor_id,
-        servico_id: Number(servico_id.servicoselecionado),
-        codigo,
+      // Montando objeto de criação
+      const params: TrabalhadorCreationAttributes = {
+        funcao_id: funcao_id ? Number(funcao_id) : undefined,
+        cliente_id: Number(cliente.clienteselecionado),
+        empresa_id: Number(empresaId),
+        gerencia_id: gerencia_id ? Number(gerencia_id) : undefined,
+        cargo_id: cargo_id ? Number(cargo_id) : undefined,
+        setor_id: setor_id ? Number(setor_id) : undefined,
+        servico_id: Number(servico.servicoselecionado),
+        nao_existe: nao_existe_trabalhador || false,
+        qnt_trabalhadores: qnt_trabalhadores ? Number(qnt_trabalhadores) : undefined,
+        codigo: codigo || undefined,
         nome: formattedNome,
-        genero,
-        data_nascimento,
-        cpf,
-        rg,
-        orgao_expeditor,
-        nis_pis,
-        ctps,
-        serie,
-        uf,
-        jornada_trabalho,
-        cargo: dataCargo,
-      });
+        genero: genero || undefined,
+        data_nascimento: data_nascimento || undefined,
+        cpf: cpf || undefined,
+        rg: rg || undefined,
+        orgao_expeditor: orgao_expeditor || undefined,
+        nis_pis: nis_pis || undefined,
+        ctps: ctps || undefined,
+        serie: serie || undefined,
+        uf: uf || undefined,
+        jornada_trabalho: jornada_trabalho || undefined,
+        cargo: dataCargo || undefined,
+      };
 
+      const data = await postDadosTrabalhadorService(params);
       res.status(201).json(data);
     } catch (err) {
       console.error("Erro em postTrabalhador:", err);
+      console.error("Detalhes do erro:", JSON.stringify(err, Object.getOwnPropertyNames(err)));
 
       if (err instanceof Error) {
         return res.status(400).json({ message: err.message });
@@ -165,9 +176,10 @@ export const dadosTrabalhador = {
         uf,
         jornada_trabalho,
         cargoString,
+        qnt_trabalhadores
       } = req.body;
 
-      const formattedNome = dadosTrabalhador.capitalizeName(nome);
+      const formattedNome = nome ? dadosTrabalhador.capitalizeName(nome) : null;
 
       const data = await putDadosTrabalhadorService(
         Number(valueFuncao),
@@ -188,7 +200,8 @@ export const dadosTrabalhador = {
         serie,
         uf,
         jornada_trabalho,
-        cargoString
+        cargoString,
+        qnt_trabalhadores
       );
 
       res.send(data);

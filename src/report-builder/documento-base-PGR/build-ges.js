@@ -66,7 +66,12 @@ module.exports = {
                         };
                     }
 
-                    groupedWorkers[key].qtdExpostos += 1;
+                    if (worker.dataValues.qnt_trabalhadores) {
+                        groupedWorkers[key].qtdExpostos += Number(worker.dataValues.qnt_trabalhadores);
+                    } else {
+                        groupedWorkers[key].qtdExpostos += 1;
+
+                    }
                 }
 
                 const compare = (x, y) => (x || "").localeCompare(y || "");

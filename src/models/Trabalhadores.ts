@@ -3,9 +3,9 @@ import { sequelize } from "../database";
 import { CadastroFuncao } from "./Funcoes";
 import { CadastroSetor } from "./Setores";
 
-// Definição dos atributos do Trabalhador
+// Todos os atributos opcionais
 export interface TrabalhadorAttributes {
-  id: number;
+  id?: number;
   empresa_id?: number;
   gerencia_id?: number;
   cargo_id?: number;
@@ -26,127 +26,56 @@ export interface TrabalhadorAttributes {
   uf?: string;
   jornada_trabalho?: string;
   cargo?: string;
-  created_at: Date;
-  updated_at: Date;
+  qnt_trabalhadores?: number;
+  nao_existe?: boolean;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
-// Atributos para a criação de um novo Trabalhador
+// Todos opcionais na criação
 export interface TrabalhadorCreationAttributes
-  extends Optional<TrabalhadorAttributes, "id" | "created_at" | "updated_at"> {}
+  extends Optional<TrabalhadorAttributes, keyof TrabalhadorAttributes> { }
 
-// Definindo o tipo da instância do modelo Trabalhador
+// Instância do modelo
 export interface TrabalhadorInstance
   extends Model<TrabalhadorAttributes, TrabalhadorCreationAttributes>,
-    TrabalhadorAttributes {}
+  TrabalhadorAttributes { }
 
-// Definindo o modelo Trabalhador
+// Modelo Sequelize
 export const Trabalhadores = sequelize.define<TrabalhadorInstance>(
   "trabalhadores",
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    empresa_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "empresas", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
-    },
-    gerencia_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "gerencias", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
-    },
-    cargo_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "cargos", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
-    },
-    setor_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "setores", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
-    },
-    cliente_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "clientes", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
-      allowNull: false,
-    },
-    servico_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "servicos", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT",
-    },
-    funcao_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "funcoes", key: "id" },
-      onUpdate: "CASCADE",
-      onDelete: "RESTRICT"
-    },
-    codigo: {
-      type: DataTypes.STRING,
-    },
-    nome: {
-      type: DataTypes.STRING,
-    },
-    genero: {
-      type: DataTypes.STRING,
-    },
-    data_nascimento: {
-      type: DataTypes.STRING,
-    },
-    cpf: {
-      type: DataTypes.STRING,
-    },
-    rg: {
-      type: DataTypes.STRING,
-    },
-    orgao_expeditor: {
-      type: DataTypes.STRING,
-    },
-    nis_pis: {
-      type: DataTypes.STRING,
-    },
-    ctps: {
-      type: DataTypes.STRING,
-    },
-    serie: {
-      type: DataTypes.STRING,
-    },
-    uf: {
-      type: DataTypes.STRING,
-    },
-    jornada_trabalho: {
-      type: DataTypes.STRING,
-    },
-    cargo: {
-      type: DataTypes.STRING,
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: Sequelize.fn("NOW"),
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      defaultValue: Sequelize.fn("NOW"),
-    },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    empresa_id: { type: DataTypes.INTEGER, allowNull: true },
+    gerencia_id: { type: DataTypes.INTEGER, allowNull: true },
+    cargo_id: { type: DataTypes.INTEGER, allowNull: true },
+    setor_id: { type: DataTypes.INTEGER, allowNull: true },
+    cliente_id: { type: DataTypes.INTEGER, allowNull: true },
+    servico_id: { type: DataTypes.INTEGER, allowNull: true },
+    funcao_id: { type: DataTypes.INTEGER, allowNull: true },
+    codigo: { type: DataTypes.STRING, allowNull: true },
+    nome: { type: DataTypes.STRING, allowNull: true },
+    genero: { type: DataTypes.STRING, allowNull: true },
+    data_nascimento: { type: DataTypes.STRING, allowNull: true },
+    cpf: { type: DataTypes.STRING, allowNull: true },
+    rg: { type: DataTypes.STRING, allowNull: true },
+    orgao_expeditor: { type: DataTypes.STRING, allowNull: true },
+    nis_pis: { type: DataTypes.STRING, allowNull: true },
+    ctps: { type: DataTypes.STRING, allowNull: true },
+    serie: { type: DataTypes.STRING, allowNull: true },
+    uf: { type: DataTypes.STRING, allowNull: true },
+    jornada_trabalho: { type: DataTypes.STRING, allowNull: true },
+    cargo: { type: DataTypes.STRING, allowNull: true },
+    qnt_trabalhadores: { type: DataTypes.INTEGER, allowNull: true },
+    nao_existe: { type: DataTypes.BOOLEAN, allowNull: true, defaultValue: false },
+    created_at: { type: DataTypes.DATE, allowNull: true, defaultValue: Sequelize.fn("NOW") },
+    updated_at: { type: DataTypes.DATE, allowNull: true, defaultValue: Sequelize.fn("NOW") },
   },
-  { tableName: "trabalhadores" }
+  { tableName: "trabalhadores", timestamps: false }
 );
-Trabalhadores.belongsTo(CadastroFuncao, {
-  foreignKey: "funcao_id",
-  as: "funcao",
-});
-Trabalhadores.belongsTo(CadastroSetor, {
-  foreignKey: "setor_id",
-  as: "setor",
-})
+
+// Relações
+Trabalhadores.belongsTo(CadastroFuncao, { foreignKey: "funcao_id", as: "funcao" });
+Trabalhadores.belongsTo(CadastroSetor, { foreignKey: "setor_id", as: "setor" });
+
 export default Trabalhadores;

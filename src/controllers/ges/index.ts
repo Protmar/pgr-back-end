@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { deleteImageAtService, fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllGesByClienteService, getAllGesByServico, getAllGesService, getImagesAtService, getOneGesService, postImagesAtService } from "../../services/ges";
+import { deleteExameService, deleteImageAtService, fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllExamesService, getAllExamesServiceByGes, getAllGesByClienteService, getAllGesByServico, getAllGesService, getImagesAtService, getOneExamesService, getOneGesService, postExameService, postImagesAtService, putExameService } from "../../services/ges";
 import { GesAttributes } from "../../models/Ges";
 import { AmbienteTrabalhoAttributes } from "../../models/AmbienteTrabalho";
 import { getCache } from "../cliente/cliente";
+import { dadosServicos } from "../servicos";
+import { getOneServico } from "../../services/servicos";
+import { getOneClienteService } from "../../services/Cliente";
 
 
 export const gesController = {
     postges: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-            
+
             // Verificando o arquivo enviado
             const file = req.files && req.files['file'] ? req.files['file'][0] : null;
 
@@ -36,7 +39,7 @@ export const gesController = {
             const { empresaId, email } = req.user;
             const userId = req.user.id;
 
-            
+
 
             // Extraindo os parâmetros
             const {
@@ -151,7 +154,8 @@ export const gesController = {
                 fluxogramaName,
                 servico_id,
                 texto_caracterizacao_processos,
-                risco_id
+                risco_id,
+                listExames
             } = req.body;
 
             // Verifica se o ID foi informado
@@ -164,6 +168,7 @@ export const gesController = {
                 empresaId,
                 Number(id),
                 listTrabalhadores,
+                listExames,
                 {
                     codigo,
                     descricao_ges: descricaoges,
@@ -336,7 +341,6 @@ export const gesController = {
 
     getAllGesByCliente: async (req: AuthenticatedUserRequest, res: Response) => {
         try {
-
             const { empresaId } = req.user!;
             const { idcliente } = req.params;
             const response = await getAllGesByClienteService(empresaId, Number(idcliente));
@@ -346,5 +350,132 @@ export const gesController = {
                 return res.status(400).json({ message: err.message });
             }
         }
-    }
+    },
+
+    postExame: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId, email } = req.user!;
+            const {
+                ges_id,
+                procedimento,
+                codigo,
+                admissional,
+                periodico,
+                demissional,
+                mudancaDeRiscos,
+                retornoAoTrabalho,
+                conclusao
+            } = req.body;
+
+            const servico_id = await getOneServico(empresaId, email);
+            const cliente_id = await getOneClienteService(empresaId, email);
+
+            const response = await postExameService({
+                empresa_id: empresaId,
+                servico_id: servico_id?.dataValues.servicoselecionado,
+                cliente_id: cliente_id?.dataValues.clienteselecionado,
+                ges_id,
+                procedimento,
+                codigo,
+                admissional,
+                periodico,
+                demissional,
+                mudanca_riscos: mudancaDeRiscos,
+                retorno_trabalho: retornoAoTrabalho,
+                conclusao,
+            });
+
+            return res.status(201).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+            return res.status(500).json({ message: "Erro interno no servidor" });
+        }
+    },
+
+    getAllExames: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId } = req.user!;
+            const { idges } = req.params;
+            const response = await getAllExamesService(Number(empresaId));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
+    getAllExamesByGes: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId } = req.user!;
+            const { idges } = req.params;
+            const response = await getAllExamesServiceByGes(Number(empresaId), Number(idges));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
+    getOneExame: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idexame } = req.params;
+            const response = await getOneExamesService(Number(idexame));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+
+    putExame: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idexame } = req.params;
+            const {
+                ges_id,
+                procedimento,
+                codigo,
+                admissional,
+                periodico,
+                demissional,
+                mudancaDeRiscos,
+                retornoAoTrabalho,
+                conclusao
+            } = req.body;
+
+            const response = await putExameService(Number(idexame), {
+                ges_id: ges_id || null, // 🔹 se vazio, salva como null
+                procedimento,
+                codigo,
+                admissional,
+                periodico,
+                demissional,
+                mudanca_riscos: mudancaDeRiscos,
+                retorno_trabalho: retornoAoTrabalho,
+                conclusao,
+            });
+
+
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
+    deleteExame: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { idexame } = req.params;
+            const response = await deleteExameService(Number(idexame));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }
+    },
 }

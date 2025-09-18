@@ -237,16 +237,17 @@ module.exports = {
                         }
 
                         const trabalhador = t.dataValues.trabalhador;
+                        console.log(trabalhador.dataValues)
                         let setorDescricao = "Não aplicavel";
-                        if (trabalhador?.setor_id) {
-                            const setor = await setorGetService(empresa.id, trabalhador.setor_id, cliente.dataValues.id);
+                        if (trabalhador?.dataValues.setor_id) {
+                            const setor = await setorGetService(empresa.id, trabalhador.dataValues.setor_id, cliente.dataValues.id);
                             setorDescricao = setor?.dataValues?.descricao || "Não aplicavel";
                         }
 
                         let funcaoDescricao = "Não aplicavel";
                         let funcao = null;
-                        if (trabalhador?.funcao_id) {
-                            const funcaoResponse = await funcaoGetService(empresa.id, trabalhador.funcao_id, cliente.dataValues.id);
+                        if (trabalhador?.dataValues.funcao_id) {
+                            const funcaoResponse = await funcaoGetService(empresa.id, trabalhador.dataValues.funcao_id, cliente.dataValues.id);
                             funcao = funcaoResponse?.dataValues || null;
                             funcaoDescricao = funcao?.descricao || "Não aplicavel";
                         }

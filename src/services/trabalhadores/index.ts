@@ -12,12 +12,21 @@ import Trabalhadores, {
 } from "../../models/Trabalhadores";
 import { ATPostService } from "../ambientesTrabalho";
 
-export const postDadosTrabalhadorService = (
+export const postDadosTrabalhadorService = async (
   params: TrabalhadorCreationAttributes
 ) => {
-  const data = Trabalhadores.create(params);
-  return data;
+  try {
+    console.log("Params recebidos para create:", params); // log de params
+    const data = await Trabalhadores.create(params, { logging: console.log }); // log do SQL
+    console.log("Trabalhador criado:", data.toJSON());
+    return data;
+  } catch (err) {
+    console.error("Erro ao criar trabalhador:", err);
+    throw err; // repassa o erro para o controller
+  }
 };
+
+
 
 export const postDadosTrabalhadorExcelService = async (
   params: any[] | object,
@@ -197,7 +206,7 @@ export const postDadosTrabalhadorExcelService = async (
 
         await GesTrabalhador.create({
           id_ges: gesId || 0,
-          id_trabalhador: newWorker.dataValues.id,
+          id_trabalhador: Number(newWorker.dataValues.id),
           id_funcao: funcaoId,
         });
       }
@@ -291,7 +300,7 @@ export const putDadosTrabalhadorService = (
   cargo_id: string,
   setor_id: string,
   codigo: string,
-  nome: string,
+  nome: string | null,
   genero: string,
   data_nascimento: string,
   cpf: string,
@@ -302,7 +311,8 @@ export const putDadosTrabalhadorService = (
   serie: string,
   uf: string,
   jornada_trabalho: string,
-  cargo: string
+  cargo: string,
+  qnt_trabalhadores?: number
 ) => {
   const data = Trabalhadores.update(
     {
@@ -311,7 +321,7 @@ export const putDadosTrabalhadorService = (
       cargo_id: Number(cargo_id),
       setor_id: Number(setor_id),
       codigo,
-      nome,
+      nome : nome !== null ? nome : undefined,
       genero,
       data_nascimento,
       cpf,
@@ -323,6 +333,7 @@ export const putDadosTrabalhadorService = (
       uf,
       jornada_trabalho,
       cargo,
+      qnt_trabalhadores: qnt_trabalhadores !== undefined ? qnt_trabalhadores : undefined
     },
     { where: { empresa_id: Number(empresaId), id: trabalhadorId } }
   );

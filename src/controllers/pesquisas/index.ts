@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
 
-import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEdificacaoService, getDadosPesquisaDescEpiService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescExposicaoService, getDadosPesquisaDescFonteGeradoraService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescMedidaControleAdministrativaExistenteService, getDadosPesquisaDescMedidaControleAdministrativaNecessariaService, getDadosPesquisaDescMedidaControleColetivaExistenteService, getDadosPesquisaDescMedidaControleColetivaNecessariaService, getDadosPesquisaDescMedidaControleIndividualExistenteService, getDadosPesquisaDescMedidaControleIndividualNecessariaService, getDadosPesquisaDescMedidaDeControleService, getDadosPesquisaDescMeioDePropagacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescResponsaveisTecnicosService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTecnicaUtilizadaService, getDadosPesquisaDescTetoService, getDadosPesquisaDescTipoPgrService, getDadosPesquisaDescTrajetoriaService, getDadosPesquisaDescVeiculoService, getDadosPesquisaDescVentilacaoService, getDadosPesquisaFatoresRiscoService, getDadosPesquisaGESService, getDadosPesquisaMobiliariosService, getDadosPesquisaParedeService, getDadosPesquisaPisoService, getDadosPesquisaRiscoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
+import { getDadosPesquisaCnpjNomeService, getDadosPesquisaDescCargoService, getDadosPesquisaDescCursoObrigatorioService, getDadosPesquisaDescDtIniDtFimService, getDadosPesquisaDescEdificacaoService, getDadosPesquisaDescEpiService, getDadosPesquisaDescEquipamentoService, getDadosPesquisaDescExamesService, getDadosPesquisaDescExposicaoService, getDadosPesquisaDescFonteGeradoraService, getDadosPesquisaDescFuncaoService, getDadosPesquisaDescGerenciaService, getDadosPesquisaDescIluminacaoService, getDadosPesquisaDescMedidaControleAdministrativaExistenteService, getDadosPesquisaDescMedidaControleAdministrativaNecessariaService, getDadosPesquisaDescMedidaControleColetivaExistenteService, getDadosPesquisaDescMedidaControleColetivaNecessariaService, getDadosPesquisaDescMedidaControleIndividualExistenteService, getDadosPesquisaDescMedidaControleIndividualNecessariaService, getDadosPesquisaDescMedidaDeControleService, getDadosPesquisaDescMeioDePropagacaoService, getDadosPesquisaDescRacService, getDadosPesquisaDescResponsaveisTecnicosService, getDadosPesquisaDescSetorService, getDadosPesquisaDescTecnicaUtilizadaService, getDadosPesquisaDescTetoService, getDadosPesquisaDescTipoPgrService, getDadosPesquisaDescTrajetoriaService, getDadosPesquisaDescVeiculoService, getDadosPesquisaDescVentilacaoService, getDadosPesquisaFatoresRiscoService, getDadosPesquisaGESService, getDadosPesquisaMobiliariosService, getDadosPesquisaParedeService, getDadosPesquisaPisoService, getDadosPesquisaRiscoService, getDadosPesquisaTrabalhadoresService } from "../../services/pesquisa";
 
 
 export const pesquisaController = {
@@ -485,6 +485,20 @@ export const pesquisaController = {
       const { empresaId } = req.user!;
 
       const data = await getDadosPesquisaDescResponsaveisTecnicosService(empresaId, pesquisa);
+      res.json(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        return res.status(400).json({ message: err.message });
+      }
+    }
+  },
+
+  getDadosPesquisaExames: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { pesquisa } = req.params;
+      const { empresaId, email } = req.user!;
+
+      const data = await getDadosPesquisaDescExamesService(empresaId, pesquisa, email);
       res.json(data);
     } catch (err) {
       if (err instanceof Error) {

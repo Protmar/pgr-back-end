@@ -362,8 +362,8 @@ export const gesController = {
                 admissional,
                 periodico,
                 demissional,
-                mudancaDeRiscos,
-                retornoAoTrabalho,
+                mudanca_riscos,
+                retorno_trabalho,
                 conclusao
             } = req.body;
 
@@ -380,8 +380,8 @@ export const gesController = {
                 admissional,
                 periodico,
                 demissional,
-                mudanca_riscos: mudancaDeRiscos,
-                retorno_trabalho: retornoAoTrabalho,
+                mudanca_riscos,
+                retorno_trabalho,
                 conclusao,
             });
 
@@ -442,8 +442,8 @@ export const gesController = {
                 admissional,
                 periodico,
                 demissional,
-                mudancaDeRiscos,
-                retornoAoTrabalho,
+                mudanca_riscos,
+                retorno_trabalho,
                 conclusao
             } = req.body;
 
@@ -454,8 +454,8 @@ export const gesController = {
                 admissional,
                 periodico,
                 demissional,
-                mudanca_riscos: mudancaDeRiscos,
-                retorno_trabalho: retornoAoTrabalho,
+                mudanca_riscos,
+                retorno_trabalho,
                 conclusao,
             });
 

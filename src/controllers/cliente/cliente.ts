@@ -211,17 +211,14 @@ export const dadosCliente = {
             const { cliente_id } = req.body;
 
             if (!cliente_id) {
-                return res.status(400).json({
-                    message: "O cliente_id é obrigatório",
-                });
+                return res.status(400).json({ message: "O cliente_id é obrigatório" });
             }
 
-            User.update(
+            // Atualiza o cliente selecionado
+            await User.update(
                 { clienteselecionado: cliente_id },
                 { where: { id: req.user!.id } }
             );
-
-            globalThis.cliente_id = cliente_id;
 
             return res.status(200).json({
                 message: "Cliente selecionado com sucesso!",
@@ -234,6 +231,7 @@ export const dadosCliente = {
             });
         }
     },
+
 
     uploadLogo: async (req: AuthenticatedUserRequest, res: Response) => {
         const { cliente_id, name } = req.body;

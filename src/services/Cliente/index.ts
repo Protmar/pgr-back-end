@@ -195,20 +195,19 @@ export const postLogoClienteService = async (
 
 export const getOneClienteService = async (empresaId: number, email: string) => {
   const data = await User.findOne({
-    where: {
-      empresaId: empresaId,
-      email: email
-    },
-    attributes: ["clienteselecionado"],
-    include: [{
-      model: Cliente,
-      as: "clientes",
-      where: {
-        empresa_id: empresaId,
+    where: { empresaId, email },
+    attributes: ["clienteselecionado"], // só traz o necessário
+    include: [
+      {
+        model: Cliente,
+        as: "clientes",
+        where: { empresa_id: empresaId },
+        attributes: ["nome_fantasia"], // só o campo necessário
       },
-      attributes: ["nome_fantasia"],
-    }]
+    ],
+    raw: true,   // transforma em objeto plano
+    nest: true,  // mantém relacionamento aninhado
   });
 
   return data;
-}
+};

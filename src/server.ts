@@ -15,8 +15,8 @@ app.use(cors());
 
 app.use(express.static("public"));
 
-app.use(bodyParser.json({ limit: "900mb" }));
-app.use(bodyParser.urlencoded({ limit: "900mb", extended: true }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 app.use(
   session({

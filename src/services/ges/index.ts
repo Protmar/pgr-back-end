@@ -165,80 +165,79 @@ export const GesTrabalhadoresPost = async (
 
 };
 
-export const getAllGesService = async (empresa_id: number, userId: number) => {
-    const servico_id = await User.findOne({
-        where: { id: userId },
-        attributes: ["servicoselecionado"],
+// Helper para remover createdAt/updatedAt recursivamente
+const removeTimestamps = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(removeTimestamps);
+  } else if (obj && typeof obj === "object") {
+    const { createdAt, updatedAt, created_at, updated_at, ...rest } = obj;
+    Object.keys(rest).forEach((key) => {
+      rest[key] = removeTimestamps(rest[key]);
     });
-
-    const data = await Ges.findAll({
-        where: {
-            empresa_id,
-            servico_id: Number(servico_id?.dataValues.servicoselecionado)
-        },
-        include: [
-            { model: GesCurso, as: "cursos" },
-            { model: GesRac, as: "racs" },
-            { model: GesTipoPgr, as: "tiposPgr" },
-            {
-                model: GesTrabalhador,
-                as: "trabalhadores",
-                include: [
-                    {
-                        model: Trabalhadores,
-                        as: "trabalhador",
-                        include: [
-                            {
-                                model: CadastroFuncao,
-                                as: "funcao",
-                            },
-                        ]
-                    },
-                ],
-            },
-            {
-                model: AmbienteTrabalho,
-                as: "ambientesTrabalhos",
-                include: [
-                    { model: CadastroTeto, as: "teto", attributes: ["descricao"] },
-                    { model: CadastroEdificacao, as: "edificacao", attributes: ["descricao"] },
-                    { model: CadastroParede, as: "parede", attributes: ["descricao"] },
-                    { model: CadastroVentilacao, as: "ventilacao", attributes: ["descricao"] },
-                    { model: CadastroIluminacao, as: "iluminacao", attributes: ["descricao"] },
-                    { model: CadastroPiso, as: "piso", attributes: ["descricao"] },
-                    {
-                        model: VeiculosAmbienteTrabalho,
-                        as: "veiculosAmbienteTrabalho",
-                        attributes: ["id"],
-                        include: [
-                            { model: CadastroVeiculo, as: "veiculo" },
-                        ]
-                    },
-                    {
-                        model: MobiliarioAmbienteTrabalho,
-                        as: "MobiliarioAmbienteTrabalho",
-                        attributes: ["id"],
-                        include: [
-                            { model: CadastroMobiliario, as: "mobiliario" },
-                        ]
-                    },
-                    {
-                        model: EquipamentosAmbienteTrabalho,
-                        as: "EquipamentoAmbienteTrabalho",
-                        attributes: ["id"],
-                        include: [
-                            { model: CadastroEquipamento, as: "equipamento" },
-                        ]
-                    },
-                ]
-            },
-
-        ]
-    });
-
-    return data;
-
+    return rest;
+  }
+  return obj;
 };
+
+// Service corrigido
+export const getAllGesService = async (empresa_id: number, userId: number) => {
+  const servicoSelecionado = await User.findOne({
+    where: { id: userId },
+    attributes: ["servicoselecionado"],
+    raw: true,
+  });
+
+  if (!servicoSelecionado) return [];
+
+  const gesList = await Ges.findAll({
+    where: {
+      empresa_id,
+      servico_id: Number(servicoSelecionado.servicoselecionado),
+    },
+    raw: true,
+    nest: true,
+  });
+
+  const gesIds = gesList.map((g: any) => g.id);
+  if (gesIds.length === 0) return [];
+
+  const [cursos, racs, tiposPgr, trabalhadores, ambientes] = await Promise.all([
+    GesCurso.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
+    GesRac.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
+    GesTipoPgr.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
+    GesTrabalhador.findAll({
+      where: { id_ges: gesIds },
+      include: [
+        {
+          model: Trabalhadores,
+          as: "trabalhador",
+          include: [{ model: CadastroFuncao, as: "funcao" }],
+        },
+      ],
+      raw: true,
+      nest: true,
+    }),
+    AmbienteTrabalho.findAll({ where: { ges_id: gesIds }, raw: true, nest: true }),
+  ]);
+
+  const result = gesList.map((ges: any) => ({
+    ...ges,
+    cursos: cursos.filter((c: any) => c.id_ges === ges.id),
+    racs: racs.filter((r: any) => r.id_ges === ges.id),
+    tiposPgr: tiposPgr.filter((t: any) => t.id_ges === ges.id),
+    trabalhadores: trabalhadores.filter((tr: any) => tr.id_ges === ges.id),
+    ambientesTrabalhos: ambientes.filter((a: any) => a.ges_id === ges.id),
+  }));
+
+  // Remove createdAt/updatedAt de todos os níveis
+  return removeTimestamps(result);
+};
+
+
+
+
+
+
 
 
 export const getOneGesRiscoService = async (empresa_id: number, idges: number, clienteId?: number) => {

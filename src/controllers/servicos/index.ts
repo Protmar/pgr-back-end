@@ -30,10 +30,10 @@ export const dadosServicos = {
       }
     }
   },
-  
+
   postWithLastClient: async (req: AuthenticatedUserRequest, res: Response) => {
     try {
-      const {  descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
+      const { descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim } = req.body;
 
       const { empresaId } = req.user!;
       const clienteId = req.params.idcliente;
@@ -83,7 +83,7 @@ export const dadosServicos = {
       const { empresaId } = req.user!;
       const { descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim, base_document_url_pgr, base_document_url_pgrtr, base_document_url_ltcat, base_document_url_lp, base_document_url_li, memorial_descritivo_processo_pgr, memorial_descritivo_processo_pgrtr, memorial_descritivo_processo_ltcat } = req.body;
 
-      const servicos = await putDadosServicosService(empresaId, Number(idservico), { descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim, base_document_url_pgr, base_document_url_pgrtr, base_document_url_lp, base_document_url_li,base_document_url_ltcat, memorial_descritivo_processo_pgr, memorial_descritivo_processo_pgrtr, memorial_descritivo_processo_ltcat });
+      const servicos = await putDadosServicosService(empresaId, Number(idservico), { descricao, responsavel_aprovacao, id_responsavel_aprovacao, cargo_responsavel_aprovacao, data_inicio, data_fim, base_document_url_pgr, base_document_url_pgrtr, base_document_url_lp, base_document_url_li, base_document_url_ltcat, memorial_descritivo_processo_pgr, memorial_descritivo_processo_pgrtr, memorial_descritivo_processo_ltcat });
 
       res.json(servicos);
     } catch (err) {
@@ -112,22 +112,25 @@ export const dadosServicos = {
     try {
       const { servico_id } = req.body;
 
-      User.update({
-        servicoselecionado: servico_id
-      }, {
-        where: { id: req.user!.id }
-      })
+      if (!servico_id) {
+        return res.status(400).json({ message: "O servico_id é obrigatório" });
+      }
 
-      globalThis.servico_id = servico_id;
+      // Atualiza de forma segura
+      await User.update(
+        { servicoselecionado: servico_id },
+        { where: { id: req.user!.id } }
+      );
 
       return res.status(200).json({
-        message: "Servico selecionado com sucesso!",
+        message: "Serviço selecionado com sucesso!",
         servico_id,
       });
     } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
-      }
+      console.error("Erro ao selecionar serviço:", err);
+      return res.status(500).json({
+        message: err instanceof Error ? err.message : "Erro desconhecido ao selecionar serviço.",
+      });
     }
   },
 
@@ -172,13 +175,20 @@ export const dadosServicos = {
     try {
       const { empresaId, email } = req.user!;
 
-      const servicos = await getOneServico(empresaId, email);
+      // Chama service otimizado que retorna apenas os campos necessários
+      const servico = await getOneServico(empresaId, email);
 
-      res.json(servicos);
-    } catch (err) {
-      if (err instanceof Error) {
-        return res.status(400).json({ message: err.message });
+      if (!servico) {
+        return res.status(404).json({ message: "Serviço não encontrado." });
       }
+
+      return res.json(servico);
+    } catch (err) {
+      console.error("Erro ao buscar serviço:", err);
+      return res.status(500).json({
+        message: err instanceof Error ? err.message : "Erro desconhecido ao buscar serviço.",
+      });
     }
   }
+
 }

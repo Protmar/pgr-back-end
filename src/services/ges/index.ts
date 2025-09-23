@@ -986,7 +986,7 @@ export const getAllGesByServicoGenerateRelatorioService = async (empresaId: numb
                 empresa_id: empresaId,
                 servico_id: idServico,
             },
-            attributes: ["id", "tipo_pgr"],
+            attributes: ["id", "tipo_pgr", "descricao_ges"],
             
         });
 

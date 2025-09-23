@@ -167,70 +167,70 @@ export const GesTrabalhadoresPost = async (
 
 // Helper para remover createdAt/updatedAt recursivamente
 const removeTimestamps = (obj: any): any => {
-  if (Array.isArray(obj)) {
-    return obj.map(removeTimestamps);
-  } else if (obj && typeof obj === "object") {
-    const { createdAt, updatedAt, created_at, updated_at, ...rest } = obj;
-    Object.keys(rest).forEach((key) => {
-      rest[key] = removeTimestamps(rest[key]);
-    });
-    return rest;
-  }
-  return obj;
+    if (Array.isArray(obj)) {
+        return obj.map(removeTimestamps);
+    } else if (obj && typeof obj === "object") {
+        const { createdAt, updatedAt, created_at, updated_at, ...rest } = obj;
+        Object.keys(rest).forEach((key) => {
+            rest[key] = removeTimestamps(rest[key]);
+        });
+        return rest;
+    }
+    return obj;
 };
 
 // Service corrigido
 export const getAllGesService = async (empresa_id: number, userId: number) => {
-  const servicoSelecionado = await User.findOne({
-    where: { id: userId },
-    attributes: ["servicoselecionado"],
-    raw: true,
-  });
+    const servicoSelecionado = await User.findOne({
+        where: { id: userId },
+        attributes: ["servicoselecionado"],
+        raw: true,
+    });
 
-  if (!servicoSelecionado) return [];
+    if (!servicoSelecionado) return [];
 
-  const gesList = await Ges.findAll({
-    where: {
-      empresa_id,
-      servico_id: Number(servicoSelecionado.servicoselecionado),
-    },
-    raw: true,
-    nest: true,
-  });
-
-  const gesIds = gesList.map((g: any) => g.id);
-  if (gesIds.length === 0) return [];
-
-  const [cursos, racs, tiposPgr, trabalhadores, ambientes] = await Promise.all([
-    GesCurso.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
-    GesRac.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
-    GesTipoPgr.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
-    GesTrabalhador.findAll({
-      where: { id_ges: gesIds },
-      include: [
-        {
-          model: Trabalhadores,
-          as: "trabalhador",
-          include: [{ model: CadastroFuncao, as: "funcao" }],
+    const gesList = await Ges.findAll({
+        where: {
+            empresa_id,
+            servico_id: Number(servicoSelecionado.servicoselecionado),
         },
-      ],
-      raw: true,
-      nest: true,
-    }),
-    AmbienteTrabalho.findAll({ where: { ges_id: gesIds }, raw: true, nest: true }),
-  ]);
+        raw: true,
+        nest: true,
+    });
 
-  const result = gesList.map((ges: any) => ({
-    ...ges,
-    cursos: cursos.filter((c: any) => c.id_ges === ges.id),
-    racs: racs.filter((r: any) => r.id_ges === ges.id),
-    tiposPgr: tiposPgr.filter((t: any) => t.id_ges === ges.id),
-    trabalhadores: trabalhadores.filter((tr: any) => tr.id_ges === ges.id),
-    ambientesTrabalhos: ambientes.filter((a: any) => a.ges_id === ges.id),
-  }));
+    const gesIds = gesList.map((g: any) => g.id);
+    if (gesIds.length === 0) return [];
 
-  // Remove createdAt/updatedAt de todos os níveis
-  return removeTimestamps(result);
+    const [cursos, racs, tiposPgr, trabalhadores, ambientes] = await Promise.all([
+        GesCurso.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
+        GesRac.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
+        GesTipoPgr.findAll({ where: { id_ges: gesIds }, raw: true, nest: true }),
+        GesTrabalhador.findAll({
+            where: { id_ges: gesIds },
+            include: [
+                {
+                    model: Trabalhadores,
+                    as: "trabalhador",
+                    include: [{ model: CadastroFuncao, as: "funcao" }],
+                },
+            ],
+            raw: true,
+            nest: true,
+        }),
+        AmbienteTrabalho.findAll({ where: { ges_id: gesIds }, raw: true, nest: true }),
+    ]);
+
+    const result = gesList.map((ges: any) => ({
+        ...ges,
+        cursos: cursos.filter((c: any) => c.id_ges === ges.id),
+        racs: racs.filter((r: any) => r.id_ges === ges.id),
+        tiposPgr: tiposPgr.filter((t: any) => t.id_ges === ges.id),
+        trabalhadores: trabalhadores.filter((tr: any) => tr.id_ges === ges.id),
+        ambientesTrabalhos: ambientes.filter((a: any) => a.ges_id === ges.id),
+    }));
+
+    // Remove createdAt/updatedAt de todos os níveis
+    return removeTimestamps(result);
 };
 
 
@@ -497,7 +497,7 @@ export const getTrabalhadores = async (empresa_id: number, idges: number) => {
                                 as: "funcao",
                                 attributes: ["funcao", "descricao"],
                             },
-                            
+
                         ]
                     },
                 ],
@@ -551,7 +551,7 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
     if (!empresa_id || !idges || isNaN(empresa_id) || isNaN(idges)) {
         throw new Error("Parâmetros empresa_id e idges devem ser números válidos.");
     }
-    
+
     const [riscos, cursos, imagens, racs, tiposPgr, trabalhadores, ambientesTrabalho, exames] = await Promise.all([
         getRiscos(empresa_id, idges),
         getCursos(empresa_id, idges),
@@ -579,18 +579,18 @@ export const getOneGesService = async (empresa_id: number, idges: number) => {
 };
 
 export const getExames = async (empresa_id: number, idges: number) => {
-  return Ges.findOne({
-    where: { empresa_id, id: idges },
-    include: [
-      {
-        model: GesExames,
-        as: "gesExames", 
+    return Ges.findOne({
+        where: { empresa_id, id: idges },
         include: [
-          { model: Exames, as: "exame" } // bate com GesExames.belongsTo
+            {
+                model: GesExames,
+                as: "gesExames",
+                include: [
+                    { model: Exames, as: "exame" } // bate com GesExames.belongsTo
+                ]
+            }
         ]
-      }
-    ]
-  });
+    });
 };
 
 
@@ -861,105 +861,142 @@ export const getAllGesByServico = async (empresaId: number, idServico: number) =
         const data = await Ges.findAll({
             where: {
                 empresa_id: empresaId,
-                servico_id: idServico
+                servico_id: idServico,
             },
+            attributes: { exclude: ["createdAt", "updatedAt"] },
             include: [
                 {
-                    model: Risco, as: "riscos",
-                    attributes: ["id"],
+                    model: Risco,
+                    as: "riscos",
+                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
                         {
                             model: CadastroMedidaControleIndividualExistente,
                             as: "medidas_individuais_existentes",
-                            attributes: ["descricao"],
-                        }
-                    ]
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
+                        },
+                    ],
                 },
                 {
-                    model: GesCurso, as: "cursos"
-                    , include: [
+                    model: GesCurso,
+                    as: "cursos",
+                    attributes: { exclude: ["createdAt", "updatedAt"] },
+                    include: [
                         {
                             model: CadastroCursoObrigatorio,
                             as: "curso",
-                        }
-                    ]
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
+                        },
+                    ],
                 },
                 {
                     model: GesRac,
                     as: "racs",
+                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
                         {
                             model: CadastroRac,
                             as: "rac",
-                        }
-                    ]
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
+                        },
+                    ],
                 },
                 {
-                    model: GesTipoPgr, as: "tiposPgr",
+                    model: GesTipoPgr,
+                    as: "tiposPgr",
+                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
-                        { model: CadastroTipoPgr, as: "tipoPgr" }
-                    ]
+                        {
+                            model: CadastroTipoPgr,
+                            as: "tipoPgr",
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
+                        },
+                    ],
                 },
                 {
                     model: GesTrabalhador,
                     as: "trabalhadores",
+                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
                         {
                             model: Trabalhadores,
                             as: "trabalhador",
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
                             include: [
                                 {
                                     model: CadastroFuncao,
                                     as: "funcao",
+                                    attributes: { exclude: ["createdAt", "updatedAt"] },
                                 },
-                            ]
+                            ],
                         },
                     ],
                 },
                 {
                     model: AmbienteTrabalho,
                     as: "ambientesTrabalhos",
+                    attributes: { exclude: ["createdAt", "updatedAt"] },
                     include: [
-                        { model: CadastroTeto, as: "teto", attributes: ["descricao"] },
-                        { model: CadastroEdificacao, as: "edificacao", attributes: ["descricao"] },
-                        { model: CadastroParede, as: "parede", attributes: ["descricao"] },
-                        { model: CadastroVentilacao, as: "ventilacao", attributes: ["descricao"] },
-                        { model: CadastroIluminacao, as: "iluminacao", attributes: ["descricao"] },
-                        { model: CadastroPiso, as: "piso", attributes: ["descricao"] },
+                        { model: CadastroTeto, as: "teto", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                        { model: CadastroEdificacao, as: "edificacao", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                        { model: CadastroParede, as: "parede", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                        { model: CadastroVentilacao, as: "ventilacao", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                        { model: CadastroIluminacao, as: "iluminacao", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                        { model: CadastroPiso, as: "piso", attributes: { exclude: ["createdAt", "updatedAt"] } },
                         {
                             model: VeiculosAmbienteTrabalho,
                             as: "veiculosAmbienteTrabalho",
-                            attributes: ["id"],
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
                             include: [
-                                { model: CadastroVeiculo, as: "veiculo" },
-                            ]
+                                { model: CadastroVeiculo, as: "veiculo", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                            ],
                         },
                         {
                             model: MobiliarioAmbienteTrabalho,
                             as: "MobiliarioAmbienteTrabalho",
-                            attributes: ["id"],
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
                             include: [
-                                { model: CadastroMobiliario, as: "mobiliario" },
-                            ]
+                                { model: CadastroMobiliario, as: "mobiliario", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                            ],
                         },
                         {
                             model: EquipamentosAmbienteTrabalho,
                             as: "EquipamentoAmbienteTrabalho",
-                            attributes: ["id"],
+                            attributes: { exclude: ["createdAt", "updatedAt"] },
                             include: [
-                                { model: CadastroEquipamento, as: "equipamento" },
-                            ]
+                                { model: CadastroEquipamento, as: "equipamento", attributes: { exclude: ["createdAt", "updatedAt"] } },
+                            ],
                         },
-                    ]
-                }
-            ]
-        })
+                    ],
+                },
+            ],
+        });
 
         return data;
     } catch (error) {
-        console.error(error)
+        console.error("Erro ao buscar GES por serviço:", error);
+        throw error;
+    }
+};
+
+export const getAllGesByServicoGenerateRelatorioService = async (empresaId: number, idServico: number) => {
+    try {
+        const data = await Ges.findAll({
+            where: {
+                empresa_id: empresaId,
+                servico_id: idServico,
+            },
+            attributes: ["id", "tipo_pgr"],
+            
+        });
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar GES por serviço:", error);
+        throw error;
     }
 }
+
 
 export const getAllGesByClienteService = async (empresaId: number, clienteId: number) => {
     try {
@@ -1052,7 +1089,7 @@ export const putExameService = async (id: number, newValues: any) => {
     } catch (error) {
         console.error(error)
     }
-} 
+}
 
 export const deleteExameService = async (id: number) => {
     try {

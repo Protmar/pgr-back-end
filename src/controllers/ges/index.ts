@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AuthenticatedUserRequest } from "../../middleware";
-import { deleteExameService, deleteImageAtService, fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllExamesService, getAllExamesServiceByGes, getAllGesByClienteService, getAllGesByServico, getAllGesService, getImagesAtService, getOneExamesService, getOneGesService, postExameService, postImagesAtService, putExameService } from "../../services/ges";
+import { deleteExameService, deleteImageAtService, fluxogramaDeleteService, fluxogramaUpdateNameService, gesDeleteService, gesPostService, gesPutService, getAllExamesService, getAllExamesServiceByGes, getAllGesByClienteService, getAllGesByServico, getAllGesByServicoGenerateRelatorioService, getAllGesService, getImagesAtService, getOneExamesService, getOneGesService, postExameService, postImagesAtService, putExameService } from "../../services/ges";
 import { GesAttributes } from "../../models/Ges";
 import { AmbienteTrabalhoAttributes } from "../../models/AmbienteTrabalho";
 import { getCache } from "../cliente/cliente";
@@ -337,6 +337,19 @@ export const gesController = {
                 return res.status(400).json({ message: err.message });
             }
         }
+    },
+
+    getAllByServicoGenerateRelatorio: async (req: AuthenticatedUserRequest, res: Response) => {
+        try {
+            const { empresaId } = req.user!;
+            const { idservico } = req.params;
+            const response = await getAllGesByServicoGenerateRelatorioService(empresaId, Number(idservico));
+            return res.status(200).json(response);
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(400).json({ message: err.message });
+            }
+        }   
     },
 
     getAllGesByCliente: async (req: AuthenticatedUserRequest, res: Response) => {

@@ -405,6 +405,7 @@ router.put("/updatenamefluxograma/:idges", ensureUserAuth, gesController.updateN
 router.post("/postimagesat", ensureUserAuth, middlewareCanEditAndCreate, gesController.postImagesAt);
 router.get("/getimagesat/:idges", ensureUserAuth, gesController.getImagesAt);
 router.get("/gesgetallbyservico/:idservico", ensureUserAuth, gesController.getAllByServico);
+router.get("/gesgetallbyservicogeneraterelatorio/:idservico", ensureUserAuth, gesController.getAllByServicoGenerateRelatorio);
 router.get("/gesgetallbycliente/:idcliente", ensureUserAuth, gesController.getAllGesByCliente);
 router.delete("/deleteimageat/:idimageat", ensureUserAuth, gesController.deleteImageAt);
 

@@ -63,38 +63,44 @@ export const getDadosPesquisaCnpjNomeService = async (
   return data; // Retorna os dados encontrados
 };
 
-export const getDadosPesquisaGESService = async(
+export const getDadosPesquisaGESService = async (
   empresa_id: any,
-  pesquisa: any,
+  pesquisa: string,
   email: any
 ) => {
-
   const servicoSelecionado = await getOneServico(empresa_id, email);
 
-  const data = await Ges.findAll({
-    where: {
-      servico_id: servicoSelecionado?.servicoselecionado ?? undefined,
-      empresa_id: empresa_id, 
-      [Op.or]: [
-        {
-          codigo: {
-            [Op.iLike]: `%${pesquisa}%`,
-          },
-        },
-        {
-          descricao_ges: {
-            [Op.iLike]: `%${pesquisa}%`,
-          } as any,
-        },
-        {
-          tipo_pgr: {
-            [Op.iLike]: `%${pesquisa}%`,
-          } as any,
-        },
-      ],
-    },
-  });
+  let where: any = {
+    servico_id: servicoSelecionado?.servicoselecionado ?? undefined,
+    empresa_id,
+  };
 
+  if (pesquisa.includes("::")) {
+    // 🔹 Pesquisa avançada → exemplo: "codigo::123&&descricao_ges::quimico"
+    const partes = pesquisa.split("&&");
+
+    where[Op.and] = partes.map((parte) => {
+      const [campo, valor] = parte.split("::");
+
+      if (campo && valor && valor.trim() !== "") {
+        return {
+          [campo.trim()]: {
+            [Op.iLike]: `%${valor.trim()}%`,
+          },
+        };
+      }
+      return {};
+    });
+  } else {
+    // 🔹 Pesquisa global (busca em todos os campos fixos)
+    where[Op.or] = [
+      { codigo: { [Op.iLike]: `%${pesquisa}%` } },
+      { descricao_ges: { [Op.iLike]: `%${pesquisa}%` } },
+      { tipo_pgr: { [Op.iLike]: `%${pesquisa}%` } },
+    ];
+  }
+
+  const data = await Ges.findAll({ where });
   return data;
 };
 
@@ -668,43 +674,47 @@ export const getDadosPesquisaDescCursoObrigatorioService = async (
 
 export const getDadosPesquisaTrabalhadoresService = async (
   empresa_id: any,
-  pesquisa: any,
+  pesquisa: string,
   email: any
 ) => {
-
   const servico = await getOneServico(empresa_id, email);
 
-  const data = await Trabalhadores.findAll({
-    where: {
-      servico_id: servico?.servicoselecionado ?? undefined,
-      empresa_id: empresa_id, 
-      [Op.or]: [
-        {
-          codigo: {
-            [Op.iLike]: `%${pesquisa}%`,
-          },
-        },
-        {
-          nome: {
-            [Op.iLike]: `%${pesquisa}%`,
-          } as any,
-        },
-        {
-          cpf: {
-            [Op.iLike]: `%${pesquisa}%`,
-          } as any,
-        },
-        {
-          cargo: {
-            [Op.iLike]: `%${pesquisa}%`,
-          } as any,
-        },
-      ],
-    },
-  });
+  let where: any = {
+    servico_id: servico?.servicoselecionado ?? undefined,
+    empresa_id,
+  };
 
+  if (pesquisa.includes("::")) {
+    // 🔹 Pesquisa avançada → exemplo: "codigo:123&&nome:joao"
+    const partes = pesquisa.split("&&");
+
+    where[Op.and] = partes.map((parte) => {
+      const [campo, valor] = parte.split("::");
+
+      if (campo && valor && valor.trim() !== "") {
+        return {
+          [campo.trim()]: {
+            [Op.iLike]: `%${valor.trim()}%`,
+          },
+        };
+      }
+      return {};
+    });
+  } else {
+    // 🔹 Pesquisa global (busca em todos os campos)
+    where[Op.or] = [
+      { codigo: { [Op.iLike]: `%${pesquisa}%` } },
+      { nome: { [Op.iLike]: `%${pesquisa}%` } },
+      { cpf: { [Op.iLike]: `%${pesquisa}%` } },
+      { cargo: { [Op.iLike]: `%${pesquisa}%` } },
+    ];
+  }
+
+  const data = await Trabalhadores.findAll({ where });
   return data;
 };
+
+
 
 export const getDadosPesquisaMobiliariosService = async (
   empresa_id: any,
@@ -768,30 +778,36 @@ export const getDadosPesquisaPisoService = async (
 
 export const getDadosPesquisaDescResponsaveisTecnicosService = async (
   empresa_id: any,
-  pesquisa: any
+  pesquisa: string
 ) => {
-  const data = await ResponsavelTecnico.findAll({
-    where: {
-      empresa_id: empresa_id,
-      [Op.or]: [
-        {
-          [Op.or]: [
-            {
-              nome: {
-                [Op.iLike]: `%${pesquisa}%`,
-              },
-            },
-            {
-              funcao: {
-                [Op.iLike]: `%${pesquisa}%`,
-              } as any,
-            }
-          ],
-        },
-      ],
-    },
-  });
+  let where: any = {
+    empresa_id,
+  };
 
+  if (pesquisa.includes("::")) {
+    const partes = pesquisa.split("&&");
+
+    where[Op.and] = partes.map((parte) => {
+      const [campo, valor] = parte.split("::");
+
+      if (campo && valor && valor.trim() !== "") {
+        return {
+          [campo.trim()]: {
+            [Op.iLike]: `%${valor.trim()}%`,
+          },
+        };
+      }
+      return {};
+    });
+  } else {
+    // 🔹 Pesquisa global (busca em todos os campos fixos)
+    where[Op.or] = [
+      { nome: { [Op.iLike]: `%${pesquisa}%` } },
+      { funcao: { [Op.iLike]: `%${pesquisa}%` } },
+    ];
+  }
+
+  const data = await ResponsavelTecnico.findAll({ where });
   return data;
 };
 

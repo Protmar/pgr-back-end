@@ -372,8 +372,8 @@ export const gesController = {
 
             const response = await postExameService({
                 empresa_id: empresaId,
-                servico_id: servico_id?.dataValues.servicoselecionado,
-                cliente_id: cliente_id?.dataValues.clienteselecionado,
+                servico_id: servico_id?.servicoselecionado,
+                cliente_id: cliente_id?.clienteselecionado,
                 ges_id,
                 procedimento,
                 codigo,

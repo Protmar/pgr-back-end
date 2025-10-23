@@ -175,7 +175,7 @@ export const medidaColetivaPlanoAcaoController = {
       // const responseData = data.map((plano: any) => ({
       //   ...plano.toJSON(),
       //   medidaColetivaNecessarias: plano.medidas_coletivas_necessarias || [],
-      //   medidaAdministrativaNecessarias: plano.medidas_administrativas_necessarias || [],
+      //   medidaAdministrativaNecessarias: plano.medidas_administrativas_n || [],
       //   medidaIndividualNecessarias: plano.medidas_individual_necessarias || [],
       // }));
       res.status(200).json({

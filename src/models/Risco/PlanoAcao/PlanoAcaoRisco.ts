@@ -94,7 +94,7 @@ PlanoAcaoRisco.belongsToMany(CadastroMedidaControleAdministrativaNecessaria, {
   through: RiscoAdministrativoNecessaria,
   foreignKey: "id_plano_acao_riscos",
   otherKey: "id_medida_controle_administrativa_necessarias",
-  as: "medidas_administrativas_necessarias"
+  as: "medidas_administrativas_n"
 // =======
 // export interface CadastroPlanoAcaoRiscoCreationAttributes
 //   extends Optional<CadastroPlanoAcaoRiscoAttributes, "id"> {}

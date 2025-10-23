@@ -386,7 +386,7 @@ export const getRiscos = async (empresa_id: number, idges: number) => {
                                 include: [
                                     {
                                         model: CadastroMedidaControleAdministrativaNecessaria,
-                                        as: "medidas_administrativas_necessarias",
+                                        as: "medidas_administrativas_n",
                                         attributes: ["descricao"]
                                     }
                                 ]

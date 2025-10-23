@@ -73,7 +73,7 @@ export const postDadosPlanoAcaoService = async (
         },
         {
           model: CadastroMedidaControleAdministrativaNecessaria,
-          as: "medidas_administrativas_necessarias",
+          as: "medidas_administrativas_n",
         },
         {
           model: CadastroMedidaControleIndividualNecessaria,
@@ -116,7 +116,7 @@ export const getDadosPlanoAcaoService = async (
       },
       {
         model: CadastroMedidaControleAdministrativaNecessaria,
-        as: "medidas_administrativas_necessarias",
+        as: "medidas_administrativas_n",
       },
       {
         model: CadastroMedidaControleIndividualNecessaria,
@@ -141,7 +141,7 @@ export const getAllDadosPlanoAcaoService = async (riscoId: string) => {
       },
       {
         model: CadastroMedidaControleAdministrativaNecessaria,
-        as: "medidas_administrativas_necessarias"
+        as: "medidas_administrativas_n"
       },
       {
         model: CadastroMedidaControleIndividualNecessaria,
@@ -232,7 +232,7 @@ export const putDadosPlanoAcaoService = async (
         },
         {
           model: CadastroMedidaControleAdministrativaNecessaria,
-          as: "medidas_administrativas_necessarias",
+          as: "medidas_administrativas_n",
         },
         {
           model: CadastroMedidaControleIndividualNecessaria,

@@ -70,6 +70,10 @@ router.post("/auth/login", authController.login)
 router.post("/auth/forgotPassword", authController.forgotPassword)
 router.post("/auth/resetPassword/:token", authController.resetPassword)
 
+//Auth Mobile
+router.post("/mobile/auth/login", authController.loginMobile)
+
+
 //mfa
 router.get("/auth/mfa/enable", ensureUserAuth, authController.enableMFA);
 router.post("/auth/mfa/addtoken", ensureUserAuth, authController.addToken);
@@ -435,6 +439,8 @@ router.get("/getriscobyges/:idges", ensureUserAuth, dadosRisco.getRiscoByGes);
 router.get("/cadastros/medidascoletivas", ensureUserAuth, medidaColetivaController.getAll);
 router.get("/cadastros/medidasadministrativas", ensureUserAuth, medidaAdministrativaController.getAll);
 router.get("/cadastros/medidasindividuais", ensureUserAuth, medidaIndividualController.getAll);
+
+router.post("/copiarrisco" , ensureUserAuth, middlewareCanEditAndCreate, dadosRisco.copy);
 
 //PLANO DE AÇÃO
 router.post("/riscos/:riscoId/planoacao", ensureUserAuth, middlewareCanEditAndCreate, dadosPlanoAcao.post);

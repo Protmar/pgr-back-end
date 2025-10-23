@@ -7,9 +7,11 @@ import { getFileToS3 } from '../../services/aws/s3';
 import { getNameDocBaseByServicoPGR } from '../../services/servicos';
 import { PDFDocument } from 'pdf-lib';
 import axios from 'axios';
-import ART from '../../models/ART';
+import ART from '../../models/ART'; 
 
-const { buildDocumentoBase } = require("../../report-builder/documento-base-PGR/documento-base-builder");
+const { buildDocumentoBase } = require("../../../../../gerarLaudos/pgr/")
+
+//const { buildDocumentoBase } = require("../../report-builder/documento-base-PGR/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
 
 dotenv.config();
@@ -32,7 +34,9 @@ export const pgrReportController = {
             ]);
 
             // Etapa 2: Gerar documento principal e baixar documento base (se existir), em paralelo
-            const docDefinitions = await buildDocumentoBase(reportOptions);
+            const docDefinitions = await axios.post("https://4zo0pg6c0g.execute-api.us-east-1.amazonaws.com/pgrGenerate/get-data-pgr", reportOptions);
+            // console.log(reportOptions)
+            // const docDefinitions = await buildDocumentoBase(reportOptions);
             const generatePdfPromise = generatePdf(docDefinitions);
 
             let basePdfLoadPromise: Promise<PDFDocument | null> = Promise.resolve(null);

@@ -63,6 +63,35 @@ export const authController = {
     }
   },
 
+  loginMobile: async (req: Request, res: Response) => {
+    const { email, password } = req.body;    
+
+    try {
+      const user = await userService.findByEmail(email);
+      if (!user) return res.status(404).json({ message: "E-mail não registrado" });
+
+      // Promisify checkPassword
+      const checkPasswordAsync = promisify(user.checkPassword.bind(user));
+      const isSame = await checkPasswordAsync(password);
+
+      if (!isSame) return res.status(401).json({ message: "Senha incorreta" });
+
+      const payload = {
+        id: user.id,
+        empresaId: user.empresaId,
+        nome: user.nome,
+        email: user.email,
+      };
+
+      const token = jwtService.signToken(payload, "12hr");
+
+      return res.json({ authenticated: true, ...payload, token, use_token_mfa: user.use_token_mfa });
+
+    } catch (err) {
+      console.error(err);
+      return res.status(400).json({ message: err instanceof Error ? err.message : "Erro inesperado" });
+    }
+  },
 
   //POST /auth/forgotPassword
   forgotPassword: async (req: Request, res: Response) => {

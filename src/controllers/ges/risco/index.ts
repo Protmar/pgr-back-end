@@ -1,4 +1,4 @@
-import { Response } from "express";
+import e, { Response } from "express";
 import { AuthenticatedUserRequest } from "../../../middleware";
 import {
   deleteDadosRiscoService,
@@ -17,11 +17,19 @@ import {
 import { CadastroMedidaControleColetivaExistente } from "../../../models/MedidaControleColetivaExistente";
 import { CadastroMedidaControleAdministrativaExistente } from "../../../models/MedidaControleAdministrativaExistente";
 import { CadastroMedidaControleIndividualExistente } from "../../../models/MedidaControleIndividualExistente";
-import { Risco } from "../../../models/Risco";
+import { Risco, RiscoAttributes } from "../../../models/Risco";
 import { RiscoColetivoExistente } from "../../../models/Risco/RiscoColetivoExistente";
 import { RiscoAdministrativoExistente } from "../../../models/Risco/RiscoAdministrativoExistente";
 import { RiscoIndividualExistente } from "../../../models/Risco/RiscoIndividualExistente";
 import { medidaAdministrativaNecessariasService, medidaColetivaNecessariasService, medidaIndividualNecessariasService } from "../../../services/ges/gesRiscos/PlanoAcao";
+import { CadastroPlanoAcaoRiscoAttributes, PlanoAcaoRisco } from "../../../models/Risco/PlanoAcao/PlanoAcaoRisco";
+import { CadastroMedidaControleColetivaNecessaria } from "../../../models/MedidaControleColetivaNecessaria";
+import { CadastroMedidaControleAdministrativaNecessaria } from "../../../models/MedidaControleAdministrativaNecessaria";
+import { CadastroMedidaControleIndividualNecessaria } from "../../../models/MedidaControleIndividualNecessaria";
+import { RiscoAdministrativoNecessaria } from "../../../models/Risco/PlanoAcao/RiscoAdministrativoNecessaria";
+import { RiscoColetivoNecessaria } from "../../../models/Risco/PlanoAcao/RiscoColetivoNecessaria";
+import { RiscoIndividualNecessaria } from "../../../models/Risco/PlanoAcao/RiscoIndividualNecessaria";
+import { Model } from "sequelize";
 
 export const dadosRisco = {
   post: async (req: AuthenticatedUserRequest, res: Response) => {
@@ -194,7 +202,7 @@ export const dadosRisco = {
         conclusao_ltcat,
         menor_limite_quantificacao
       } = req.body;
-  
+
       const data = await putDadosRiscoService(
         empresaId.toString(),
         idrisco,
@@ -226,7 +234,7 @@ export const dadosRisco = {
         conclusao_ltcat?.toString(),
         menor_limite_quantificacao
       );
-  
+
       res.status(200).json(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -312,6 +320,293 @@ export const dadosRisco = {
       }
     }
   },
+
+  copy: async (req: AuthenticatedUserRequest, res: Response) => {
+    try {
+      const { riscoId, gesId } = req.body;
+      const { empresaId } = req.user!;
+
+      // ===== Includes do Risco =====
+      const includeColetivoExistente = {
+        model: RiscoColetivoExistente,
+        as: "relacoes_coletivas",
+        include: [
+          {
+            model: CadastroMedidaControleColetivaExistente,
+            as: "medidas_coletivas_existentes",
+          },
+        ],
+      };
+
+      const includeAdministrativoExistente = {
+        model: RiscoAdministrativoExistente,
+        as: "relacoes_administrativas",
+        include: [
+          {
+            model: CadastroMedidaControleAdministrativaExistente,
+            as: "medidas_administrativas_existentes",
+          },
+        ],
+      };
+
+      const includeIndividualExistente = {
+        model: RiscoIndividualExistente,
+        as: "relacoes_individuais",
+        include: [
+          {
+            model: CadastroMedidaControleIndividualExistente,
+            as: "medidas_individuais_existentes",
+          },
+        ],
+      };
+
+      // ===== Includes do Plano de Ação =====
+      const includeColetivoNecessaria = {
+        model: RiscoColetivoNecessaria,
+        as: "riscosColetivosNecessaria",
+        include: [
+          {
+            model: CadastroMedidaControleColetivaNecessaria,
+            as: "medidas_coletivas_necessarias",
+          },
+        ],
+      };
+
+      const includeAdministrativoNecessaria = {
+        model: RiscoAdministrativoNecessaria,
+        as: "riscosAdministrativosNecessaria",
+        include: [
+          {
+            model: CadastroMedidaControleAdministrativaNecessaria,
+            as: "medidas_administrativas_n",
+          },
+        ],
+      };
+
+      const includeIndividualNecessaria = {
+        model: RiscoIndividualNecessaria,
+        as: "riscosIndividuaisNecessaria",
+        include: [
+          {
+            model: CadastroMedidaControleIndividualNecessaria,
+            as: "medidas_individuais_necessarias",
+          },
+        ],
+      };
+
+      // ===== Consultas =====
+      const [riscoBase, planosBase] = await Promise.all([
+        Risco.findOne({
+          where: { id: riscoId, empresa_id: empresaId },
+          include: [
+            includeColetivoExistente,
+            includeAdministrativoExistente,
+            includeIndividualExistente,
+          ],
+        }),
+        PlanoAcaoRisco.findAll({
+          where: { id_risco: riscoId },
+          include: [
+            includeColetivoNecessaria,
+            includeAdministrativoNecessaria,
+            includeIndividualNecessaria,
+          ],
+        }),
+      ]);
+
+      if (!riscoBase) {
+        return res.status(404).json({ message: "Risco não encontrado" });
+      }
+
+      // Une os dados como antes
+      const riscoAntigo = {
+        ...riscoBase.dataValues,
+        planosAcao: planosBase.map((p) => p.dataValues),
+      };
+
+      // ===== Exemplo de acessos =====
+      //@ts-ignore
+      const descColetivaExistente = riscoAntigo.relacoes_coletivas;
+
+
+      //@ts-ignore
+      const descAdministrativaExistente = riscoAntigo.relacoes_administrativas;
+
+      //@ts-ignore
+      const descIndividualExistente = riscoAntigo.relacoes_individuais;
+
+      //@ts-ignore
+      const descColetivaNecessaria = riscoAntigo.planosAcao
+        ?.flatMap((plano: any) =>
+          plano.riscosColetivosNecessaria?.map(
+            (r: any) => r.medidas_coletivas_necessarias?.dataValues?.descric
+          ) || []
+        )
+        .filter(Boolean);
+
+      //@ts-ignore
+      const descAdministrativaNecessaria = riscoAntigo.planosAcao
+        ?.flatMap((plano: any) =>
+          plano.riscosAdministrativosNecessaria?.map(
+            (r: any) => r.dataValues?.medidas_administrativas_n?.dataValues?.descr
+          ) || []
+        )
+        .filter(Boolean);
+
+      //@ts-ignore
+      const descIndividualNecessaria = riscoAntigo.planosAcao
+        ?.flatMap((plano: any) =>
+          plano.riscosIndividuaisNecessaria?.map(
+            (r: any) => r.medidas_individuais_necessarias?.dataValues?.des
+          ) || []
+        )
+        .filter(Boolean);
+
+
+      const risco = await Risco.create({
+        empresa_id: empresaId,
+        id_fator_risco: riscoAntigo.id_fator_risco,
+        id_fonte_geradora: riscoAntigo.id_fonte_geradora,
+        id_exigencia_atividade: riscoAntigo.id_exigencia_atividade,
+        id_trajetoria: riscoAntigo.id_trajetoria,
+        id_exposicao: riscoAntigo.id_exposicao,
+        id_meio_propagacao: riscoAntigo.id_meio_propagacao,
+        transmitir_esocial: riscoAntigo.transmitir_esocial,
+        intens_conc: riscoAntigo.intens_conc,
+        lt_le: riscoAntigo.lt_le,
+        comentario: riscoAntigo.comentario,
+        nivel_acao: riscoAntigo.nivel_acao,
+        id_tecnica_utilizada: riscoAntigo.id_tecnica_utilizada,
+        id_estrategia_amostragem: riscoAntigo.id_estrategia_amostragem,
+        desvio_padrao: riscoAntigo.desvio_padrao,
+        percentil: riscoAntigo.percentil,
+        obs: riscoAntigo.obs,
+        probab_freq: riscoAntigo.probab_freq,
+        conseq_severidade: riscoAntigo.conseq_severidade,
+        grau_risco: riscoAntigo.grau_risco,
+        classe_risco: riscoAntigo.classe_risco,
+        ges_id: gesId,
+        conclusao_insalubridade: riscoAntigo.conclusao_insalubridade,
+        conclusao_periculosidade: riscoAntigo.conclusao_periculosidade,
+        conclusao_ltcat: riscoAntigo.conclusao_ltcat,
+        menor_limite_quantificacao: riscoAntigo.menor_limite_quantificacao,
+      });
+
+      // Associa medidas de controle
+      if (descColetivaExistente && descColetivaExistente.length > 0) {
+        descColetivaExistente.map(async (e: any) => {
+          await RiscoColetivoExistente.create(
+            {
+              id_risco: risco.getDataValue("id"),
+              id_medida_controle_coletiva_existentes: e.dataValues.medidas_coletivas_existentes.dataValues.id as number,
+            }
+          );
+        })
+
+      }
+
+      if (descAdministrativaExistente && descAdministrativaExistente.length > 0) {
+        descAdministrativaExistente.map(async (e: any) => {
+          await RiscoAdministrativoExistente.create(
+            {
+              id_risco: risco.getDataValue("id"),
+              id_medida_controle_administrativa_existentes: e.dataValues.medidas_administrativas_existentes.dataValues.id as number,
+            }
+          );
+        })
+
+      }
+
+      if (descIndividualExistente && descIndividualExistente.length > 0) {
+        descIndividualExistente.map(async (e: any) => {
+          await RiscoIndividualExistente.create(
+            {
+              id_risco: risco.getDataValue("id"),
+              id_medida_controle_individual_existentes: e.dataValues.medidas_individuais_existentes.dataValues.id as number,
+            }
+          );
+        })
+
+      }
+
+
+
+      // Cria todos os planos de ação em paralelo
+      const novosPlanosAcao = await Promise.all(
+        riscoAntigo.planosAcao.map(async (plano: any) => {
+          const novoPlano = await PlanoAcaoRisco.create({
+            id_risco: risco.getDataValue("id"),
+            eliminar_risco_administrativo: plano.eliminar_risco_administrativo,
+            eliminar_risco_coletivo: plano.eliminar_risco_coletivo,
+            eliminar_risco_individual: plano.eliminar_risco_individual,
+            responsavel: plano.responsavel,
+            data_prevista: plano.data_prevista,
+            data_realizada: plano.data_realizada,
+            data_inspecao: plano.data_inspecao,
+            data_monitoramento: plano.data_monitoramento,
+            resultado_realizacacao: plano.resultado_realizacacao,
+          });
+
+          // Copia os riscos coletivos necessários
+          if (plano.riscosColetivosNecessaria?.length) {
+            await Promise.all(
+              plano.riscosColetivosNecessaria.map(async (colNecessaria: any) => {
+                await RiscoColetivoNecessaria.create({
+                  id_plano_acao_riscos: novoPlano.dataValues.id, // usa o novo plano
+                  id_medida_controle_coletiva_necessarias:
+                    colNecessaria.dataValues.id_medida_controle_coletiva_necessari,
+                });
+              })
+            );
+          }
+
+          // Copia os riscos administrativos necessários
+          if (plano.riscosAdministrativosNecessaria?.length) {
+            await Promise.all(
+              plano.riscosAdministrativosNecessaria.map(async (admNecessaria: any) => {
+                await RiscoAdministrativoNecessaria.create({
+                  id_plano_acao_riscos: novoPlano.dataValues.id,
+                  id_medida_controle_administrativa_necessarias:
+                    admNecessaria.dataValues.id_medida_controle_administrati,
+                });
+              })
+            );
+          }
+
+          // Copia os riscos individuais necessários
+          if (plano.riscosIndividuaisNecessaria?.length) {
+            await Promise.all(
+              plano.riscosIndividuaisNecessaria.map(async (indNecessaria: any) => {
+                await RiscoIndividualNecessaria.create({
+                  id_plano_acao_riscos: novoPlano.dataValues.id,
+                  id_medida_controle_individual_necessarias:
+                    indNecessaria.dataValues.id_medida_controle_individual_neces,
+                });
+              })
+            );
+          }
+
+          return novoPlano;
+        })
+      );
+
+
+      return res.json({
+        novosPlanosAcao
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao copiar risco", error });
+    }
+  }
+
+
+
+
+
+
+
+
 };
 
 export const medidaColetivaController = {
@@ -354,5 +649,6 @@ export const medidaIndividualController = {
     }
   },
 
-  
+
+
 };

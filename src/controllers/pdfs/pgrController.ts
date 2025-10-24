@@ -9,6 +9,8 @@ import { PDFDocument } from 'pdf-lib';
 import axios from 'axios';
 import ART from '../../models/ART'; 
 
+const { buildDocumentoBase } = require("../../../../../gerarLaudos/pgr/")
+
 //const { buildDocumentoBase } = require("../../report-builder/documento-base-PGR/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
 
@@ -32,10 +34,13 @@ export const pgrReportController = {
             ]);
 
             // Etapa 2: Gerar documento principal e baixar documento base (se existir), em paralelo
-            const docDefinitions = await axios.post("https://4zo0pg6c0g.execute-api.us-east-1.amazonaws.com/pgrGenerate/get-data-pgr", reportOptions);
-            // console.log(reportOptions)
-            // const docDefinitions = await buildDocumentoBase(reportOptions);
-            const generatePdfPromise = generatePdf(docDefinitions);
+            // const docDefinitions = await axios.post("https://4zo0pg6c0g.execute-api.us-east-1.amazonaws.com/pgrGenerate/get-data-pgr", reportOptions);
+            console.log(reportOptions)
+            const docDefinitions = await buildDocumentoBase(reportOptions);
+
+            console.log("DEFINIÇÕES DO DOCUMENTO:", docDefinitions);
+
+            const generatePdfPromise = generatePdf(docDefinitions.body);
 
             let basePdfLoadPromise: Promise<PDFDocument | null> = Promise.resolve(null);
 

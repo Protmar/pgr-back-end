@@ -7,9 +7,9 @@ import { getFileToS3 } from '../../services/aws/s3';
 import { getNameDocBaseByServicoPGR } from '../../services/servicos';
 import { PDFDocument } from 'pdf-lib';
 import axios from 'axios';
-import ART from '../../models/ART'; 
+import ART from '../../models/ART';
 
-const { buildDocumentoBase } = require("../../../../../gerarLaudos/pgr/")
+// const { buildDocumentoBase } = require("../../../../../gerarLaudos/pgr/")
 
 //const { buildDocumentoBase } = require("../../report-builder/documento-base-PGR/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
@@ -34,13 +34,20 @@ export const pgrReportController = {
             ]);
 
             // Etapa 2: Gerar documento principal e baixar documento base (se existir), em paralelo
-            // const docDefinitions = await axios.post("https://4zo0pg6c0g.execute-api.us-east-1.amazonaws.com/pgrGenerate/get-data-pgr", reportOptions);
-            console.log(reportOptions)
-            const docDefinitions = await buildDocumentoBase(reportOptions);
+            const { data: lambdaResponse } = await axios.post(
+                "https://4zo0pg6c0g.execute-api.us-east-1.amazonaws.com/pgrGenerate/get-data-pgr",
+                reportOptions
+            );
 
-            console.log("DEFINIÇÕES DO DOCUMENTO:", docDefinitions);
+            // 'body' vem como string JSON
+            const parsedBody = JSON.parse(lambdaResponse.body);
 
-            const generatePdfPromise = generatePdf(docDefinitions.body);
+            // Agora pegamos o documento real
+            const docDefinitions = parsedBody.doc;
+
+            // Passa para generatePdf
+            const generatePdfPromise = generatePdf(docDefinitions);
+
 
             let basePdfLoadPromise: Promise<PDFDocument | null> = Promise.resolve(null);
 

@@ -9,8 +9,6 @@ import { PDFDocument } from 'pdf-lib';
 import axios from 'axios';
 import ART from '../../models/ART'; 
 
-const { buildDocumentoBase } = require("../../../../../gerarLaudos/pgr/")
-
 //const { buildDocumentoBase } = require("../../report-builder/documento-base-PGR/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
 

@@ -45,6 +45,47 @@ export const pgrReportController = {
             // Agora pegamos o documento real
             const docDefinitions = parsedBody.doc;
 
+            // Adiciona bordas e elipse de rodapé após receber o doc do Lambda
+            // Adiciona bordas e elipse de rodapé com número da página após receber o doc do Lambda
+            docDefinitions.background = (currentPage: number, pageSize: any) => {
+                const margin = 25;
+                const endWidth = pageSize.width - 25;
+                const endHeight = pageSize.height - 25;
+
+                return [
+                    {
+                        canvas: [
+                            { type: "line", x1: margin, y1: margin, x2: endWidth, y2: margin, lineWidth: 0.5 },
+                            { type: "line", x1: margin, y1: margin, x2: margin, y2: endHeight, lineWidth: 0.5 },
+                            { type: "line", x1: margin, y1: endHeight, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+                            { type: "line", x1: endWidth, y1: margin, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+                            { type: "ellipse", x: pageSize.width / 2, y: endHeight - 10, color: "#40618b", fillOpacity: 0.75, r1: 25, r2: 25 },
+                        ],
+                    },
+                ];
+            };
+
+            // Adiciona número da página no centro da elipse
+            docDefinitions.footer = (currentPage: number, pageCount: number) => {
+                return {
+                    margin: [0, 0, 0, 10],
+                    columns: [
+                        { text: '' }, // espaço à esquerda
+                        {
+                            text: currentPage.toString(),
+                            alignment: 'center',
+                            color: '#FFFFFF',
+                            fontSize: 14,
+                            bold: true,
+                            margin: [0, -5, 0, 0], // ajusta posição vertical para centralizar dentro da elipse
+                        },
+                        { text: '' }, // espaço à direita
+                    ],
+                };
+            };
+
+
+
             // Passa para generatePdf
             const generatePdfPromise = generatePdf(docDefinitions);
 

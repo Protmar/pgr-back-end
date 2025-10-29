@@ -77,7 +77,7 @@ export const pgrReportController = {
                             color: '#FFFFFF',
                             fontSize: 14,
                             bold: true,
-                            margin: [0, -15, 0, 0], // ajusta posição vertical para centralizar dentro da elipse
+                            margin: [0, 7, 0, 0], // ajusta posição vertical para centralizar dentro da elipse
                         },
                         { text: '' }, // espaço à direita
                     ],

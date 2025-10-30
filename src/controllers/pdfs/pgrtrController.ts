@@ -4,18 +4,19 @@ import { AuthenticatedUserRequest } from "../../middleware";
 import { Cliente } from "../../models/Cliente";
 import { Empresa } from "../../models";
 import { getFileToS3 } from '../../services/aws/s3';
-import { getNameDocBaseByServicoPGR, getNameDocBaseByServicoPGRTR } from '../../services/servicos';
+import { getNameDocBaseByServicoPGR } from '../../services/servicos';
 import { PDFDocument } from 'pdf-lib';
 import axios from 'axios';
 import ART from '../../models/ART';
 
-const { buildDocumentoBase } = require("../../report-builder/documento-base-PGRTR/documento-base-builder");
+// const { buildDocumentoBase } = require("../../../../../gerarLaudos/pgr/")
+
+//const { buildDocumentoBase } = require("../../report-builder/documento-base-PGR/documento-base-builder");
 const { generatePdf } = require("../../report-builder/utils/report-utils");
 
 dotenv.config();
 
 export const pgrtrReportController = {
-
     getPGRTRReport: async (req: AuthenticatedUserRequest, res: Response) => {
         const { empresaId } = req.user!;
         const { clientId, gesIds, servicoId } = req.body;
@@ -29,17 +30,70 @@ export const pgrtrReportController = {
                     gesIds,
                     servicoId
                 ),
-                getNameDocBaseByServicoPGRTR(Number(empresaId), Number(servicoId))
+                getNameDocBaseByServicoPGR(Number(empresaId), Number(servicoId))
             ]);
 
             // Etapa 2: Gerar documento principal e baixar documento base (se existir), em paralelo
-            const docDefinitions = await buildDocumentoBase(reportOptions);
+            const { data: lambdaResponse } = await axios.post(
+                "https://4zo0pg6c0g.execute-api.us-east-1.amazonaws.com/pgrtr-generate/get-data-pgrtr",
+                reportOptions
+            );
+
+            // 'body' vem como string JSON
+            const parsedBody = JSON.parse(lambdaResponse.body);
+
+            // Agora pegamos o documento real
+            const docDefinitions = parsedBody.doc;
+
+            // Adiciona bordas e elipse de rodapé após receber o doc do Lambda
+            // Adiciona bordas e elipse de rodapé com número da página após receber o doc do Lambda
+            docDefinitions.background = (currentPage: number, pageSize: any) => {
+                const margin = 25;
+                const endWidth = pageSize.width - 25;
+                const endHeight = pageSize.height - 25;
+
+                return [
+                    {
+                        canvas: [
+                            { type: "line", x1: margin, y1: margin, x2: endWidth, y2: margin, lineWidth: 0.5 },
+                            { type: "line", x1: margin, y1: margin, x2: margin, y2: endHeight, lineWidth: 0.5 },
+                            { type: "line", x1: margin, y1: endHeight, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+                            { type: "line", x1: endWidth, y1: margin, x2: endWidth, y2: endHeight, lineWidth: 0.5 },
+                            { type: "ellipse", x: pageSize.width / 2, y: endHeight - 10, color: "#40618b", fillOpacity: 0.75, r1: 25, r2: 25 },
+                        ],
+                    },
+                ];
+            };
+
+            // Adiciona número da página no centro da elipse
+            docDefinitions.footer = (currentPage: number, pageCount: number) => {
+                return {
+                    margin: [0, 0, 0, 10],
+                    columns: [
+                        { text: '' }, // espaço à esquerda
+                        {
+                            text: currentPage.toString(),
+                            alignment: 'center',
+                            color: '#FFFFFF',
+                            fontSize: 14,
+                            bold: true,
+                            margin: [0, 30, 0, 0], // ajusta posição vertical para centralizar dentro da elipse
+                        },
+                        { text: '' }, // espaço à direita
+                    ],
+                };
+            };
+
+
+
+            // Passa para generatePdf
             const generatePdfPromise = generatePdf(docDefinitions);
+
 
             let basePdfLoadPromise: Promise<PDFDocument | null> = Promise.resolve(null);
 
-            if (nameDocumentBaseResponse?.dataValues?.base_document_url_pgrtr) {
-                const nameDocumentBase = nameDocumentBaseResponse.dataValues.base_document_url_pgrtr;
+            if (nameDocumentBaseResponse?.dataValues?.base_document_url_pgr) {
+                const nameDocumentBase = nameDocumentBaseResponse.dataValues.base_document_url_pgr;
                 basePdfLoadPromise = (async () => {
                     const fileDocumentoBase = await getFileToS3(nameDocumentBase.toString());
                     const basePdfBuffer = (await axios.get(fileDocumentoBase.url, { responseType: 'arraybuffer' })).data;
